@@ -23,39 +23,6 @@ def lineToArray(line):
     return array
 
 masterDF = pd.DataFrame()
-# index=1
-# indxs=[]
-# for line in lines:
-#     if(index==1):
-#         indxs=lineToArray(line)
-#         index=index+1
-#         continue
-#     sampList = lineToArray(line)
-#     df1=pd.DataFrame({indxs[0]:indxs, sampList[0]:sampList},index=indxs)
-#     if(index==2):
-#         print(df1)
-#         masterDF=df1
-#         index=index+1
-#         continue
-#     tempArr=[masterDF,df1]
-#     masterDF=pd.merge(masterDF,df1,how="outer",on=indxs[0])
-#     if(index==3):
-#         print(df1)
-#         print(masterDF)
-#     if(index==50):
-#         print(df1)
-#         print(masterDF)
-#         break
-#     print(index)
-#     index=index+1
-#         
-# print(masterDF)
-
-
-
-#get values for antibiotics as array and cycle through
-#if value is not (some value) then add to new dataframe
-#return data frame
 
 
 

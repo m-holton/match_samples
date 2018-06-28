@@ -26,6 +26,7 @@ masterDF = pd.DataFrame()
 
 
 
+
 #built other way
 #build dictionary first, then pass dict to dataframe as arg
 dataDict = {}
@@ -105,18 +106,19 @@ print(controlindexs.size)
 men_count=0
 cont_count=0
 while men_count < mentindexs.size:
+    cont_count=0
     row=mentalDF.iloc[men_count]
     m_id=row.iloc[0]
     age=row.iloc[49]
     bmi=row.iloc[75]
     smoking =row.iloc[205]
     match_array=[]
+    print(controlindexs.size)
+
     if(age=="Unspecified" or bmi=="Unspecified" or smoking=="Unspecified" ):
         print("error some info not given for " +m_id)
         men_count=men_count+1
         continue
-    
-    
     age=int(float(age))
     while cont_count < controlindexs.size:
         #print("running"+str(cont_count))

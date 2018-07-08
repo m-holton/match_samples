@@ -9,7 +9,6 @@ from _ast import Num
 from array import array
 import pandas as pd
 import numpy as np
-from pywin.scintilla import control
 
 textfile = sys.argv[1]
 with open(textfile,'r') as i:

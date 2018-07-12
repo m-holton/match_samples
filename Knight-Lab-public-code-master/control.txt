@@ -1,0 +1,2 @@
+depression_bipolar_schizophrenia	mental_illness_type_depression
+I do not have this condition	No

@@ -1,4 +1,5 @@
-depression_bipolar_schizophrenia	mental_illness_type_depression
-Self-diagnosed	Yes
-Diagnosed by a medical professional (doctor, physician assistant)	
-Diagnosed by an alternative medicine practitioner	
+depression_bipolar_schizophrenia	age_years
+==	>= <
+Self-diagnosed	44
+Diagnosed by a medical professional (doctor, physician assistant)	50
+Diagnosed by an alternative medicine practitioner

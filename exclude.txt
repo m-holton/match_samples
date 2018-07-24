@@ -1,2 +1,4 @@
-antibiotic_history
-I have not taken antibiotics in the past year.
+antibiotic_history	age_years
+keep	exclude
+==	>
+I have not taken antibiotics in the past year.	60

@@ -1,2 +1,4 @@
-depression_bipolar_schizophrenia	mental_illness_type_depression
-I do not have this condition	No
+depression_bipolar_schizophrenia	age_years
+==	> <
+I do not have this condition	30
+Unspecified	44

@@ -1,3 +1,0 @@
-bmi_cat	age_years	smoking_frequency
-string	number	string
-	5	

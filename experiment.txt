@@ -1,3 +1,11 @@
+<<<<<<< HEAD
 depression_bipolar_schizophrenia
 "Self-diagnosed"
 "Diagnosed by a medical professional (doctor, physician assistant)")
+=======
+depression_bipolar_schizophrenia	age_years
+==	>= <
+Self-diagnosed	44
+Diagnosed by a medical professional (doctor, physician assistant)	50
+Diagnosed by an alternative medicine practitioner
+>>>>>>> 38ce1a46058982e1114af8110d93baa56b36673e

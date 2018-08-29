@@ -1,0 +1,2 @@
+BodySite = 'gut'
+ReportedAntibioticUsage = 'No'

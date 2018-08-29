@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-depression_bipolar_schizophrenia
-Unspecified
-I do not have this condition
-=======
 depression_bipolar_schizophrenia	age_years
 ==	> <
 I do not have this condition	30
 Unspecified	44
->>>>>>> 38ce1a46058982e1114af8110d93baa56b36673e

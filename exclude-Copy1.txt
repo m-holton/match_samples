@@ -1,2 +1,0 @@
-BodySite = 'gut'
-ReportedAntibioticUsage = 'No'

@@ -1,1 +1,0 @@
-antibiotic_history IN ('I have not had antibiotics within the last year.')

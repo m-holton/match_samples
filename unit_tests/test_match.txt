@@ -1,3 +1,0 @@
-range	age_years	3
-exact	bmi_category 
-exact	sex

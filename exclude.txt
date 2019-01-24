@@ -1,7 +1,0 @@
-antibiotic_history	age_years
-keep	exclude
-==	>
-I have not taken antibiotics in the past year.	60
-
---p-keep-query antibiotic_history in ('I have not take antibiotics in the past year', 'bleep') \
---p-exclude-query age_years > 60

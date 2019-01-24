@@ -1,4 +1,0 @@
-depression_bipolar_schizophrenia	age_years
-==	> <
-I do not have this condition	30
-Unspecified	44

@@ -1,3 +1,0 @@
-range	Day	3
-range	Month	2
-exact	Year	=

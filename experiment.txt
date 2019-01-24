@@ -1,5 +1,0 @@
-depression_bipolar_schizophrenia	age_years
-==	>= <
-Self-diagnosed	44
-Diagnosed by a medical professional (doctor, physician assistant)	50
-Diagnosed by an alternative medicine practitioner

@@ -275,20 +275,43 @@ def stable_marriage(dictionary_pref, pref_counts_cont, pref_counts_case):
         dictionary with keys and their corresponding values representing a match between a case and control sample
     '''
   
-    free_keys = order_keys(dictionary_pref)
-    '''print(dictionary_pref)
-    print(pref_counts_cont)
-    print(pref_counts_case)'''
-
+    #first make master copy
+    master_copy_of_case_dict = case_dictionary.copy()
+    #cut out keys in case_dictionary that have no possible matches
+    list_of_keys = []
+    for key in case_dictionary:
+        list_of_keys.append(key)
+    for key in list_of_keys:
+        if len(case_dictionary[key])==0:
+            case_dictionary.pop(key,None)
+    
+    free_keys = order_keys(case_dictionary)
+    for key in free_keys:
+        if pref_counts_case[key]==0:
+            case_dictionary.pop(key,None)
+            
+            
     one_to_one_match_dictionary = {}
     while free_keys :
         key = free_keys.pop()
-        if len(dictionary_pref[key]) == 0:
+        if case_dictionary[key]==[]:
             continue
         #get the highest ranked woman that has not yet been proposed to
-        entry = dictionary_pref[key].pop()
+        entry = case_dictionary[key].pop()
+                        
         if entry not in one_to_one_match_dictionary: 
             one_to_one_match_dictionary[entry] = key
+            #remove key to reorder but this my not be the best if a switch is needed later
+            if case_dictionary[key]==[]:
+                case_dictionary.pop(key,None)
+            for case_key in case_dictionary:
+                if entry in case_dictionary[case_key]:
+                    case_dictionary[case_key].remove(entry)
+                    if case_dictionary[case_key] == []:
+                        case_dictionary[case_key] = []
+            #reorder keys
+            free_keys = order_keys(case_dictionary)
+            
         else:
             key_in_use = one_to_one_match_dictionary [entry]
             if pref_counts_case[key] < pref_counts_case[key_in_use]:
@@ -296,8 +319,9 @@ def stable_marriage(dictionary_pref, pref_counts_cont, pref_counts_case):
                 free_keys.append(key_in_use)
             else:
                 free_keys.append(key)
+                
     return one_to_one_match_dictionary
-
+    
 
 
 

@@ -1,0 +1,26 @@
+id	age_years	sex	disease	bmi_category 	test_site	antibiotic_history	correct_case	should_match
+3	30	male	schizophrenia	overweight	none	I have not had antibiotics within the last year.	Unspecified	no
+5	Unspecified	male	none	obese	oral	I have not had antibiotics within the last year.	control	no
+6	20	male	depression	obese	oral	I have not had antibiotics within the last year.	case	no
+7	30	male	schizophrenia	normal	vaginal	I have not had antibiotics within the last year.	case	8
+8	30	male	none	normal	skin	I have not had antibiotics within the last year.	control	7
+9	30	female	depression	normal	fecal	I have not had antibiotics within the last year.	case	10
+10	30	female	none	normal	skin	I have not had antibiotics within the last year.	control	9
+11	100	female	depression	normal	fecal	I have not had antibiotics within the last year.	case	12
+12	103	female	Unspecified	normal	skin	I have not had antibiotics within the last year.	control	11
+13	35	male	none	normal	vaginal	I have not had antibiotics within the last year.	control	16
+14	40	male	schizophrenia	normal	fecal	I have not had antibiotics within the last year.	case	15
+15	37	male	none	normal	oral	I have not had antibiotics within the last year.	control	14
+16	36	male	schizophrenia	normal	skin	I have not had antibiotics within the last year.	case	13
+17	42	male	none	normal	oral	I have not had antibiotics within the last year.	control	18
+18	45	male	schizophrenia	normal	fecal	I have not had antibiotics within the last year.	case	17
+19	80	female	depression	obese	fecal	I have not had antibiotics within the last year.	case	20
+20	80	female	none	obese	skin	I have not had antibiotics within the last year.	control	19
+21	90	female	depression	normal	fecal	I have not had antibiotics within the last year.	case	no
+22	90	female	none	obese	skin	I have not had antibiotics within the last year.	control	no
+23	70	male	schizophrenia	normal	vaginal	I have not had antibiotics within the last year.	case	no
+24	70	female	none	normal	skin	I have not had antibiotics within the last year.	control	no
+25	111	female	depression	normal	fecal	I have not had antibiotics within the last year.	case	no
+26	116	female	none	normal	skin	I have not had antibiotics within the last year.	control	no
+27	333	male	depression	normal	fecal	I have not had antibiotics within the last year.	case	no
+28	333	male	psychopathy	normal	skin	I have not had antibiotics within the last year.	Unspecified	no

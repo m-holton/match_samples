@@ -1,0 +1,3 @@
+range	age_years	4 
+exact	bmi_cat 
+exact	sex

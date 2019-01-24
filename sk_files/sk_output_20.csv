@@ -1,0 +1,133 @@
+id	AGE_YEARS	BMI_CAT	SEX	RACE	ANTIBIOTIC_HISTORY	disease	Paper_1	BMI_CORRECTED	case_control	matched_to
+70687	60	Overweight	female	Other	I have not taken antibiotics in the past year.	HC	Yes	27.48	control	84676
+71600	53	Obese	male	Hispanic	I have not taken antibiotics in the past year.	SZ	Yes	36.48	case	84543
+71603	35	Obese	male	Hispanic	I have not taken antibiotics in the past year.	SZ	Yes	31	case	84654
+71604	62	Overweight	female	African American	Year	HC	Yes	29.18	control	84666
+71607	67	Obese	female	African American	I have not taken antibiotics in the past year.	SZ	Yes	33.84	case	84188
+71610	56	Obese	female	Caucasian	I have not taken antibiotics in the past year.	SZ	Yes	43.09	case	0
+71611	39	Obese	male	Caucasian	I have not taken antibiotics in the past year.	SZ	Yes	30.54	case	84645
+71613	38	Obese	female	African American	Year	SZ	Yes	33.45	case	84602
+71616	51	Obese	female	Hispanic	I have not taken antibiotics in the past year.	SZ	Yes	32.92	case	84348
+71971	43	Overweight	male	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	26.31	control	85152
+74221	63	Obese	female	Caucasian	Year	HC	Yes	36.89	control	0
+74236	62	Obese	male	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	30.38	control	85136
+79461	37	Obese	male	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	30.54	control	85162
+84205	55	Obese	female	African American	I have not taken antibiotics in the past year.	HC	Yes	31.28	control	85083
+84224	64	Normal	male	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	24.68	control	85100
+84225	45	Obese	male	African American	I have not taken antibiotics in the past year.	HC	Yes	32.08	control	85082
+84268	63	Normal	male	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	23.24	control	85154
+84281	41	Obese	male	Hispanic	I have not taken antibiotics in the past year.	HC	Yes	30.41	control	84381
+84286	63	Normal	male	Caucasian	I have not taken antibiotics in the past year.	SZ	Yes	23.42	case	84493
+84287	76	Obese	male	Caucasian	Year	SZ	Yes	34.06	case	84632
+84288	60	Obese	male	Caucasian	Year	SZ	Yes	33.47	case	84613
+84289	56	Overweight	male	Caucasian	I have not taken antibiotics in the past year.	SZ	Yes	27.47	case	84590
+84322	75	Overweight	male	Caucasian	Year	HC	Yes	26.54	control	0
+84342	63	Overweight	male	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	29.02	control	85151
+84348	68	Overweight	female	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	26.63	control	71616
+84381	50	Obese	male	Caucasian	I have not taken antibiotics in the past year.	SZ	Yes	34.44	case	84281
+84449	55	Overweight	female	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	29.12	control	84679
+84453	39	Obese	female	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	33.09	control	85084
+84493	59	Overweight	male	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	25.84	control	84286
+84590	65	Normal	male	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	21.11	control	84289
+84591	60	Overweight	male	Caucasian	Year	HC	Yes	26.97	control	84665
+84618	62	Obese	male	Caucasian	Year	HC	Yes	31.66	control	85143
+84638	42	Obese	male	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	38.39	control	85159
+84645	46	Obese	male	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	32.08	control	71611
+84652	54	Overweight	female	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	26.61	control	85142
+84656	43	Overweight	female	Hispanic	I have not taken antibiotics in the past year.	HC	Yes	25.61	control	0
+84657	41	Overweight	female	Caucasian	I have not taken antibiotics in the past year.	HC	Yes	26.63	control	0
+84658	62	Normal	male	Caucasian	I have not taken antibiotics in the past year.	SZ	Yes	23.37	case	84562
+84660	38	Overweight	male	Caucasian	I have not taken antibiotics in the past year.	SZ	Yes	26.78	case	84653
+84665	61	Overweight	male	Caucasian	Year	SZ	Yes	25.61	case	84591
+84666	49	Obese	female	African American	Year	SZ	Yes	35.44	case	71604
+84671	54	Overweight	female	Other	I have not taken antibiotics in the past year.	SZ	Yes	28.94	case	85085
+84672	58	Obese	male	African American	I have not taken antibiotics in the past year.	SZ	Yes	41.32	case	0
+84676	66	Overweight	female	Caucasian	I have not taken antibiotics in the past year.	SZ	Yes	27.98	case	70687
+84677	30	Obese	female	Caucasian	I have not taken antibiotics in the past year.	SZ	Yes	36.61	case	84476
+84678	48	Overweight	female	Caucasian	Year	SZ	Yes	28.35	case	84636
+84680	56	Obese	male	Caucasian	I have not taken antibiotics in the past year.	SZ	Yes	31.01	case	84584
+85082	63	Normal	male	Caucasian	I have not taken antibiotics in the past year.	SZ	Yes	24.39	case	84225
+85083	43	Obese	female	Hispanic	I have not taken antibiotics in the past year.	SZ	Yes	38.77	case	84205
+84188	60	Overweight	female	Caucasian	I have not taken antibiotics in the past year.	HC	none	27.44	control	71607
+84207	51	Normal	male	Caucasian	6 months	HC	none	22.84	control	0
+84210	59	Obese	female	African American	Month	HC	none	37.94	control	0
+84240	54	Obese	female	Hispanic	I have not taken antibiotics in the past year.	HC	none	31.09	control	84674
+84248	51	Obese	male	African American	6 months	HC	none	30.81	control	85160
+84296	90	Overweight	male	Caucasian	Year	HC	none	25.1	control	0
+84307	83	Obese	male	Hispanic	Month	HC	none	33.47	control	0
+84316	80	Normal	female	Hispanic	I have not taken antibiotics in the past year.	HC	none	19.53	control	0
+84318	79	Normal	female	Hispanic	I have not taken antibiotics in the past year.	HC	none	20.55	control	0
+84328	85	Overweight	male	Hispanic	I have not taken antibiotics in the past year.	HC	none	28.8	control	0
+84331	68	Normal	female	Caucasian	6 months	HC	none	20.6	control	0
+84334	74	Overweight	female	Caucasian	I have not taken antibiotics in the past year.	HC	none	27.44	control	85150
+84336	85	Overweight	female	Hispanic	I have not taken antibiotics in the past year.	HC	none	25.75	control	0
+84365	66	Normal	female	Caucasian	I have not taken antibiotics in the past year.	HC	none	24.45	control	0
+84374	61	Normal	female	Caucasian	I have not taken antibiotics in the past year.	HC	none	21.31	control	0
+84380	70	Normal	male	Caucasian	I have not taken antibiotics in the past year.	HC	none	24.39	control	0
+84436	54	Normal	male	Caucasian	I have not taken antibiotics in the past year.	HC	none	20.61	control	85138
+84455	45	Normal	female	Caucasian	I have not taken antibiotics in the past year.	HC	none	21.66	control	0
+84472	33	Normal	male	Caucasian	6 months	HC	none	19.26	control	0
+84476	41	Obese	female	Other	I have not taken antibiotics in the past year.	HC	none	31	control	84677
+84485	35	Normal	male	Caucasian	I have not taken antibiotics in the past year.	HC	none	24.33	control	0
+84486	96	Normal	female	Caucasian	I have not taken antibiotics in the past year.	HC	none	22.01	control	0
+84505	81	Overweight	male	Hispanic	I have not taken antibiotics in the past year.	HC	none	27.1	control	0
+84522	74	Overweight	male	Caucasian	I have not taken antibiotics in the past year.	HC	none	25.1	control	85148
+84524	76	Obese	male	Caucasian	Month	HC	none	31.8	control	0
+84525	27	Overweight	female	Caucasian	I have not taken antibiotics in the past year.	HC	none	25.75	control	0
+84541	69	Normal	female	Caucasian	6 months	HC	none	23.17	control	0
+84542	29	Overweight	male	Caucasian	Year	HC	none	29.99	control	85141
+84543	46	Overweight	male	Caucasian	I have not taken antibiotics in the past year.	HC	none	28.8	control	71600
+84544	81	Underweight	female	Caucasian	I have not taken antibiotics in the past year.	HC	none	17.47	control	0
+84548	82	Normal	male	Caucasian	Year	HC	none	21.29	control	0
+84555	76	Normal	male	Caucasian	Year	HC	none	24.41	control	0
+84558	74	Underweight	female	Caucasian	6 months	HC	none	18.01	control	0
+84559	64	Overweight	female	Caucasian	Year	HC	none	26.45	control	84667
+84562	66	Overweight	male	Caucasian	I have not taken antibiotics in the past year.	HC	none	27.1	control	84658
+84584	73	Overweight	male	Caucasian	I have not taken antibiotics in the past year.	HC	none	26.5	control	84680
+84587	60	Normal	female	Asian or Pacific Islander	Year	HC	none	24.33	control	0
+84599	32	Normal	female	Asian or Pacific Islander	I have not taken antibiotics in the past year.	HC	none	22.86	control	0
+84602	28	Overweight	female	Hispanic	Year	HC	none	26.61	control	71613
+84606	33	Normal	female	Hispanic	Year	HC	none	22.45	control	0
+84607	53	Obese	male	Caucasian	I have not taken antibiotics in the past year.	HC	none	60.46	control	85086
+84613	61	Overweight	male	Caucasian	Year	HC	none	29.84	control	84288
+84632	76	Overweight	male	Caucasian	Year	HC	none	29.29	control	84287
+84634	37	Normal	female	Hispanic	I have not taken antibiotics in the past year.	HC	none	21.67	control	0
+84636	45	Normal	female	Caucasian	Year	HC	none	21.14	control	84678
+84637	41	Overweight	male	Caucasian	I have not taken antibiotics in the past year.	HC	none	27.98	control	85157
+84653	54	Normal	male	Caucasian	I have not taken antibiotics in the past year.	HC	none	23.67	control	84660
+84654	50	Overweight	male	Caucasian	I have not taken antibiotics in the past year.	HC	none	27.26	control	71603
+84659	67	Overweight	male	Hispanic	I have not taken antibiotics in the past year.	HC	none	26.5	control	85104
+84662	32	Obese	female	Caucasian	Week	SZ	none	32.89	case	0
+84667	67	Obese	female	Caucasian	Year	SZ	none	33.28	case	84559
+84674	50	Obese	female	Caucasian	I have not taken antibiotics in the past year.	SZ	none	38.01	case	84240
+84675	47	Overweight	unspecified	Hispanic	I have not taken antibiotics in the past year.	HC	none	29.41	control	0
+84679	53	Obese	female	Asian or Pacific Islander	I have not taken antibiotics in the past year.	SZ	none	36.15	case	84449
+85084	58	Obese	female	Caucasian	I have not taken antibiotics in the past year.	SZ	none	37.91	case	84453
+85085	66	Normal	female	Caucasian	I have not taken antibiotics in the past year.	HC	none	22.96	control	84671
+85086	42	Obese	male	Caucasian	I have not taken antibiotics in the past year.	SZ	none	53.16	case	84607
+85100	59	Overweight	male	Caucasian	I have not taken antibiotics in the past year.	SZ	none	25.7	case	84224
+85102	43	Overweight	female	Caucasian	6 months	SZ	none	25.75	case	0
+85104	65	Normal	male	Caucasian	I have not taken antibiotics in the past year.	SZ	none	22.96	case	84659
+85107	47	Obese	female	Caucasian	6 months	BP	none	32.69	Unspecified	0
+85108	60	Overweight	female	African American	Year	BP	none	28.88	Unspecified	0
+85109	46	Overweight	female	African American	Month	BP	none	28.87	Unspecified	0
+85111	58	Obese	female	Caucasian	I have not taken antibiotics in the past year.	BP	none	32.74	Unspecified	0
+85112	59	Obese	male	Caucasian	I have not taken antibiotics in the past year.	BP	none	38.39	Unspecified	0
+85113	56	Normal	male	African American	I have not taken antibiotics in the past year.	BP	none	21.71	Unspecified	0
+85117	57	Obese	female	Caucasian	I have not taken antibiotics in the past year.	BP	none	39.16	Unspecified	0
+85118	43	Overweight	female	Caucasian	Month	BP	none	29.26	Unspecified	0
+85120	47	Normal	female	Caucasian	I have not taken antibiotics in the past year.	BP	none	19.49	Unspecified	0
+85136	50	Obese	male	Hispanic	I have not taken antibiotics in the past year.	SZ	none	38.01	case	74236
+85138	48	Overweight	male	Caucasian	I have not taken antibiotics in the past year.	SZ	none	25.55	case	84436
+85141	38	Obese	male	Caucasian	Year	SZ	none	35.94	case	84542
+85142	53	Obese	female	Other	I have not taken antibiotics in the past year.	SZ	none	34.34	case	84652
+85143	61	Obese	male	Caucasian	Year	SZ	none	33.45	case	84618
+85148	56	Overweight	male	African American	I have not taken antibiotics in the past year.	SZ	none	27.57	case	84522
+85150	68	Overweight	female	Hispanic	I have not taken antibiotics in the past year.	SZ	none	26.7	case	84334
+85151	43	Obese	male	Hispanic	I have not taken antibiotics in the past year.	SZ	none	35.31	case	84342
+85152	56	Normal	male	Caucasian	I have not taken antibiotics in the past year.	SZ	none	21.29	case	71971
+85154	60	Normal	male	Caucasian	I have not taken antibiotics in the past year.	SZ	none	24.83	case	84268
+85157	49	Normal	male	Hispanic	I have not taken antibiotics in the past year.	SZ	none	24.86	case	84637
+85159	58	Obese	male	Caucasian	I have not taken antibiotics in the past year.	SZ	none	41.27	case	84638
+85160	67	Normal	male	Caucasian	6 months	SZ	none	23.24	case	84248
+85162	55	Normal	male	Asian or Pacific Islander	I have not taken antibiotics in the past year.	SZ	none	23.24	case	79461

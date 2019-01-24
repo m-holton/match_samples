@@ -1,0 +1,2 @@
+qc_filtered IN ('True')
+host_species = 's__Homo_sapiens'

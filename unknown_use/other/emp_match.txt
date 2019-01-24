@@ -1,0 +1,2 @@
+range	ph 	0.2
+exact	country

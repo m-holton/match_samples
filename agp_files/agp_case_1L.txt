@@ -1,0 +1,1 @@
+diabetes  IN ('Diagnosed by a medical professional (doctor, physician assistant)', 'Self-diagnosed', 'Diagnosed by an alternative medicine practitioner') 

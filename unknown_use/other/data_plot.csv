@@ -1,0 +1,2 @@
+id	dataset	conditions	load	keep	case_control	null_filter	match	total
+ag_base	ag_map_with_alpha.txt	none	45.919759000000056	9.612818999999945	18.791808000000003	25.076257	3.0640530000000012	102.46470200000005

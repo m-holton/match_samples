@@ -110,7 +110,7 @@ def determine_cases_and_controls(afterExclusion_MD, query_line_dict, case_contro
         case_controlDF.loc[ids,'case_control'] = key
 
     #turns case_controlDF into a metadata object
-    case_controlMD = Metadata( case_controlDF)
+    case_controlMD = Metadata(case_controlDF)
 
     #merges afterExclution_MD and case_controlMD into one new metadata object
     mergedMD = Metadata.merge(afterExclusion_MD, case_controlMD)
@@ -145,6 +145,7 @@ def filter_prep_for_matchMD(merged_MD, match_condition_lines, null_value_lines):
         try:
             returned_MD.get_column(column)
         except:
+            #use raise exeption
             print('Column %s not found in your input data. Correct this error in your --match/-m file'%(column))
             sys.exit(1)
         #Get the ids of samples in the metadata object that have non null values for every column used for matching
@@ -158,7 +159,7 @@ def filter_prep_for_matchMD(merged_MD, match_condition_lines, null_value_lines):
 
     return returned_MD
 
-
+#put in class
 def orderDict(dictionary, value_frequency):
     '''
     orders the elements of each array that is associated with a sample key by how often they get matched to other samples
@@ -244,7 +245,7 @@ def order_keys(dictionary):
     return keys_greatest_to_least
 
 
-def stable_marriage(dictionary_pref, pref_counts_case):
+def stable_marriage(case_dictionary, pref_counts_case):
     '''
     based on code shown by Tyler Moore in his slides for Lecture 2 for CSE 3353, SMU, Dallas, TX
     these slides can be found at https://tylermoore.ens.utulsa.edu/courses/cse3353/slides/l02-handout.pdf
@@ -300,7 +301,7 @@ def stable_marriage(dictionary_pref, pref_counts_case):
             free_keys = order_keys(case_dictionary)
 
         else:
-            key_in_use = one_to_one_match_dictionary [entry]
+            key_in_use = one_to_one_match_dictionary[entry]
             if pref_counts_case[key] < pref_counts_case[key_in_use]:
                 one_to_one_match_dictionary[entry] = key
                 free_keys.append(key_in_use)
@@ -444,8 +445,6 @@ user_input_file_name_match = ''
 for currentArgument, currentValue in arguments:
     if currentArgument in ("-v", "--verbose"):
         print ("enabling verbose mode")
-    elif currentArgument in ("-h", "--help"):
-        print ("displaying help")
     elif currentArgument in ("-i", "--inputData"):
         file_of_metadata = currentValue
     elif currentArgument in ("-k", "--keep"):
@@ -503,6 +502,7 @@ match_condition_lines_input = get_user_input_query_lines(user_input_file_name_ma
 tloadedFiles = time.clock()
 print('time to load input files is %s'%(tloadedFiles - tstart))
 
+#look in to flag for exclude_query_lines_input
 if exclude_query_lines_input != False:
     afterExclusionMD = keep_samples(originalMD, exclude_query_lines_input)
 else:
@@ -526,7 +526,7 @@ if case_query_lines_input != False and control_query_lines_input != False:
 else:
     afterExclusionMD.to_dataframe().to_csv(outputFileName, sep = '\t')
     print('keep exit')
-    sys.exit(0)
+    break
 
 if null_values_lines_input == False or match_condition_lines_input == False:
     prepped_for_matchMD = case_controlMD

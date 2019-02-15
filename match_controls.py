@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import qiime2
 import time
+import click
 
 from qiime2 import Metadata
 from collections import defaultdict
@@ -175,38 +176,14 @@ def orderDict(dictionary, value_frequency):
         how many samples element matches to
 
     Returns
-    dictionary_to_return: dictionary
+    dictionary: dictionary
         dictionary with elements of the arrays that correspond to keys ordered from least to greatest abundance
     '''
-    dictionary_to_return = dictionary.copy()
-    for key in dictionary_to_return:
-        unordered_array = dictionary_to_return[key]
-        if len(unordered_array) == 0:
-            continue
-        #ordered_array will store the elements linked to key in their proper order
-        ordered_array = []
-        count = 0
-        while count < len(unordered_array):
-            value = unordered_array[count]
-            index = 0 #this index is for going through when sorting
-            while index < len(ordered_array):
-                ordered_value = ordered_array[index]
-                if value_frequency[ordered_value] > value_frequency[value]:
-                    ordered_array.insert(index,value)
-                    break
-                if value_frequency[ordered_value] == value_frequency[value]:
-                    if ordered_value >= value:
-                        ordered_array.insert(index,value)
-                        break
-                index = index + 1
-            if index == len(ordered_array):
-                ordered_array.insert(index,value)
+    for k in dictionary:
+        dictionary[k] = sorted(dictionary[k])
+        dictionary[k] = sorted(dictionary[k], key = lambda x:value_frequency[x] ) 
 
-            count = count + 1
-        #overrides the unordered array linked to key with its ordered array
-        dictionary_to_return[key] = ordered_array
-
-    return dictionary_to_return
+    return dictionary
 
 
 def order_keys(dictionary):
@@ -222,25 +199,9 @@ def order_keys(dictionary):
     keys_greatest_to_least: list
         contains keys in order of greatest to least amount of samples they match to
     '''
-    keys_greatest_to_least = []
-    for key in dictionary:
-        if keys_greatest_to_least == []:
-            keys_greatest_to_least.append(key)
-            continue
-        abundance_of_key_values = len(dictionary[key])
-        index = 0
-        for list_key in keys_greatest_to_least:
-            abundance_of_list_key_values = len(dictionary[list_key])
-            if abundance_of_key_values > abundance_of_list_key_values:
-                keys_greatest_to_least.insert(index, key)
-                break
-            if abundance_of_key_values == abundance_of_list_key_values:
-                    if list_key >= key:
-                        keys_greatest_to_least.insert(index, key)
-                        break
-            index = index + 1
-        if index == len(keys_greatest_to_least):
-            keys_greatest_to_least.append(key)
+    
+    keys_greatest_to_least = sorted(dictionary, key=lambda x: len (dictionary[x]), reverse=True)
+    
 
     return keys_greatest_to_least
 
@@ -268,18 +229,13 @@ def stable_marriage(case_dictionary, pref_counts_case):
     #first make master copy
     master_copy_of_case_dict = case_dictionary.copy()
     #cut out keys in case_dictionary that have no possible matches
-    list_of_keys = []
+    
+    
     for key in case_dictionary:
-        list_of_keys.append(key)
-    for key in list_of_keys:
         if len(case_dictionary[key])==0:
             case_dictionary.pop(key,None)
 
     free_keys = order_keys(case_dictionary)
-    for key in free_keys:
-        if pref_counts_case[key]==0:
-            case_dictionary.pop(key,None)
-
 
     one_to_one_match_dictionary = {}
     while free_keys :
@@ -348,8 +304,7 @@ def match_samples(prepped_for_match_MD, conditions_for_match_lines):
         #print('case index is %s'%(case_index))
 
         # set matchDF to be only the samples of masterDF that are control samples
-        controlDF = matchDF.copy()
-        controlDF = controlDF[controlDF['case_control'].isin(['control'])]
+        controlDF = matchDF[matchDF['case_control'].isin(['control'])]
 
         # loop though input columns to determine matches
         for conditions in conditions_for_match_lines:
@@ -399,7 +354,7 @@ def match_samples(prepped_for_match_MD, conditions_for_match_lines):
 
     case_dictionary = orderDict(case_dictionary, control_match_count_dictionary)
 
-    case_to_control_match = stable_marriage(case_dictionary.copy(),  case_match_count_dictionary)
+    case_to_control_match = stable_marriage(case_dictionary, case_match_count_dictionary)
 
 
     for key in case_to_control_match:
@@ -416,6 +371,17 @@ def match_samples(prepped_for_match_MD, conditions_for_match_lines):
 
 
 tstart = time.clock()
+
+@click.command()
+@click.option('--verbose', default=1, help='Number of greetings.')
+@click.option('--keep', default=1, help='Number of greetings.')
+@click.option('--control', default=1, help='Number of greetings.')
+@click.option('--case', default=1, help='Number of greetings.')
+@click.option('--nullValues', default=1, help='Number of greetings.')
+@click.option('--match', default=1, help='Number of greetings.')
+@click.option('--inputData', prompt='Your name', help='The person to greet.')
+@click.option('--output', prompt='Your name', help='The person to greet.')
+
 
 # reading in commandline arguments
 all_arguments = sys.argv

@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import qiime2
 import time
+import click
 
 from qiime2 import Metadata
 from collections import defaultdict

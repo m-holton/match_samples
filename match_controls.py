@@ -15,7 +15,7 @@ from qiime2 import Metadata
 from collections import defaultdict
 
 
-def get_user_input_query_lines(user_input_file_of_queries):
+def get_user_input_query_lines(user_input_file_of_queries,input_catagory):
     '''
     converts user_input_file_of_queries file into a list of strings that represent the lines of the file
 
@@ -32,9 +32,16 @@ def get_user_input_query_lines(user_input_file_of_queries):
          returns False boolean
     '''
     if user_input_file_of_queries == '':
-        print('null query entered')
+        if verbose:
+            print('null query entered for %s'%(input_catagory))
         return False
-    return open('./%s'%(user_input_file_of_queries),'r').readlines()
+    try:
+        lines = open('./%s'%(user_input_file_of_queries),'r').readlines()
+    except:
+        if verbose:
+            print('No samples fulfill keep queries. Exited while filtering out unwanted samples')
+        return False
+    return lines
 
 def keep_samples(original_MD, keep_query_lines):
     '''
@@ -151,7 +158,7 @@ def filter_prep_for_matchMD(merged_MD, match_condition_lines, null_value_lines):
             ids = returned_MD.get_ids(column + ' NOT IN ' + null_value_lines[0])
         except:
             print('No samples pass null filter queries. Exited while determining non null samples')
-            return 
+            return
         #shrinks the MD so that future ids do not include samples that fail past queries
         returned_MD = returned_MD.filter_ids(ids)
 
@@ -378,78 +385,21 @@ the third element is the range number if the match type is range
     there is not third element if the match type is exact
 '''
 
-
-
-
-# reading in commandline arguments
-all_arguments = sys.argv
-# selecting all arguments after python file name
-argumentList = all_arguments[1:]
-unixOptions = "i:k:c:e:n:m:o:"
-gnuOptions = ["inputData=", "keep=", "control=", "case=", "nullValues=", "match=", "output="]
-
-try:
-    arguments, values = getopt.getopt(argumentList, unixOptions, gnuOptions)
-except getopt.error as err:
-    # output error, and return with an error code
-    print (str(err))
-    sys.exit(2)
-
-
-#metadata file
-inputData = ''
-outputFileName = ''
-keep = ''
-control = ''
-case = ''
-nullValues = ''
-match = ''
-
-# evaluate given options
-for currentArgument, currentValue in arguments:
-    if currentArgument in ("-v", "--verbose"):
-        print ("enabling verbose mode")
-    elif currentArgument in ("-i", "--inputData"):
-        inputData = currentValue
-    elif currentArgument in ("-k", "--keep"):
-        keep = currentValue
-    elif currentArgument in ("-c", "--control"):
-        control = currentValue
-    elif currentArgument in ("-e", "--case"):
-        case = currentValue
-    elif currentArgument in ("-n", "--nullValues"):
-        nullValues = currentValue
-    elif currentArgument in ("-m", "--match"):
-        match = currentValue
-    elif currentArgument in ("-o", "--output"):
-        outputFileName = currentValue
-
-if outputFileName == '':
-    print('output put file name not entered')
-    sys.exit()
-if inputData == '':
-    print('metadata file not found')
-    sys.exit()
-    
-    
-    
-
-
 @click.command()
 @click.option('--verbose', default=False, type=bool, help='Make print statements appear')
-@click.option('--keep', default="", help='name of file with sqlite lines used to determine what samples to exclude or keep')
-@click.option('--control', default="", help='name of file with sqlite lines used to determine what samples to exclude or keep')
-@click.option('--case', default="", help='Number of greetings.')
+@click.option('--keep', default=1, help='name of file with sqlite lines used to determine what samples to exclude or keep')
+@click.option('--control', default=1, help='name of file with sqlite lines used to determine what samples to exclude or keep')
+@click.option('--case', default=1, help='Number of greetings.')
 @click.option('--nullValues', default=1, help='name of file with sqlite lines used to determine what samples to exclude or keep')
-@click.option('--match', default="", help='name of file with sqlite lines used to determine what samples to exclude or keep')
+@click.option('--match', default=1, help='name of file with sqlite lines used to determine what samples to exclude or keep')
 @click.option('--inputData', required = True, prompt='The name of metadata file with samples is needed', help='Name of file with sample metadata to analyze.')
 @click.option('--output', required = True, prompt='The name of file to output data to is needed', help='Name of file to export data to.')
 
 
 
-    
+
 def ExcludeOnly(verbose,inputData,keep,output):
-    tstart = time.clock()   
+    tstart = time.clock()
     #read metadata file into metadata object
     try:
         originalMD = Metadata.load(inputData)
@@ -459,17 +409,18 @@ def ExcludeOnly(verbose,inputData,keep,output):
             print("metadata file path entered is %s"%(inputData))
         return
     #each line is a sqlite query to determine what samples to keep
-    exclude_query_lines_input = get_user_input_query_lines(keep)
+    keep_query_lines_input = get_user_input_query_lines(keep,"keep")
     tloadedFiles = time.clock()
     if verbose:
         print('time to load input files is %s'%(tloadedFiles - tstart))
-    
-    
-    afterExclusionMD = keep_samples(originalMD, exclude_query_lines_input)
+
+
+    afterExclusionMD = keep_samples(originalMD, keep_query_lines_input)
     afterExclusionMD.to_dataframe().to_csv(output, sep = '\t')
-    
+
     tkeep = time.clock()
     tend = time.clock()
+
     if verbose:
         print('time to filter out unwanted samples is %s'%(tkeep - tloadedFiles))
         print('time to do everything %s'%(tend-tstart))
@@ -478,7 +429,7 @@ def ExcludeOnly(verbose,inputData,keep,output):
 
 
 def ControlAndCaseOnly(verbose,inputData,control,case,output):
-    tstart = time.clock()   
+    tstart = time.clock()
     #read metadata file into metadata object
     try:
         originalMD = Metadata.load(inputData)
@@ -488,9 +439,9 @@ def ControlAndCaseOnly(verbose,inputData,control,case,output):
             print("metadata file path entered is %s"%(inputData))
         return
     #each line is a sqlite query to determine what samples to label control
-    control_query_lines_input = get_user_input_query_lines(control)
+    control_query_lines_input = get_user_input_query_lines(control,"control")
     #each line is a sqlite query to determine what samples to label case
-    case_query_lines_input = get_user_input_query_lines(case)
+    case_query_lines_input = get_user_input_query_lines(case,"case")
     tloadedFiles = time.clock()
     if verbose:
         print('time to load input files is %s'%(tloadedFiles - tstart))
@@ -503,19 +454,20 @@ def ControlAndCaseOnly(verbose,inputData,control,case,output):
     case_control_Series.index.name = afterExclusionMD.id_header
     case_controlDF = case_control_Series.to_frame('case_control')
     case_control_dict = {'case':case_query_lines_input, 'control':control_query_lines_input }
-    case_controlMD = determine_cases_and_controls(afterExclusionMD, case_control_dict, case_controlDF)   
-    
+    case_controlMD = determine_cases_and_controls(afterExclusionMD, case_control_dict, case_controlDF)
+
     case_controlMD.to_dataframe().to_csv(outputFileName, sep = '\t')
-    
+
     tcase_control = time.clock()
     tend = time.clock()
-    print('time to label case and control samples is %s'%(tcase_control - tloadedFiles))
-    print('time to do everything %s'%(tend-tstart))
-        
-    
+    if verbose:
+        print('time to label case and control samples is %s'%(tcase_control - tloadedFiles))
+        print('time to do everything %s'%(tend-tstart))
+
+
 
 def ControlCaseAndMatch(verbose,inputData,control,case,match,output):
-    tstart = time.clock()   
+    tstart = time.clock()
     #read metadata file into metadata object
     try:
         originalMD = Metadata.load(inputData)
@@ -524,16 +476,16 @@ def ControlCaseAndMatch(verbose,inputData,control,case,match,output):
             print('metadata file could not load. If you entered a valid path then try clearing the formating. The file must be a TSV metadata file.')
             print("metadata file path entered is %s"%(inputData))
         return
-    
+
     #each line is a sqlite query to determine what samples to label control
-    control_query_lines_input = get_user_input_query_lines(control)
+    control_query_lines_input = get_user_input_query_lines(control,"control")
     #each line is a sqlite query to determine what samples to label case
-    case_query_lines_input = get_user_input_query_lines(case)
-    match_condition_lines_input = get_user_input_query_lines(match)
+    case_query_lines_input = get_user_input_query_lines(case,"case")
+    match_condition_lines_input = get_user_input_query_lines(match,"match")
     tloadedFiles = time.clock()
     if verbose:
         print('time to load input files is %s'%(tloadedFiles - tstart))
-        
+
     ids = originalMD.get_ids()
     case_control_Series = pd.Series( ['Unspecified'] * len(ids), ids)
     '''
@@ -544,28 +496,30 @@ def ControlCaseAndMatch(verbose,inputData,control,case,match,output):
     case_controlDF = case_control_Series.to_frame('case_control')
     case_control_dict = {'case':case_query_lines_input, 'control':control_query_lines_input }
     case_controlMD = determine_cases_and_controls(afterExclusionMD, case_control_dict, case_controlDF)
-    
+
 
     tcase_control = time.clock()
-    print('time to label case and control samples is %s'%(tcase_control - tloadedFiles))
+    if verbose:
+        print('time to label case and control samples is %s'%(tcase_control - tloadedFiles))
 
-    if match_condition_lines_input != False:
-        matchedMD = match_samples( prepped_for_matchMD, match_condition_lines_input )
-        matchedMD.to_dataframe().to_csv(outputFileName, sep = '\t')
-    
-    
+
+    matchedMD = match_samples( prepped_for_matchMD, match_condition_lines_input )
+    matchedMD.to_dataframe().to_csv(outputFileName, sep = '\t')
+
+
     tmatch = time.clock()
     tend = time.clock()
-    print('time to match is %s'%(tmatch- tcase_control))
-    print('time to do everything %s'%(tend-tstart))
-    
+    if verbose:
+        print('time to match is %s'%(tmatch- tcase_control))
+        print('time to do everything %s'%(tend-tstart))
 
-    
-    
-    
+
+
+
+
 
 def ControlCaseNullAndMatch(verbose,inputData,control,case,nullValues,match,output):
-    tstart = time.clock()   
+    tstart = time.clock()
     #read metadata file into metadata object
     try:
         originalMD = Metadata.load(inputData)
@@ -575,15 +529,15 @@ def ControlCaseNullAndMatch(verbose,inputData,control,case,nullValues,match,outp
             print("metadata file path entered is %s"%(inputData))
         return
     #each line is a sqlite query to determine what samples to label control
-    control_query_lines_input = get_user_input_query_lines(control)
+    control_query_lines_input = get_user_input_query_lines(control,"control")
     #each line is a sqlite query to determine what samples to label case
-    case_query_lines_input = get_user_input_query_lines(case)
-    null_values_lines_input = get_user_input_query_lines(nullValues)
-    match_condition_lines_input = get_user_input_query_lines(match)
+    case_query_lines_input = get_user_input_query_lines(case,"case")
+    null_values_lines_input = get_user_input_query_lines(nullValues,"nullValues")
+    match_condition_lines_input = get_user_input_query_lines(match,"match")
     tloadedFiles = time.clock()
     if verbose:
         print('time to load input files is %s'%(tloadedFiles - tstart))
-       
+
     ids = originalMD.get_ids()
     case_control_Series = pd.Series( ['Unspecified'] * len(ids), ids)
     '''
@@ -595,36 +549,36 @@ def ControlCaseNullAndMatch(verbose,inputData,control,case,nullValues,match,outp
     case_control_dict = {'case':case_query_lines_input, 'control':control_query_lines_input }
 
     case_controlMD = determine_cases_and_controls(afterExclusionMD, case_control_dict, case_controlDF)
-    
-    
-    
+
+
+
     tcase_control = time.clock()
     print('time to label case and control samples is %s'%(tcase_control - tloadedFiles))
 
-    
+
     prepped_for_matchMD= filter_prep_for_matchMD(case_controlMD, match_condition_lines_input, null_values_lines_input)
 
 
     tprepped = time.clock()
     print('time to filter Metadata information for samples with null values is %s'%(tprepped - tcase_control))
-    
-    
-    
+
+
+
     if match_condition_lines_input != False:
         matchedMD = match_samples( prepped_for_matchMD, match_condition_lines_input )
         matchedMD.to_dataframe().to_csv(outputFileName, sep = '\t')
-    
+
 
     tmatch = time.clock()
     tend = time.clock()
     print('time to match is %s'%(tmatch- tprepped))
     print('time to do everything %s'%(tend-tstart))
-       
-    
+
+
 
 
 def ExcludeControlCaseAndMatch(verbose,inputData,keep,control,case,match,output):
-    tstart = time.clock()   
+    tstart = time.clock()
     #read metadata file into metadata object
     try:
         originalMD = Metadata.load(inputData)
@@ -635,16 +589,16 @@ def ExcludeControlCaseAndMatch(verbose,inputData,keep,control,case,match,output)
         return
 
     #each line is a sqlite query to determine what samples to keep
-    exclude_query_lines_input = get_user_input_query_lines(keep)
+    keep_query_lines_input = get_user_input_query_lines(keep,"keep")
     #each line is a sqlite query to determine what samples to label control
-    control_query_lines_input = get_user_input_query_lines(control)
+    control_query_lines_input = get_user_input_query_lines(control,"control")
     #each line is a sqlite query to determine what samples to label case
-    case_query_lines_input = get_user_input_query_lines(case)
-    match_condition_lines_input = get_user_input_query_lines(match)
+    case_query_lines_input = get_user_input_query_lines(case,"case")
+    match_condition_lines_input = get_user_input_query_lines(match,"match")
     tloadedFiles = time.clock()
     if verbose:
         print('time to load input files is %s'%(tloadedFiles - tstart))
-    afterExclusionMD = keep_samples(originalMD, exclude_query_lines_input)
+    afterExclusionMD = keep_samples(originalMD, keep_query_lines_input)
     tkeep = time.clock()
     if verbose:
         print('time to filter out unwanted samples is %s'%(tkeep - tloadedFiles))
@@ -659,25 +613,25 @@ def ExcludeControlCaseAndMatch(verbose,inputData,keep,control,case,match,output)
     case_control_dict = {'case':case_query_lines_input, 'control':control_query_lines_input }
 
     case_controlMD = determine_cases_and_controls(afterExclusionMD, case_control_dict, case_controlDF)
-    
-    
+
+
     tcase_control = time.clock()
     print('time to label case and control samples is %s'%(tcase_control - tkeep))
 
     if match_condition_lines_input != False:
         matchedMD = match_samples( prepped_for_matchMD, match_condition_lines_input )
         matchedMD.to_dataframe().to_csv(outputFileName, sep = '\t')
-    
-    
+
+
     tmatch = time.clock()
     tend = time.clock()
     print('time to match is %s'%(tmatch- tcase_control))
     print('time to do everything %s'%(tend-tstart))
-    
-    
+
+
 
 def Everything(verbose,inputData,keep,control,case,nullValues,match,output):
-    tstart = time.clock()   
+    tstart = time.clock()
     #read metadata file into metadata object
     try:
         originalMD = Metadata.load(inputData)
@@ -688,17 +642,17 @@ def Everything(verbose,inputData,keep,control,case,nullValues,match,output):
         return
 
     #each line is a sqlite query to determine what samples to keep
-    exclude_query_lines_input = get_user_input_query_lines(keep)
+    keep_query_lines_input = get_user_input_query_lines(keep,"keep")
     #each line is a sqlite query to determine what samples to label control
-    control_query_lines_input = get_user_input_query_lines(control)
+    control_query_lines_input = get_user_input_query_lines(control,"control")
     #each line is a sqlite query to determine what samples to label case
-    case_query_lines_input = get_user_input_query_lines(case)
-    null_values_lines_input = get_user_input_query_lines(nullValues)
-    match_condition_lines_input = get_user_input_query_lines(match)
+    case_query_lines_input = get_user_input_query_lines(case,"case")
+    null_values_lines_input = get_user_input_query_lines(nullValues,"nullValues")
+    match_condition_lines_input = get_user_input_query_lines(match,"match")
     tloadedFiles = time.clock()
     if verbose:
         print('time to load input files is %s'%(tloadedFiles - tstart))
-    afterExclusionMD = keep_samples(originalMD, exclude_query_lines_input)
+    afterExclusionMD = keep_samples(originalMD, keep_query_lines_input)
     tkeep = time.clock()
     if verbose:
         print('time to filter out unwanted samples is %s'%(tkeep - tloadedFiles))
@@ -713,11 +667,11 @@ def Everything(verbose,inputData,keep,control,case,nullValues,match,output):
     case_control_dict = {'case':case_query_lines_input, 'control':control_query_lines_input }
 
     case_controlMD = determine_cases_and_controls(afterExclusionMD, case_control_dict, case_controlDF)
-    
+
     tcase_control = time.clock()
     print('time to label case and control samples is %s'%(tcase_control - tkeep))
-    
-    
+
+
 
     prepped_for_matchMD= filter_prep_for_matchMD(case_controlMD, match_condition_lines_input, null_values_lines_input)
 
@@ -733,10 +687,3 @@ def Everything(verbose,inputData,keep,control,case,nullValues,match,output):
     tend = time.clock()
     print('time to match is %s'%(tmatch- tprepped))
     print('time to do everything %s'%(tend-tstart))
-    
-    
-    
-    
-    
-    
-    

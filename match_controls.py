@@ -36,7 +36,6 @@ def get_user_input_query_lines(user_input_file_of_queries):
         return False
     return open('./%s'%(user_input_file_of_queries),'r').readlines()
 
-
 def keep_samples(original_MD, keep_query_lines):
     '''
     Filters out unwanted rows based on values in chosen columns.
@@ -63,7 +62,6 @@ def keep_samples(original_MD, keep_query_lines):
         print('No samples fulfill keep queries. Exited while filtering out unwanted samples')
         sys.exit(1)
     return shrunk_MD
-
 
 def determine_cases_and_controls(afterExclusion_MD, query_line_dict, case_controlDF):
     '''
@@ -118,7 +116,6 @@ def determine_cases_and_controls(afterExclusion_MD, query_line_dict, case_contro
 
     return mergedMD
 
-
 def filter_prep_for_matchMD(merged_MD, match_condition_lines, null_value_lines):
     '''
     filters out samples that do not have valid entries (null values) for columns that determine matching
@@ -160,6 +157,7 @@ def filter_prep_for_matchMD(merged_MD, match_condition_lines, null_value_lines):
 
     return returned_MD
 
+
 #put in class
 def orderDict(dictionary, value_frequency):
     '''
@@ -181,10 +179,9 @@ def orderDict(dictionary, value_frequency):
     '''
     for k in dictionary:
         dictionary[k] = sorted(dictionary[k])
-        dictionary[k] = sorted(dictionary[k], key = lambda x:value_frequency[x] ) 
+        dictionary[k] = sorted(dictionary[k], key = lambda x:value_frequency[x] )
 
     return dictionary
-
 
 def order_keys(dictionary):
     '''
@@ -199,12 +196,11 @@ def order_keys(dictionary):
     keys_greatest_to_least: list
         contains keys in order of greatest to least amount of samples they match to
     '''
-    
+
     keys_greatest_to_least = sorted(dictionary, key=lambda x: len (dictionary[x]), reverse=True)
-    
+
 
     return keys_greatest_to_least
-
 
 def stable_marriage(case_dictionary, pref_counts_case):
     '''
@@ -229,8 +225,8 @@ def stable_marriage(case_dictionary, pref_counts_case):
     #first make master copy
     master_copy_of_case_dict = case_dictionary.copy()
     #cut out keys in case_dictionary that have no possible matches
-    
-    
+
+
     for key in case_dictionary:
         if len(case_dictionary[key])==0:
             case_dictionary.pop(key,None)

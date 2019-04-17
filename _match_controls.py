@@ -9,7 +9,8 @@ import pandas as pd
 import numpy as np
 import qiime2
 import time
-
+import unittest
+import click
 
 from qiime2 import Metadata
 from collections import defaultdict
@@ -26,145 +27,6 @@ from pandas.util.testing import assert_frame_equal
 import match_controls
 
 
-
-correctOutFrame = open('./unitTest_files/%s'%('test_case.txt'),'r').readlines()
-
-
-smallTestFile = pd.DataFrame(index = [1,2,3], data = { 'bmi': ['normal','obese','overweight'], 'age': [23,42,11] } )
-largeTestFile = pd.read_csv('./unitTest_files/test_data.csv', sep = '\t' ).set_index('id')
-truncatedlargeTestFile = pd.read_csv('./unitTest_files/test_data_2.csv', sep = '\t' ).set_index('id')
-
-
-csvdata_keep = Metadata.load('./unitTest_files/unit_keep.csv').to_dataframe()
-csvdata_case_control = Metadata.load('./unitTest_files/unit_control.csv').to_dataframe()
-csvdata_filter = Metadata.load('./unitTest_files/unit_filtered.csv').to_dataframe()
-csvdata_match = Metadata.load('./unitTest_files/unit_output.csv').to_dataframe()
-#print(csvdata_match)
-
-
-tstart = time.clock()
-
-
-# reading in commandline arguments
-all_arguments = sys.argv
-# selecting all arguments after python file name
-argumentList = all_arguments[1:]
-unixOptions = "i:k:c:e:n:m:o:"
-gnuOptions = ["inputData=", "keep=", "control=", "case=", "nullValues=", "match=", "output="]
-
-try:
-    arguments, values = getopt.getopt(argumentList, unixOptions, gnuOptions)
-except getopt.error as err:
-    # output error, and return with an error code
-    print (str(err))
-    sys.exit(2)
-
-
-#metadata file
-file_of_metadata = ''
-user_input_file_name_exclude = ''
-user_input_file_name_control = ''
-user_input_file_name_experiment = ''
-user_input_file_null_values = ''
-user_input_file_name_match = ''
-
-# evaluate given options
-#print(arguments)
-
-for currentArgument, currentValue in arguments:
-    if currentArgument in ("-v", "--verbose"):
-        print ("enabling verbose mode")
-    elif currentArgument in ("-h", "--help"):
-        print ("displaying help")
-    elif currentArgument in ("-i", "--inputData"):
-        file_of_metadata = currentValue
-    elif currentArgument in ("-k", "--keep"):
-        user_input_file_name_exclude = currentValue
-    elif currentArgument in ("-c", "--control"):
-        user_input_file_name_control = currentValue
-    elif currentArgument in ("-e", "--case"):
-        user_input_file_name_experiment = currentValue
-    elif currentArgument in ("-n", "--nullValues"):
-        user_input_file_null_values = currentValue
-    elif currentArgument in ("-m", "--match"):
-        user_input_file_name_match = currentValue
-    elif currentArgument in ("-o", "--output"):
-        outputFileName = currentValue
-
-if file_of_metadata == '':
-    print('metadata file not found')
-    sys.exit(2)
-if outputFileName == '':
-    print('output put file name not entered')
-    sys.exit(2)
-#read metadata file into metadata object
-originalMD = Metadata.load( file_of_metadata )
-
-
-
-#each line is a sqlite query to determine what samples to keep
-exclude_query_lines_input = match_controls.get_user_input_query_lines(user_input_file_name_exclude)
-#each line is a sqlite query to determine what samples to label control
-control_query_lines_input = match_controls.get_user_input_query_lines(user_input_file_name_control)
-#each line is a sqlite query to determine what samples to label case
-case_query_lines_input = match_controls.get_user_input_query_lines(user_input_file_name_experiment)
-null_values_lines_input = match_controls.get_user_input_query_lines(user_input_file_null_values)
-
-'''
-each line is tab seperated
-the first element is the type of match: range or exact
-    range matches samples if the numerical values compared are with in some other number of eachother
-        this is only to be used with numerical values
-    exact matches samples if the values compared are exactly the same
-        this can be used for strings and numbers
-the second element is the column to compare values of for the case and control samples
-the third element is the range number or = (if the match type is exact)
-    this determines how far away a sample can be from another sample for the given column to be matched
-'''
-match_condition_lines_input = match_controls.get_user_input_query_lines(user_input_file_name_match)
-
-tloadedFiles = time.clock()
-print('time to load input files is %s'%(tloadedFiles - tstart))
-
-
-
-
-def test_get_user_input_query_lines():
-
-    if match_controls.get_user_input_query_lines("")!=False:
-        print("null input lines does not result in False return value")
-
-def test_keep_samples():
-    csvdata = afterExclusionMD.to_dataframe()
-    try:
-        assert_frame_equal(csvdata, csvdata_keep)
-        return True
-    except:
-        return False
-
-
-def test_determine_cases_and_controls():
-    csvdata = case_controlMD.to_dataframe()
-    '''print(csvdata)
-    print(csvdata_case_control)
-    print( assert_frame_equal(csvdata, csvdata_case_control) )
-    '''
-    try:
-        assert_frame_equal(csvdata, csvdata_case_control)
-    except:
-        return False
-    return True
-
-
-def test_filter_prep_for_matchMD():
-
-    csvdata = prepped_for_matchMD.to_dataframe()
-
-    try:
-        assert_frame_equal(csvdata, csvdata_filter)
-    except:
-        return False
-    return True
 
 def test_orderDict():
     test_unorderedDict = {'key_1':['a','b','c','d','e'], 'key_2':['a','c','e','d','b'],  'key_3':['b','e','e','c','a']}
@@ -233,7 +95,59 @@ def test_stable_marriage():
         return False
     return True
 
-def test_match_samples():
+
+
+
+
+
+
+def test_get_user_input_query_lines():
+    if not assertRaises(SomeException):
+        print("null input lines does not result in Exception")
+    if match_controls.get_user_input_query_lines("")!=False:
+        print("null input lines does not result in False return value")
+        
+        
+        
+        
+        
+        
+        
+
+def test_keep_samples(afterExclusionMD, csvdata_keep):
+    csvdata = afterExclusionMD.to_dataframe()
+    try:
+        assert_frame_equal(csvdata, csvdata_keep)
+        return True
+    except:
+        return False
+
+
+def test_determine_cases_and_controls(case_controlMD, csvdata_case_control):
+    csvdata = case_controlMD.to_dataframe()
+    '''print(csvdata)
+    print(csvdata_case_control)
+    print( assert_frame_equal(csvdata, csvdata_case_control) )
+    '''
+    try:
+        assert_frame_equal(csvdata, csvdata_case_control)
+    except:
+        return False
+    return True
+
+
+def test_filter_prep_for_matchMD(prepped_for_matchMD, csvdata_filter):
+
+    csvdata = prepped_for_matchMD.to_dataframe()
+
+    try:
+        assert_frame_equal(csvdata, csvdata_filter)
+    except:
+        return False
+    return True
+
+
+def test_match_samples(matchedMD, csvdata_match):
     csvdata = matchedMD.to_dataframe()
     csvdata_match["matched_to"]= csvdata_match["matched_to"].astype("int64")
     csvdata_match["age_years"]= csvdata_match["age_years"].astype("int64")
@@ -256,26 +170,32 @@ def test_match_samples():
 
 
 
-if test_orderDict() == False:
-    sys.exit(0)
-if test_order_keys() == False:
-    sys.exit(0)
-if test_stable_marriage() == False:
-    sys.exit(0)
 
 
-if exclude_query_lines_input != False:
-    afterExclusionMD = match_controls.keep_samples(originalMD, exclude_query_lines_input)
-else:
-    afterExclusionMD = originalMD
 
-keep = test_keep_samples()
-print("keep_samples function works correctly is %s"%(keep))
-
-tkeep = time.clock()
-print('time to filter out unwanted samples is %s'%(tkeep - tloadedFiles))
-
-if case_query_lines_input != False and control_query_lines_input != False:
+def test_Everything(verbose, inputdata, keep, control, case, nullvalues, match, output, csvdata_keep, csvdata_case_control, csvdata_filter, csvdata_match):
+    
+    csvdata_keep = Metadata.load(csvdata_keep).to_dataframe()
+    csvdata_case_control = Metadata.load(csvdata_case_control).to_dataframe()
+    csvdata_filter = Metadata.load(csvdata_filter).to_dataframe()
+    csvdata_match = Metadata.load(csvdata_match).to_dataframe()
+    
+    tstart = time.clock()
+    inputDict = {"inputdata":inputdata, "keep":keep, "control":control, "case":case, "nullvalues":nullvalues, "match":match}
+    #loads and opens input files
+    inputDict = match_controls.get_user_input_query_lines(verbose,inputDict)
+    
+    tloadedFiles = time.clock()
+    if verbose:
+        print('Time to load input files is %s'%(tloadedFiles - tstart))
+    afterExclusionMD = match_controls.keep_samples(verbose, inputDict["inputdata"], inputDict["keep"])
+    
+    
+    tkeep = time.clock()
+    keep = test_keep_samples(afterExclusionMD, csvdata_keep)
+    if verbose:
+        print("keep_samples function works correctly is %s"%(keep))
+        print('Time to filter out unwanted samples is %s'%(tkeep - tloadedFiles))
     ids = afterExclusionMD.get_ids()
     case_control_Series = pd.Series( ['Unspecified'] * len(ids), ids)
     '''
@@ -284,43 +204,124 @@ if case_query_lines_input != False and control_query_lines_input != False:
     '''
     case_control_Series.index.name = afterExclusionMD.id_header
     case_controlDF = case_control_Series.to_frame('case_control')
-    case_control_dict = {'case':case_query_lines_input, 'control':control_query_lines_input }
+    case_control_dict = {'case':inputDict["case"], 'control':inputDict["control"] }
 
-    case_controlMD = match_controls.determine_cases_and_controls(afterExclusionMD, case_control_dict, case_controlDF)
-else:
-    afterExclusionMD.to_dataframe().to_csv(outputFileName, sep = '\t')
-    print('keep exit')
-    sys.exit(0)
+    case_controlMD = match_controls.determine_cases_and_controls(verbose, afterExclusionMD, case_control_dict, case_controlDF)
 
-cas_con = test_determine_cases_and_controls()
-print("determine_cases_and_controls function works correctly is %s"%(cas_con))
+    tcase_control = time.clock()
+    case_control = test_determine_cases_and_controls(case_controlMD, csvdata_case_control)
+    if verbose:
+        print("determine_cases_and_controls function works correctly is %s"%(case_control))
+        print('Time to label case and control samples is %s'%(tcase_control - tkeep))
 
-if null_values_lines_input == False or match_condition_lines_input == False:
-    prepped_for_matchMD = case_controlMD
-else:
-    prepped_for_matchMD= match_controls.filter_prep_for_matchMD(case_controlMD, match_condition_lines_input, null_values_lines_input)
+    prepped_for_matchMD= match_controls.filter_prep_for_matchMD(verbose, case_controlMD, inputDict["match"], inputDict["nullvalues"])
 
-filtered = test_filter_prep_for_matchMD()
-print("filter_prep_for_matchMD function works correctly is %s"%(filtered))
+    tprepped = time.clock()
+    prepped = test_filter_prep_for_matchMD(prepped_for_matchMD, csvdata_filter)
+    if verbose:
+        print("filter_prep_for_matchMD function works correctly is %s"%(prepped))
+        print('Time to filter Metadata information for samples with null values is %s'%(tprepped - tcase_control))
 
-tprepped = time.clock()
-print('time to prep Metadata information for match is %s'%(tprepped - tkeep))
-
-if match_condition_lines_input != False:
-    matchedMD = match_controls.match_samples( prepped_for_matchMD, match_condition_lines_input )
-    matchedMD.to_dataframe().to_csv(outputFileName, sep = '\t')
-
-match = test_match_samples()
-print("match_samples function works correctly is %s"%(match))
-
-tmatch = time.clock()
-tend = time.clock()
-print('time to match is %s'%(tmatch- tprepped))
-print('time to do everything %s'%(tend-tstart))
+    if inputDict["match"] != False:
+        matchedMD = match_controls.match_samples(verbose, prepped_for_matchMD, inputDict["match"] )
+        matchedMD.to_dataframe().to_csv(output, sep = '\t')
+    tmatch = time.clock()
+    tend = time.clock()
+    match = test_match_samples(matchedMD, csvdata_match)
+    if verbose:
+        print("match_samples function works correctly is %s"%(match))
+        print('Time to match is %s'%(tmatch- tprepped))
+        print('Time to do everything %s'%(tend-tstart))
+        
 
 
+@click.command()
+@click.option('--verbose', is_flag=True, help='Make print statements appear')
+@click.option('--keep', default=1, type = str, help='name of file with sqlite lines used to determine what samples to exclude or keep')
+@click.option('--control', default=1, type = str, help='name of file with sqlite lines used to determine what samples to label control')
+@click.option('--case', default=1, type = str, help='name of file with sqlite lines used to determine what samples to label case')
+@click.option('--nullvalues', default=1, type = str, help='name of file with sqlite lines used to determine what samples to exclude or keep')
+@click.option('--match', default=1, type = str, help='name of file with sqlite lines used to determine what samples to exclude or keep')
+@click.option('--inputdata', required = True, type = str, help='Name of file with sample metadata to analyze.')
+@click.option('--output', required = True, type = str, help='Name of file to export data to.')
+@click.option('--csvdata_keep', default=1, type = str, help='Name of file that include the proper output of keep_samples to the corresponding test file.')
+@click.option('--csvdata_case_control', default=1, type = str, help='Name of file that include the proper output of determine_cases_and_controls to the corresponding test file.')
+@click.option('--csvdata_filter', default=1, type = str, help='Name of file that include the proper output of filter_prep_for_matchMD to the corresponding test file.')
+@click.option('--csvdata_match', default=1, type = str, help='Name of file that include the proper output of match_samples to the corresponding test file.')
+def mainControler(verbose, inputdata, keep, control, case, nullvalues, match, output, csvdata_keep, csvdata_case_control, csvdata_filter, csvdata_match):
+    
+    '''
+    #test_get_user_input_query_lines()
+    test_keep_samples()
+    test_determine_cases_and_controls()
+    test_filter_prep_for_matchMD()
+    test_orderDict()
+    test_order_keys()
+    test_stable_marriage()
+    test_match_samples()
+    
+    
+    
+    
+    csvdata_keep = Metadata.load('./unitTest_files/unit_keep.csv').to_dataframe()
+    csvdata_case_control = Metadata.load('./unitTest_files/unit_control.csv').to_dataframe()
+    csvdata_filter = Metadata.load('./unitTest_files/unit_filtered.csv').to_dataframe()
+    csvdata_match = Metadata.load('./unitTest_files/unit_output.csv').to_dataframe()
+    '''
+    test_get_user_input_query_lines()
+    test_orderDict()
+    test_order_keys()
+    test_stable_marriage()
+    
+    #correctOutFrame = open('./unitTest_files/%s'%('test_case.txt'),'r').readlines()
 
 
+    #smallTestFile = pd.DataFrame(index = [1,2,3], data = { 'bmi': ['normal','obese','overweight'], 'age': [23,42,11] } )
+    #largeTestFile = pd.read_csv('./unitTest_files/test_data.csv', sep = '\t' ).set_index('id')
+    #truncatedlargeTestFile = pd.read_csv('./unitTest_files/test_data_2.csv', sep = '\t' ).set_index('id')
+
+
+    
+
+    
+    if isinstance(keep, str) and isinstance(case, str):
+        if isinstance(control, str) and isinstance(case, str) and isinstance(case, str):
+                if isinstance(match, str) and isinstance(case, str):
+                    if isinstance(nullvalues, str) and isinstance(case, str):
+                        if verbose:
+                            print("Testing Everything")
+                            test_Everything(verbose, inputdata, keep, control, case, nullvalues, match, output, csvdata_keep, csvdata_case_control, csvdata_filter, csvdata_match)
+                    else:
+                        if verbose:
+                            print("Testing ExcludeControlCaseAndMatch")
+                        test_ExcludeControlCaseAndMatch(verbose,inputdata,keep,control,case, match, output, csvdata_keep, csvdata_case_control, csvdata_match)
+                else:
+                    if verbose:
+                            print("Testing KeepAndControlCase")
+                    test_KeepAndControlCase(verbose,inputdata,keep,control,case,output, csvdata_keep, csvdata_case_control)
+        else:
+            if verbose:
+                print("Testing KeepOnly")
+            test_KeepOnly(verbose, inputdata, keep, output, csvdata_keep)
+    elif isinstance(control, str) and isinstance(case, str) and isinstance(case, str):
+        if isinstance(match, str) and isinstance(case, str):
+            if isinstance(nullvalues, str) and isinstance(case, str):
+                if verbose:
+                    print("Testing ControlCaseNullAndMatch")
+                test_ControlCaseNullAndMatch(verbose,inputdata,control,case, nullvalues, match, output, csvdata_case_control, csvdata_filter, csvdata_match)
+            else:
+                if verbose:
+                    print("Testing ControlCaseAndMatch")
+                test_ControlCaseAndMatch(verbose,inputdata,control,case,match,output, csvdata_case_control, csvdata_match)
+        else:
+            if verbose:
+                print("Testing ControlAndCaseOnly")
+            test_ControlAndCaseOnly(verbose,inputdata,control, case, output, csvdata_case_control)
+    
+    
+    
+if __name__ == '__main__':
+    mainControler()
 
 
 

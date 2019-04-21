@@ -432,14 +432,6 @@ def KeepOnly(verbose,inputdata,keep,output):
         Name of file with sample metadata to analyze.
     keep: string
         name of file with sqlite lines used to determine what samples to exclude or keep
-    control: string
-        name of file with sqlite lines used to determine what samples to label control
-    case: string
-        name of file with sqlite lines used to determine what samples to label case
-    nullvalues: string
-        name of file with sqlite lines used to determine what samples to exclude or keep
-    match: string
-        name of file with sqlite lines used to determine what samples to exclude or keep
     output: string
         Name of file to export data to.
    
@@ -477,16 +469,10 @@ def ControlAndCaseOnly(verbose,inputdata,control,case,output):
         Tells function if it should output print statements or not. True outputs print statements.
     inputdata: string
         Name of file with sample metadata to analyze.
-    keep: string
-        name of file with sqlite lines used to determine what samples to exclude or keep
     control: string
         name of file with sqlite lines used to determine what samples to label control
     case: string
         name of file with sqlite lines used to determine what samples to label case
-    nullvalues: string
-        name of file with sqlite lines used to determine what samples to exclude or keep
-    match: string
-        name of file with sqlite lines used to determine what samples to exclude or keep
     output: string
         Name of file to export data to.
    
@@ -537,10 +523,6 @@ def KeepAndControlCase(verbose,inputdata,keep,control,case,output):
         name of file with sqlite lines used to determine what samples to label control
     case: string
         name of file with sqlite lines used to determine what samples to label case
-    nullvalues: string
-        name of file with sqlite lines used to determine what samples to exclude or keep
-    match: string
-        name of file with sqlite lines used to determine what samples to exclude or keep
     output: string
         Name of file to export data to.
    
@@ -587,14 +569,10 @@ def ControlCaseAndMatch(verbose,inputdata,control,case,match,output):
         Tells function if it should output print statements or not. True outputs print statements.
     inputdata: string
         Name of file with sample metadata to analyze.
-    keep: string
-        name of file with sqlite lines used to determine what samples to exclude or keep
     control: string
         name of file with sqlite lines used to determine what samples to label control
     case: string
         name of file with sqlite lines used to determine what samples to label case
-    nullvalues: string
-        name of file with sqlite lines used to determine what samples to exclude or keep
     match: string
         name of file with sqlite lines used to determine what samples to exclude or keep
     output: string
@@ -651,8 +629,6 @@ def ControlCaseNullAndMatch(verbose,inputdata,control,case,nullvalues,match,outp
         Tells function if it should output print statements or not. True outputs print statements.
     inputdata: string
         Name of file with sample metadata to analyze.
-    keep: string
-        name of file with sqlite lines used to determine what samples to exclude or keep
     control: string
         name of file with sqlite lines used to determine what samples to label control
     case: string
@@ -729,8 +705,6 @@ def ExcludeControlCaseAndMatch(verbose,inputdata,keep,control,case,match,output)
         name of file with sqlite lines used to determine what samples to label control
     case: string
         name of file with sqlite lines used to determine what samples to label case
-    nullvalues: string
-        name of file with sqlite lines used to determine what samples to exclude or keep
     match: string
         name of file with sqlite lines used to determine what samples to exclude or keep
     output: string

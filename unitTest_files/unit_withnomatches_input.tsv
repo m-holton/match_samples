@@ -1,7 +1,7 @@
-id	age_years	sex	disease	bmi_category 	test_site	antibiotic_history		case_control
-13	30	male	none	normal	vaginal	I have not had antibiotics within the last year.		control
-14	40	male	schizophrenia	normal	fecal	I have not had antibiotics within the last year.		case
-15	31	male	none	normal	oral	I have not had antibiotics within the last year.		control
-16	41	male	schizophrenia	normal	skin	I have not had antibiotics within the last year.		case
-17	50	male	none	normal	oral	I have not had antibiotics within the last year.		control
-18	13	male	schizophrenia	normal	fecal	I have not had antibiotics within the last year.		case
+id	age_years	sex	disease	bmi_category 	test_site	antibiotic_history	case_control
+13	30	male	none	normal	vaginal	I have not had antibiotics within the last year.	control
+14	40	male	schizophrenia	normal	fecal	I have not had antibiotics within the last year.	case
+15	31	male	none	normal	oral	I have not had antibiotics within the last year.	control
+16	41	male	schizophrenia	normal	skin	I have not had antibiotics within the last year.	case
+17	50	male	none	normal	oral	I have not had antibiotics within the last year.	control
+18	13	male	schizophrenia	normal	fecal	I have not had antibiotics within the last year.	case

@@ -369,9 +369,9 @@ def match_samples(verbose, prepped_for_match_MD, conditions_for_match_lines):
 
             column_name = conditions.split('\t')[1].strip()
             try:
-                returned_MD.get_column(column)
+                matchDF[column_name]
             except:
-                raise Exception('Column %s not found in your input data. Correct this error in your --match/-m file'%(column))
+                raise KeyError('Column %s not found in your input data. Correct this error in your --match/-m file'%(column_name))
 
             # get the type of data for the given column. This determine how a match is determined
             if conditions.split('\t')[0] == 'range':
@@ -416,8 +416,8 @@ def match_samples(verbose, prepped_for_match_MD, conditions_for_match_lines):
         
     for key in case_to_control_match:
         key_value = case_to_control_match[key]
-        matchDF.loc[ key, 'matched_to'] = key_value
-        matchDF.loc[ key_value, 'matched_to'] = key
+        matchDF.loc[ key, 'matched_to'] = str(key_value)
+        matchDF.loc[ key_value, 'matched_to'] = str(key)
 
     return Metadata(matchDF)
 

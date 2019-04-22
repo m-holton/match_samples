@@ -1,1 +1,1 @@
-('Unspecified', 'none')
+('Unspecified')

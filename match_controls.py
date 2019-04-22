@@ -242,6 +242,7 @@ def determine_cases_and_controls(verbose, afterExclusion_MD, query_line_dict, ca
     '''
     if verbose:
         print("Metadata Object has %s samples"%(afterExclusion_MD.id_count))
+    
     for key in query_line_dict:
         if key != 'case' and key != 'control':
             if verbose:
@@ -354,7 +355,7 @@ def match_samples(verbose, prepped_for_match_MD, conditions_for_match_lines):
     matchDF = prepped_for_match_MD.to_dataframe()
     case_for_matchDF = matchDF[matchDF['case_control'].isin(['case'])]
     # creates column to show matches. since it will contain the sample number it was matched too the null value will be 0
-    matchDF['matched_to'] = '0'
+    matchDF['matched_to'] = 'none'
 
     # loops though case samples and matches them to controls
     for case_index, case_row in case_for_matchDF.iterrows():
@@ -367,6 +368,10 @@ def match_samples(verbose, prepped_for_match_MD, conditions_for_match_lines):
         for conditions in conditions_for_match_lines:
 
             column_name = conditions.split('\t')[1].strip()
+            try:
+                returned_MD.get_column(column)
+            except:
+                raise Exception('Column %s not found in your input data. Correct this error in your --match/-m file'%(column))
 
             # get the type of data for the given column. This determine how a match is determined
             if conditions.split('\t')[0] == 'range':
@@ -828,19 +833,22 @@ def Everything(verbose,inputdata,keep,control,case,nullvalues,match,output):
 
 @click.command()
 @click.option('--verbose', is_flag=True, help='Make print statements appear')
-@click.option('--keep', default=1, type = str, help='name of file with sqlite lines used to determine what samples to exclude or keep')
-@click.option('--control', default=1, type = str, help='name of file with sqlite lines used to determine what samples to label control')
-@click.option('--case', default=1, type = str, help='name of file with sqlite lines used to determine what samples to label case')
-@click.option('--nullvalues', default=1, type = str, help='name of file with sqlite lines used to determine what samples to exclude or keep')
-@click.option('--match', default=1, type = str, help='name of file with sqlite lines used to determine what samples to exclude or keep')
+@click.option('--unit', is_flag=True, help='Signals that unit tests are being run. This makes mainControler not call any other functions in match_controls.py')
+@click.option('--keep', default=1, type = int, help='name of file with sqlite lines used to determine what samples to exclude or keep')
+@click.option('--control', default=1, type = int, help='name of file with sqlite lines used to determine what samples to label control')
+@click.option('--case', default=1, type = int, help='name of file with sqlite lines used to determine what samples to label case')
+@click.option('--nullvalues', default=1, type = int, help='name of file with sqlite lines used to determine what samples to exclude or keep')
+@click.option('--match', default=1, type = int, help='name of file with sqlite lines used to determine what samples to exclude or keep')
 @click.option('--inputdata', required = True, type = str, help='Name of file with sample metadata to analyze.')
 @click.option('--output', required = True, type = str, help='Name of file to export data to.')
-def mainControler(verbose,inputdata,keep,control,case,nullvalues,match,output):
+def mainControler(verbose, unit, inputdata, keep, control, case, nullvalues, match, output):
     '''
     Parameters
     ----------
     verbose: boolean
         Tells function if it should output print statements or not. True outputs print statements.
+    unit: boolean
+        Signals that unit tests are being run. This makes mainControler not call any other functions in match_controls.py
     inputdata: string
         Name of file with sample metadata to analyze.
     keep: string
@@ -869,42 +877,52 @@ def mainControler(verbose,inputdata,keep,control,case,nullvalues,match,output):
                     if isinstance(nullvalues, str):
                         if verbose:
                             print("Calling Everything")
-                            Everything(verbose,inputdata,keep,control,case,nullvalues,match,output)
+                        if unit:
                             return "Everything"
+                        Everything(verbose,inputdata,keep,control,case,nullvalues,match,output)
                     else:
                         if verbose:
                             print("Calling ExcludeControlCaseAndMatch")
+                        if unit:
+                            return "ExcludeControlCaseAndMatch"
                         ExcludeControlCaseAndMatch(verbose,inputdata,keep,control,case,match,output)
-                        return "ExcludeControlCaseAndMatch"
                 else:
                     if verbose:
-                            print("Calling KeepAndControlCase")
+                        print("Calling KeepAndControlCase")
+                    if unit:
+                        return "KeepAndControlCase"
                     KeepAndControlCase(verbose,inputdata,keep,control,case,output)
-                    return "KeepAndControlCase"
         else:
             if verbose:
                 print("Calling KeepOnly")
+            if unit:
+                return "KeepOnly"
             KeepOnly(verbose,inputdata,keep,output)
-            return "KeepOnly"
     elif isinstance(control, str) and isinstance(case, str):
         if isinstance(match, str):
             if isinstance(nullvalues, str):
                 if verbose:
                     print("Calling ControlCaseNullAndMatch")
+                if unit:
+                    return "ControlCaseNullAndMatch"
                 ControlCaseNullAndMatch(verbose,inputdata,control,case,nullvalues,match,output)
-                return "ControlCaseNullAndMatch"
             else:
                 if verbose:
                     print("Calling ControlCaseAndMatch")
+                if unit:
+                    return "ControlCaseAndMatch"
                 ControlCaseAndMatch(verbose,inputdata,control,case,match,output)
-                return "ControlCaseAndMatch"
         else:
             if verbose:
                 print("Calling ControlAndCaseOnly")
+            if unit:
+                return "ControlAndCaseOnly"
             ControlAndCaseOnly(verbose,inputdata,control,case,output)
-            return "ControlAndCaseOnly"
-    elif verbose:
-        print("No Functions Called")
+    else:
+        if verbose:
+            print("No Functions Called")
+        if unit:
+            return "No Functions Called"
         
     
     

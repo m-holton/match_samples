@@ -1,1 +1,24 @@
 language: python
+python:
+  - "3.7"
+before_install:
+#install conda and quime 2
+#from https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/use-conda-with-travis-ci.html
+- wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+- bash miniconda.sh -b -p $HOME/miniconda
+- export PATH="$HOME/miniconda/bin:$PATH"
+- hash -r
+- conda config --set always_yes yes --set changeps1 no
+- conda update -q conda
+# Useful for debugging any issues with conda
+- conda info -a
+- wget https://data.qiime2.org/distro/core/qiime2-2019.1-py36-linux-conda.yml
+- conda env create -n qiime2-2019.1 --file qiime2-2019.1-py36-linux-conda.yml
+# OPTIONAL CLEANUP
+- rm qiime2-2019.1-py36-linux-conda.yml
+- source activate qiime2-2019.1
+# install:
+# command to install dependencies
+# command to run tests
+script:
+  - python _match_controls.py

@@ -1,6 +1,7 @@
+dist: xenial # needed for 3.7 in travis
 language: python
 python:
-  - "3.6"
+  - "3.7"
 before_install:
 #install conda and quime 2
 #from https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/use-conda-with-travis-ci.html

@@ -1,6 +1,6 @@
 language: python
 python:
-  - "3.7"
+  - "3.6"
 before_install:
 #install conda and quime 2
 #from https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/use-conda-with-travis-ci.html

@@ -4,8 +4,7 @@
 #
 # ----------------------------------------------------------------------------
 
-import getopt
-import sys
+import getopt, sys
 import pandas as pd
 import numpy as np
 import qiime2
@@ -30,10 +29,8 @@ import match_controls
 
 
 def test_orderDict():
-    test_unorderedDict = {'key_1':['a','b','c','d','e'],
-        'key_2':['a','c','e','d','b'],  'key_3':['b','e','e','c','a']}
-    correct_output = {'key_1':['a','b','c','d','e'],
-        'key_2':['a','b','c','d','e'], 'key_3':['a','b','c','e','e']}
+    test_unorderedDict = {'key_1':['a','b','c','d','e'], 'key_2':['a','c','e','d','b'],  'key_3':['b','e','e','c','a']}
+    correct_output = {'key_1':['a','b','c','d','e'], 'key_2':['a','b','c','d','e'], 'key_3':['a','b','c','e','e']}
 
     test_error = {'key_4':['b','f','e','c','a']}
 
@@ -43,8 +40,7 @@ def test_orderDict():
     test_frequencies = {'a':1,'b':2,'c':3,'d':4,'e':5}
     test_frequencies_equal = {'a':1,'b':3,'c':3,'d':3,'e':5}
 
-    if (match_controls.orderDict(test_unorderedDict,
-        test_frequencies) != correct_output):
+    if (match_controls.orderDict(test_unorderedDict, test_frequencies) != correct_output):
         print('orderDict is not properly matching the output')
         print(match_controls.orderDict(test_unorderedDict, test_frequencies))
         print('should be')
@@ -53,8 +49,7 @@ def test_orderDict():
     counter = 0
     run_number = 1
     while run_number <=100:
-        if (match_controls.orderDict(test_equal_freq, test_frequencies_equal)
-            != correct_output_freq):
+        if (match_controls.orderDict(test_equal_freq, test_frequencies_equal) != correct_output_freq):
             counter = counter + 1
         run_number = run_number + 1
     if counter>=0:
@@ -67,8 +62,7 @@ def test_orderDict():
     return True
 
 def test_order_keys():
-    test_unorderedDict={'2':['a','b'], '1':['a'],  '3':['a','b','c'],
-        '5':['a','b','c','d','e'], '4':['a','b','c','d']}
+    test_unorderedDict={'2':['a','b'], '1':['a'],  '3':['a','b','c'],  '5':['a','b','c','d','e'], '4':['a','b','c','d']}
     correct_output=['5','4','3','2','1']
     if (match_controls.order_keys(test_unorderedDict) != correct_output):
         print('order_keys is not properly matching the output')
@@ -77,11 +71,9 @@ def test_order_keys():
         print(correct_output)
         return False
 
-    test_unorderedDict_equ_freq={'2b':['a','b'], '1':['a'], '2a':['a', 'c'],
-        '3':['a','b','c'],  '5':['a','b','c','d','e'], '4':['a','b','c','d']}
+    test_unorderedDict_equ_freq={'2b':['a','b'], '1':['a'], '2a':['a', 'c'],  '3':['a','b','c'],  '5':['a','b','c','d','e'], '4':['a','b','c','d']}
     correct_output_equ_freq=['5','4','3','2a', '2b', '1']
-    if (match_controls.order_keys(test_unorderedDict_equ_freq)
-        != correct_output_equ_freq):
+    if (match_controls.order_keys(test_unorderedDict_equ_freq) != correct_output_equ_freq):
         print('order_keys is not properly matching the output')
         print(match_controls.order_keys(test_unorderedDict_equ_freq))
         print('should be')
@@ -90,18 +82,12 @@ def test_order_keys():
     return True
 
 def test_stable_marriage():
-    case_dictionary = {'14': ['15', '17'], '25': [], '19': ['20'], '21':[],
-        '6': [], '9': ['10'], '3': [], '7': ['8'], '18': ['17'], '23': [],
-        '16': ['13', '15'], '27': [], '11': ['12']}
-    control_match_count_dictionary = {'10': 1, '15': 2, '17': 2, '12': 1,
-        '8': 1, '20': 1, '13': 1}
-    case_match_count_dictionary = {'23': 0, '6': 0, '14': 2, '21': 0, '16': 2,
-        '11': 1, '19': 1, '9': 1, '27': 0, '7': 1, '3': 0, '25': 0, '18': 1}
+    case_dictionary = {'14': ['15', '17'], '25': [], '19': ['20'], '21':[], '6': [], '9': ['10'], '3': [], '7': ['8'], '18': ['17'], '23': [], '16': ['13', '15'], '27': [], '11': ['12']}
+    control_match_count_dictionary = {'10': 1, '15': 2, '17': 2, '12': 1, '8': 1, '20': 1, '13': 1}
+    case_match_count_dictionary = {'23': 0, '6': 0, '14': 2, '21': 0, '16': 2, '11': 1, '19': 1, '9': 1, '27': 0, '7': 1, '3': 0, '25': 0, '18': 1}
 
-    case_to_control_match = match_controls.stable_marriage(case_dictionary,
-        control_match_count_dictionary, case_match_count_dictionary)
-    test_output  = {'15': '16', '12': '11', '8': '7', '10': '9', '17': '18',
-        '20': '19'}
+    case_to_control_match = match_controls.stable_marriage(case_dictionary, control_match_count_dictionary, case_match_count_dictionary)
+    test_output  = {'15': '16', '12': '11', '8': '7', '10': '9', '17': '18', '20': '19'}
     if case_to_control_match != test_output:
         print("stable marriage fails. \nOutput should be {'15': '16', '12': '11', '8': '7', '10': '9', '17': '18', '20': '19'} \nOutput was")
         print(case_to_control_match)
@@ -112,11 +98,19 @@ def test_stable_marriage():
 
 
 
+
+
+
 def test_get_user_input_query_lines():
     if not assertRaises(SomeException):
         print("null input lines does not result in Exception")
     if match_controls.get_user_input_query_lines("")!=False:
         print("null input lines does not result in False return value")
+
+
+
+
+
 
 
 
@@ -155,8 +149,7 @@ def test_match_samples(matchedMD, csvdata_match):
     csvdata["age_years"]= csvdata["age_years"].astype("int64")
 
 
-    print('test---------- age_years are the same = %s'%(
-        csvdata_match["age_years"].equals(csvdata["age_years"] )))
+    print('test---------- age_years are the same = %s'%( csvdata_match["age_years"].equals(csvdata["age_years"] )))
     #print( assert_frame_equal(csvdata, csvdata_match) )
     if csvdata_match["age_years"].equals(csvdata["age_years"]) != True:
         print("age_years columns don't match")
@@ -171,9 +164,7 @@ def test_match_samples(matchedMD, csvdata_match):
 
 
 
-def test_Everything(verbose, inputdata, keep, control, case, nullvalues,
-    match, output, csvdata_keep, csvdata_case_control, csvdata_filter,
-    csvdata_match):
+def test_Everything(verbose, inputdata, keep, control, case, nullvalues, match, output, csvdata_keep, csvdata_case_control, csvdata_filter, csvdata_match):
 
     csvdata_keep = Metadata.load(csvdata_keep).to_dataframe()
     csvdata_case_control = Metadata.load(csvdata_case_control).to_dataframe()
@@ -181,24 +172,21 @@ def test_Everything(verbose, inputdata, keep, control, case, nullvalues,
     csvdata_match = Metadata.load(csvdata_match).to_dataframe()
 
     tstart = time.clock()
-    inputDict = {"inputdata":inputdata, "keep":keep, "control":control,
-        "case":case, "nullvalues":nullvalues, "match":match}
+    inputDict = {"inputdata":inputdata, "keep":keep, "control":control, "case":case, "nullvalues":nullvalues, "match":match}
     #loads and opens input files
     inputDict = match_controls.get_user_input_query_lines(verbose,inputDict)
 
     tloadedFiles = time.clock()
     if verbose:
         print('Time to load input files is %s'%(tloadedFiles - tstart))
-    afterExclusionMD = match_controls.keep_samples(verbose,
-        inputDict["inputdata"], inputDict["keep"])
+    afterExclusionMD = match_controls.keep_samples(verbose, inputDict["inputdata"], inputDict["keep"])
 
 
     tkeep = time.clock()
     keep = test_keep_samples(afterExclusionMD, csvdata_keep)
     if verbose:
         print("keep_samples function works correctly is %s"%(keep))
-        print('Time to filter out unwanted samples is %s'%(
-            tkeep - tloadedFiles))
+        print('Time to filter out unwanted samples is %s'%(tkeep - tloadedFiles))
     ids = afterExclusionMD.get_ids()
     case_control_Series = pd.Series( ['Unspecified'] * len(ids), ids)
     '''
@@ -207,23 +195,17 @@ def test_Everything(verbose, inputdata, keep, control, case, nullvalues,
     '''
     case_control_Series.index.name = afterExclusionMD.id_header
     case_controlDF = case_control_Series.to_frame('case_control')
-    case_control_dict = {'case':inputDict["case"],
-        'control':inputDict["control"] }
+    case_control_dict = {'case':inputDict["case"], 'control':inputDict["control"] }
 
-    case_controlMD = match_controls.determine_cases_and_controls(verbose,
-        afterExclusionMD, case_control_dict, case_controlDF)
+    case_controlMD = match_controls.determine_cases_and_controls(verbose, afterExclusionMD, case_control_dict, case_controlDF)
 
     tcase_control = time.clock()
-    case_control = test_determine_cases_and_controls(case_controlMD,
-        csvdata_case_control)
+    case_control = test_determine_cases_and_controls(case_controlMD, csvdata_case_control)
     if verbose:
-        print("determine_cases_and_controls function works correctly is %s"%(
-            case_control))
-        print('Time to label case and control samples is %s'%(
-            tcase_control - tkeep))
+        print("determine_cases_and_controls function works correctly is %s"%(case_control))
+        print('Time to label case and control samples is %s'%(tcase_control - tkeep))
 
-    prepped_for_matchMD= match_controls.filter_prep_for_matchMD(verbose,
-        case_controlMD, inputDict["match"], inputDict["nullvalues"])
+    prepped_for_matchMD= match_controls.filter_prep_for_matchMD(verbose, case_controlMD, inputDict["match"], inputDict["nullvalues"])
 
     tprepped = time.clock()
     prepped = test_filter_prep_for_matchMD(prepped_for_matchMD, csvdata_filter)
@@ -232,8 +214,7 @@ def test_Everything(verbose, inputdata, keep, control, case, nullvalues,
         print('Time to filter Metadata information for samples with null values is %s'%(tprepped - tcase_control))
 
     if inputDict["match"] != False:
-        matchedMD = match_controls.match_samples(verbose, prepped_for_matchMD,
-            inputDict["match"] )
+        matchedMD = match_controls.match_samples(verbose, prepped_for_matchMD, inputDict["match"] )
         matchedMD.to_dataframe().to_csv(output, sep = '\t')
     tmatch = time.clock()
     tend = time.clock()
@@ -246,26 +227,19 @@ def test_Everything(verbose, inputdata, keep, control, case, nullvalues,
 
 
 @click.command()
-@click.option("--verbose", is_flag=True,
-    help="Make print statements appear")
-@click.option("--unit", is_flag=True,
-    help="Signals that unit tests are being run. This makes mainControler not call any other functions in match_controls.py")
-@click.option("--keep", default=1, type = int,
-    help="name of file with sqlite lines used to determine what samples to exclude or keep")
-@click.option("--control", default=1, type = int,
-    help="name of file with sqlite lines used to determine what samples to label control")
-@click.option("--case", default=1, type = int,
-    help="name of file with sqlite lines used to determine what samples to label case")
-@click.option("--nullvalues", default=1, type = int,
-    help="name of file with sqlite lines used to determine what samples to exclude or keep")
-@click.option("--match", default=1, type = int,
-    help="name of file with sqlite lines used to determine what samples to exclude or keep")
-@click.option("--inputdata", required = True, type = str,
-    help="Name of file with sample metadata to analyze.")
-@click.option("--output", required = True, type = str,
-    help="Name of file to export data to.")
-def mainControler(verbose, inputdata, keep, control, case, nullvalues, match,
-    output, csvdata_keep, csvdata_case_control, csvdata_filter, csvdata_match):
+@click.option('--verbose', is_flag=True, help='Make print statements appear')
+@click.option('--keep', default=1, type = str, help='name of file with sqlite lines used to determine what samples to exclude or keep')
+@click.option('--control', default=1, type = str, help='name of file with sqlite lines used to determine what samples to label control')
+@click.option('--case', default=1, type = str, help='name of file with sqlite lines used to determine what samples to label case')
+@click.option('--nullvalues', default=1, type = str, help='name of file with sqlite lines used to determine what samples to exclude or keep')
+@click.option('--match', default=1, type = str, help='name of file with sqlite lines used to determine what samples to exclude or keep')
+@click.option('--inputdata', required = True, type = str, help='Name of file with sample metadata to analyze.')
+@click.option('--output', required = True, type = str, help='Name of file to export data to.')
+@click.option('--csvdata_keep', default=1, type = str, help='Name of file that include the proper output of keep_samples to the corresponding test file.')
+@click.option('--csvdata_case_control', default=1, type = str, help='Name of file that include the proper output of determine_cases_and_controls to the corresponding test file.')
+@click.option('--csvdata_filter', default=1, type = str, help='Name of file that include the proper output of filter_prep_for_matchMD to the corresponding test file.')
+@click.option('--csvdata_match', default=1, type = str, help='Name of file that include the proper output of match_samples to the corresponding test file.')
+def mainControler(verbose, inputdata, keep, control, case, nullvalues, match, output, csvdata_keep, csvdata_case_control, csvdata_filter, csvdata_match):
 
     '''
     #test_get_user_input_query_lines()
@@ -286,19 +260,9 @@ def mainControler(verbose, inputdata, keep, control, case, nullvalues, match,
     csvdata_match = Metadata.load('./unitTest_files/unit_output.csv').to_dataframe()
     '''
     test_get_user_input_query_lines()
-    test_keep_samples()
-    test_determine_cases_and_controls()
-    test_filter_prep_for_matchMD()
     test_orderDict()
     test_order_keys()
     test_stable_marriage()
-    test_match_samples()
-
-
-    '''test_get_user_input_query_lines()
-    test_orderDict()
-    test_order_keys()
-    test_stable_marriage()'''
 
     #correctOutFrame = open('./unitTest_files/%s'%('test_case.txt'),'r').readlines()
 
@@ -312,49 +276,38 @@ def mainControler(verbose, inputdata, keep, control, case, nullvalues, match,
 
 
     if isinstance(keep, str) and isinstance(case, str):
-        if isinstance(control, str) and isinstance(case, str) and isinstance(
-            case, str):
+        if isinstance(control, str) and isinstance(case, str) and isinstance(case, str):
                 if isinstance(match, str) and isinstance(case, str):
                     if isinstance(nullvalues, str) and isinstance(case, str):
                         if verbose:
                             print("Testing Everything")
-                            test_Everything(verbose, inputdata, keep, control,
-                                case, nullvalues, match, output, csvdata_keep,
-                                csvdata_case_control, csvdata_filter,
-                                csvdata_match)
+                            test_Everything(verbose, inputdata, keep, control, case, nullvalues, match, output, csvdata_keep, csvdata_case_control, csvdata_filter, csvdata_match)
                     else:
                         if verbose:
                             print("Testing ExcludeControlCaseAndMatch")
-                        test_ExcludeControlCaseAndMatch(verbose,inputdata,
-                            keep,control,case, match, output, csvdata_keep,
-                            csvdata_case_control, csvdata_match)
+                        test_ExcludeControlCaseAndMatch(verbose,inputdata,keep,control,case, match, output, csvdata_keep, csvdata_case_control, csvdata_match)
                 else:
                     if verbose:
                             print("Testing KeepAndControlCase")
-                    test_KeepAndControlCase(verbose,inputdata,keep,control,
-                        case,output, csvdata_keep, csvdata_case_control)
+                    test_KeepAndControlCase(verbose,inputdata,keep,control,case,output, csvdata_keep, csvdata_case_control)
         else:
             if verbose:
                 print("Testing KeepOnly")
             test_KeepOnly(verbose, inputdata, keep, output, csvdata_keep)
-    elif isinstance(control, str) and isinstance(case, str) and isinstance(
-        case, str):
+    elif isinstance(control, str) and isinstance(case, str) and isinstance(case, str):
         if isinstance(match, str) and isinstance(case, str):
             if isinstance(nullvalues, str) and isinstance(case, str):
                 if verbose:
                     print("Testing ControlCaseNullAndMatch")
-                test_ControlCaseNullAndMatch(verbose,inputdata,control,case,
-                    nullvalues, match, output, csvdata_case_control, csvdata_filter, csvdata_match)
+                test_ControlCaseNullAndMatch(verbose,inputdata,control,case, nullvalues, match, output, csvdata_case_control, csvdata_filter, csvdata_match)
             else:
                 if verbose:
                     print("Testing ControlCaseAndMatch")
-                test_ControlCaseAndMatch(verbose,inputdata,control,case,match,
-                    output, csvdata_case_control, csvdata_match)
+                test_ControlCaseAndMatch(verbose,inputdata,control,case,match,output, csvdata_case_control, csvdata_match)
         else:
             if verbose:
                 print("Testing ControlAndCaseOnly")
-            test_ControlAndCaseOnly(verbose,inputdata,control, case, output,
-                csvdata_case_control)
+            test_ControlAndCaseOnly(verbose,inputdata,control, case, output, csvdata_case_control)
 
 
 
@@ -377,18 +330,13 @@ if match_controls.get_user_input_query_lines("")!=False:
     print("null input lines does not result in False return value")
 
 #each line is a sqlite query to determine what samples to keep
-exclude_query_lines_input = match_controls.get_user_input_query_lines(
-    nul_user_input_file_name_exclude)
+exclude_query_lines_input = match_controls.get_user_input_query_lines(nul_user_input_file_name_exclude)
 #each line is a sqlite query to determine what samples to label control
-control_query_lines_input = match_controls.get_user_input_query_lines(
-    nul_user_input_file_name_control)
+control_query_lines_input = match_controls.get_user_input_query_lines(nul_user_input_file_name_control)
 #each line is a sqlite query to determine what samples to label case
-case_query_lines_input = match_controls.get_user_input_query_lines(
-    nul_user_input_file_name_experiment)
-null_values_lines_input = match_controls.get_user_input_query_lines(
-    nul_user_input_file_null_values)
-match_condition_lines_input = match_controls.get_user_input_query_lines(
-    nul_user_input_file_name_match)
+case_query_lines_input = match_controls.get_user_input_query_lines(nul_user_input_file_name_experiment)
+null_values_lines_input = match_controls.get_user_input_query_lines(nul_user_input_file_null_values)
+match_condition_lines_input = match_controls.get_user_input_query_lines(nul_user_input_file_name_match)
 
 
 if exclude_query_lines_input != False:

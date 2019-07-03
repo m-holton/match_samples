@@ -198,7 +198,7 @@ def get_user_input_query_lines(verbose, dictofFiles):
                 dict_of_file_lines[key] = Metadata.load(dictofFiles[key])
             except:
                 raise ValueError("metadata file could not load. The file "
-                    + "must be a TSV metadata file.")
+                    + "must be a tab separated metadata file.")
         else:
             if verbose:
                     print("file path entered is %s"%(dictofFiles[key]))
@@ -247,8 +247,7 @@ def keep_samples(verbose, original_MD, keep_query_lines):
     return shrunk_MD
 
 
-def determine_cases_and_controls(verbose, afterExclusion_MD, query_line_dict,
-    case_controlDF):
+def determine_cases_and_controls(verbose, afterExclusion_MD, query_line_dict):
     '''
     Determines what samples are cases or controls using the queries in
         query_line_array. The labels of each sample are stored in
@@ -268,17 +267,18 @@ def determine_cases_and_controls(verbose, afterExclusion_MD, query_line_dict,
         the first array are made of queries to determine controls
         the second array are made of queries to determine cases
 
-    case_controlDF : dataframe
-        dataframe with one column named case_control. The indexs are the same
-            as the indexs of afterExclution_MD all values are Undefined to
-            start
-
     Returns
     -------
     mergedMD : Metadata object
         Metadata object with unwanted samples filtered out and a case_control
             column that reflects if the index is a case, control, or Undefined
     '''
+
+    ids = afterExclusion_MD.get_ids()
+    case_control_Series = pd.Series(["Unspecified"] * len(ids), ids)
+    case_control_Series.index.name = afterExclusion_MD.id_header
+    case_controlDF = case_control_Series.to_frame("case_control")
+
     if verbose:
         print("Metadata Object has %s samples"%(afterExclusion_MD.id_count))
 
@@ -346,12 +346,19 @@ def filter_prep_for_matchMD(verbose, merged_MD, match_condition_lines,
         totalNumOfSamples = returned_MD.id_count
         print("%s samples before filtered out null samples"%(
             returned_MD.id_count))
+    if len(null_value_lines) == 0:
+        if verbose:
+            print("%s samples filtered out due to null samples"%(
+                totalNumOfSamples - returned_MD.id_count))
+            print("%s samples after filtering out null samples"%(
+                returned_MD.id_count))
+        return returned_MD
     for condition in match_condition_lines:
         column = condition.split("\t")[1].strip()
         try:
             returned_MD.get_column(column)
         except:
-            raise Exception("Column %s not found in your input data. Correct this error in your --match/-m file"%(column))
+            raise KeyError("Column %s not found in your input data. Correct this error in your --match/-m file"%(column))
 
         #Get the ids of samples in the metadata object that have non null
             #values for every column used for matching
@@ -415,6 +422,8 @@ def match_samples(verbose, prepped_for_match_MD, conditions_for_match_lines):
 
         # set matchDF to be only the samples of masterDF that are control samples
         controlDF = matchDF[matchDF["case_control"].isin(["control"])]
+        if controlDF.size == 0:
+            return Metadata(matchDF)
 
         # loop though input columns to determine matches
         for conditions in conditions_for_match_lines:
@@ -481,488 +490,10 @@ def match_samples(verbose, prepped_for_match_MD, conditions_for_match_lines):
 
     for key in case_to_control_match:
         key_value = case_to_control_match[key]
-        matchDF.loc[ key, "matched_to"] = str(key_value)
-        matchDF.loc[ key_value, "matched_to"] = str(key)
+        matchDF.loc[key, "matched_to"] = str(key_value)
+        matchDF.loc[key_value, "matched_to"] = str(key)
 
     return Metadata(matchDF)
-
-
-
-
-
-
-def KeepOnly(verbose, inputdata, keep, output):
-    '''
-
-    Parameters
-    ----------
-    verbose: boolean
-        Tells function if it should output print statements or not.
-            True outputs print statements.
-    inputdata: string
-        Name of file with sample metadata to analyze.
-    keep: string
-        name of file with sqlite lines used to determine what samples
-            to exclude or keep
-    output: string
-        Name of file to export data to.
-
-
-    '''
-
-    tstart = time.clock()
-    inputDict = {"inputdata":inputdata, "keep":keep, "control":None,
-        "case":None, "nullvalues":None, "match":None}
-    #loads and opens input files
-    inputDict = get_user_input_query_lines(verbose, inputDict)
-
-    tloadedFiles = time.clock()
-    if verbose:
-        print("Time to load input files is %s"%(tloadedFiles - tstart))
-
-    afterExclusionMD = keep_samples(verbose, inputDict["inputdata"],
-        inputDict["keep"])
-    afterExclusionMD.to_dataframe().to_csv(output, sep="\t")
-
-    tkeep = time.clock()
-    tend = time.clock()
-
-    if verbose:
-        print("Time to filter out unwanted samples is %s"%(
-            tkeep - tloadedFiles))
-        print("Time to do everything %s"%(tend - tstart))
-
-
-
-
-def ControlAndCaseOnly(verbose, inputdata, control, case, output):
-    '''
-
-    Parameters
-    ----------
-    verbose: boolean
-        Tells function if it should output print statements or not.
-            True outputs print statements.
-    inputdata: string
-        Name of file with sample metadata to analyze.
-    control: string
-        name of file with sqlite lines used to determine what samples
-            to label control
-    case: string
-        name of file with sqlite lines used to determine what samples to
-            label case
-    output: string
-        Name of file to export data to.
-
-
-    '''
-
-    tstart = time.clock()
-    inputDict = {"inputdata":inputdata, "keep":None, "control":control,
-        "case":case, "nullvalues":None, "match":None}
-    #loads and opens input files
-    inputDict = get_user_input_query_lines(verbose, inputDict)
-
-    tloadedFiles = time.clock()
-    if verbose:
-        print("Time to load input files is %s"%(tloadedFiles - tstart))
-
-    ids = inputDict["inputdata"].get_ids()
-    case_control_Series = pd.Series(["Unspecified"] * len(ids), ids)
-    '''
-    ["Unspecified"] * len(ids) creates a list of elements. The list is
-        the same length as ids. All the elements are "Unspecified"
-    '''
-    case_control_Series.index.name = inputDict["inputdata"].id_header
-    case_controlDF = case_control_Series.to_frame("case_control")
-    case_control_dict = {"case":inputDict["case"],
-        "control":inputDict["control"]}
-    case_controlMD = determine_cases_and_controls(verbose,
-        inputDict["inputdata"], case_control_dict, case_controlDF)
-
-    case_controlMD.to_dataframe().to_csv(output, sep="\t")
-
-    tcase_control = time.clock()
-    tend = time.clock()
-    if verbose:
-        print("Time to label case and control samples is %s"%(
-            tcase_control - tloadedFiles))
-        print("Time to do everything %s"%(tend - tstart))
-
-
-def KeepAndControlCase(verbose, inputdata, keep, control, case, output):
-    '''
-
-    Parameters
-    ----------
-    verbose: boolean
-        Tells function if it should output print statements or not.
-            True outputs print statements.
-    inputdata: string
-        Name of file with sample metadata to analyze.
-    keep: string
-        name of file with sqlite lines used to determine what samples
-            to exclude or keep
-    control: string
-        name of file with sqlite lines used to determine what samples
-            to label control
-    case: string
-        name of file with sqlite lines used to determine what samples
-            to label case
-    output: string
-        Name of file to export data to.
-
-
-    '''
-
-    tstart = time.clock()
-    inputDict = {"inputdata":inputdata, "keep":keep, "control":control,
-        "case":case, "nullvalues":None, "match":None}
-    #loads and opens input files
-    inputDict = get_user_input_query_lines(verbose, inputDict)
-
-    tloadedFiles = time.clock()
-    if verbose:
-        print("Time to load input files is %s"%(tloadedFiles - tstart))
-    afterExclusionMD = keep_samples(verbose, inputDict["inputdata"],
-        inputDict["keep"])
-    tkeep = time.clock()
-    if verbose:
-        print("Time to filter out unwanted samples is %s"%(
-            tkeep - tloadedFiles))
-    ids = afterExclusionMD.get_ids()
-    case_control_Series = pd.Series(["Unspecified"] * len(ids), ids)
-    '''
-    ["Unspecified"] * len(ids) creates a list of elements. The list is
-        the same length as ids. All the elements are "Unspecified"
-    '''
-    case_control_Series.index.name = afterExclusionMD.id_header
-    case_controlDF = case_control_Series.to_frame("case_control")
-    case_control_dict = {"case":inputDict["case"],
-        "control":inputDict["control"]}
-
-    case_controlMD = determine_cases_and_controls(verbose,
-        afterExclusionMD, case_control_dict, case_controlDF)
-    case_controlMD.to_dataframe().to_csv(output, sep="\t")
-    tcase_control = time.clock()
-    tend = time.clock()
-    if verbose:
-        print("Time to label case and control samples is %s"%(
-            tcase_control - tkeep))
-        print("Time to do everything %s"%(tend - tstart))
-
-
-def ControlCaseAndMatch(verbose, inputdata, control, case, match, output):
-    '''
-
-    Parameters
-    ----------
-    verbose: boolean
-        Tells function if it should output print statements or not.
-            True outputs print statements.
-    inputdata: string
-        Name of file with sample metadata to analyze.
-    control: string
-        name of file with sqlite lines used to determine what samples
-            to label control
-    case: string
-        name of file with sqlite lines used to determine what samples
-            to label case
-    match: string
-        name of file with sqlite lines used to determine what samples
-            to exclude or keep
-    output: string
-        Name of file to export data to.
-
-
-    '''
-
-    tstart = time.clock()
-    inputDict = {"inputdata":inputdata, "keep":None, "control":control,
-        "case":case, "nullvalues":None, "match":match}
-    #loads and opens input files
-    inputDict = get_user_input_query_lines(verbose, inputDict)
-
-    tloadedFiles = time.clock()
-    if verbose:
-        print("Time to load input files is %s"%(tloadedFiles - tstart))
-
-    ids = inputDict["inputdata"].get_ids()
-    case_control_Series = pd.Series(["Unspecified"] * len(ids), ids)
-    '''
-    ["Unspecified"] * len(ids) creates a list of elements. The list is
-        the same length as ids. All the elements are "Unspecified"
-    '''
-    case_control_Series.index.name = inputDict["inputdata"].id_header
-    case_controlDF = case_control_Series.to_frame("case_control")
-    case_control_dict = {"case":inputDict["case"],
-        "control":inputDict["control"]}
-    case_controlMD = determine_cases_and_controls(verbose,
-        inputDict["inputdata"], case_control_dict, case_controlDF)
-
-    tcase_control = time.clock()
-    if verbose:
-        print("Time to label case and control samples is %s"%(
-            tcase_control - tloadedFiles))
-
-    matchedMD = match_samples(verbose, case_controlMD,
-        inputDict["match"])
-    matchedMD.to_dataframe().to_csv(output, sep="\t")
-
-    tmatch = time.clock()
-    tend = time.clock()
-    if verbose:
-        print("Time to match is %s"%(tmatch- tcase_control))
-        print("Time to do everything %s"%(tend - tstart))
-
-
-
-
-
-
-def ControlCaseNullAndMatch(verbose, inputdata, control, case, nullvalues,
-    match, output):
-    '''
-
-
-    Parameters
-    ----------
-    verbose: boolean
-        Tells function if it should output print statements or not.
-            True outputs print statements.
-    inputdata: string
-        Name of file with sample metadata to analyze.
-    control: string
-        name of file with sqlite lines used to determine what samples
-            to label control
-    case: string
-        name of file with sqlite lines used to determine what samples
-            to label case
-    nullvalues: string
-        name of file with sqlite lines used to determine what samples
-            to exclude or keep
-    match: string
-        name of file with sqlite lines used to determine what samples
-            to exclude or keep
-    output: string
-        Name of file to export data to.
-
-
-
-    '''
-
-    tstart = time.clock()
-    inputDict = {"inputdata":inputdata, "keep":None, "control":control,
-        "case":case, "nullvalues":nullvalues, "match":match}
-    #loads and opens input files
-    inputDict = get_user_input_query_lines(verbose, inputDict)
-
-    tloadedFiles = time.clock()
-    if verbose:
-        print("Time to load input files is %s"%(tloadedFiles - tstart))
-
-    ids = inputDict["inputdata"].get_ids()
-    case_control_Series = pd.Series(["Unspecified"] * len(ids), ids)
-    '''
-    ["Unspecified"] * len(ids) creates a list of elements. The list is
-        the same length as ids. All the elements are "Unspecified"
-    '''
-    case_control_Series.index.name = inputDict["inputdata"].id_header
-    case_controlDF = case_control_Series.to_frame("case_control")
-    case_control_dict = {"case":inputDict["case"],
-        "control":inputDict["control"]}
-
-    case_controlMD = determine_cases_and_controls(verbose,
-        inputDict["inputdata"], case_control_dict, case_controlDF)
-
-    tcase_control = time.clock()
-    if verbose:
-        print("Time to label case and control samples is %s"%(
-            tcase_control - tloadedFiles))
-
-
-    prepped_for_matchMD= filter_prep_for_matchMD(verbose,
-        case_controlMD, inputDict["match"], inputDict["nullvalues"])
-
-    tprepped = time.clock()
-    if verbose:
-        print("Time to filter Metadata information for samples with null values is %s"%(
-            tprepped - tcase_control))
-
-    if inputDict["match"] != False:
-        matchedMD = match_samples(verbose, prepped_for_matchMD,
-            inputDict["match"])
-        matchedMD.to_dataframe().to_csv(output, sep="\t")
-
-    tmatch = time.clock()
-    tend = time.clock()
-    if verbose:
-        print("Time to match is %s"%(tmatch- tprepped))
-        print("Time to do everything %s"%(tend - tstart))
-
-
-
-
-def ExcludeControlCaseAndMatch(verbose, inputdata, keep, control, case,
-    match, output):
-    '''
-
-
-    Parameters
-    ----------
-    verbose: boolean
-        Tells function if it should output print statements or not.
-            True outputs print statements.
-    inputdata: string
-        Name of file with sample metadata to analyze.
-    keep: string
-        name of file with sqlite lines used to determine what samples
-            to exclude or keep
-    control: string
-        name of file with sqlite lines used to determine what samples
-            to label control
-    case: string
-        name of file with sqlite lines used to determine what samples
-            to label case
-    match: string
-        name of file with sqlite lines used to determine what samples
-            to exclude or keep
-    output: string
-        Name of file to export data to.
-
-
-
-    '''
-
-    tstart = time.clock()
-    inputDict = {"inputdata":inputdata, "keep":keep, "control":control,
-        "case":case, "nullvalues":None, "match":match}
-    #loads and opens input files
-    inputDict = get_user_input_query_lines(verbose, inputDict)
-    tloadedFiles = time.clock()
-    if verbose:
-        print("Time to load input files is %s"%(tloadedFiles - tstart))
-    afterExclusionMD = keep_samples(verbose, inputDict["inputdata"],
-        inputDict["keep"])
-    tkeep = time.clock()
-    if verbose:
-        print("Time to filter out unwanted samples is %s"%(
-            tkeep - tloadedFiles))
-    ids = afterExclusionMD.get_ids()
-    case_control_Series = pd.Series(["Unspecified"] * len(ids), ids)
-    '''
-    ["Unspecified"] * len(ids) creates a list of elements. The list is
-        the same length as ids. All the elements are "Unspecified"
-    '''
-    case_control_Series.index.name = afterExclusionMD.id_header
-    case_controlDF = case_control_Series.to_frame("case_control")
-    case_control_dict = {"case":inputDict["case"],
-        "control":inputDict["control"]}
-
-    case_controlMD = determine_cases_and_controls(verbose,
-        afterExclusionMD, case_control_dict, case_controlDF)
-
-
-    tcase_control = time.clock()
-    if verbose:
-        print("Time to label case and control samples is %s"%(
-            tcase_control - tkeep))
-
-    if inputDict["match"] != False:
-        matchedMD = match_samples(verbose, case_controlMD,
-            inputDict["match"])
-        matchedMD.to_dataframe().to_csv(output, sep="\t")
-
-    tmatch = time.clock()
-    tend = time.clock()
-    if verbose:
-        print("Time to match is %s"%(tmatch- tcase_control))
-        print("Time to do everything %s"%(tend - tstart))
-
-
-
-def Everything(verbose, inputdata, keep, control, case, nullvalues, match,
-    output):
-    '''
-    Parameters
-    ----------
-    verbose: boolean
-        Tells function if it should output print statements or not.
-            True outputs print statements.
-    inputdata: string
-        Name of file with sample metadata to analyze.
-    keep: string
-        name of file with sqlite lines used to determine what samples
-            to exclude or keep
-    control: string
-        name of file with sqlite lines used to determine what samples
-            to label control
-    case: string
-        name of file with sqlite lines used to determine what samples
-            to label case
-    nullvalues: string
-        name of file with sqlite lines used to determine what samples
-            to exclude or keep
-    match: string
-        name of file with sqlite lines used to determine what samples
-            to exclude or keep
-    output: string
-        Name of file to export data to.
-
-
-    '''
-
-    tstart = time.clock()
-    inputDict = {"inputdata":inputdata, "keep":keep, "control":control,
-        "case":case, "nullvalues":nullvalues, "match":match}
-    #loads and opens input files
-    inputDict = get_user_input_query_lines(verbose, inputDict)
-
-    tloadedFiles = time.clock()
-    if verbose:
-        print("Time to load input files is %s"%(tloadedFiles - tstart))
-    afterExclusionMD = keep_samples(verbose, inputDict["inputdata"],
-        inputDict["keep"])
-    tkeep = time.clock()
-    if verbose:
-        print("Time to filter out unwanted samples is %s"%(
-            tkeep - tloadedFiles))
-    ids = afterExclusionMD.get_ids()
-    case_control_Series = pd.Series(["Unspecified"] * len(ids), ids)
-    '''
-    ["Unspecified"] * len(ids) creates a list of elements. The list is
-        the same length as ids. All the elements are "Unspecified"
-    '''
-    case_control_Series.index.name = afterExclusionMD.id_header
-    case_controlDF = case_control_Series.to_frame("case_control")
-    case_control_dict = {"case":inputDict["case"],
-        "control":inputDict["control"]}
-
-    case_controlMD = determine_cases_and_controls(verbose,
-        afterExclusionMD, case_control_dict, case_controlDF)
-
-    tcase_control = time.clock()
-    if verbose:
-        print("Time to label case and control samples is %s"%(
-            tcase_control - tkeep))
-
-    prepped_for_matchMD= filter_prep_for_matchMD(verbose,
-        case_controlMD, inputDict["match"], inputDict["nullvalues"])
-
-    tprepped = time.clock()
-    if verbose:
-        print("Time to filter Metadata information for samples with null values is %s"%(
-            tprepped - tcase_control))
-
-    if inputDict["match"] != False:
-        matchedMD = match_samples(verbose, prepped_for_matchMD,
-            inputDict["match"])
-        matchedMD.to_dataframe().to_csv(output, sep="\t")
-    tmatch = time.clock()
-    tend = time.clock()
-    if verbose:
-        print("Time to match is %s"%(tmatch- tprepped))
-        print("Time to do everything %s"%(tend - tstart))
 
 
 def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
@@ -1001,15 +532,17 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
         "case":case, "nullvalues":nullvalues, "match":match}
     #loads and opens input files
     inputDict = get_user_input_query_lines(verbose, inputDict)
-    tloadedFiles = time.clock()
+
     if verbose:
+        tloadedFiles = time.clock()
         print("Time to load input files is %s"%(tloadedFiles - tstart))
 
     if "keep" in inputDict:
         afterExclusionMD = keep_samples(verbose, inputDict["inputdata"],
             inputDict["keep"])
-        tkeep = time.clock()
+
         if verbose:
+            tkeep = time.clock()
             print("Time to filter out unwanted samples is %s"%(
                 tkeep - tloadedFiles))
     else:
@@ -1017,22 +550,15 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
         afterExclusionMD = inputDict["inputdata"]
 
     if "case" in inputDict and "control" in inputDict:
-        ids = afterExclusionMD.get_ids()
-        case_control_Series = pd.Series(["Unspecified"] * len(ids), ids)
-        '''
-        ["Unspecified"] * len(ids) creates a list of elements. The list is
-            the same length as ids. All the elements are "Unspecified"
-        '''
-        case_control_Series.index.name = afterExclusionMD.id_header
-        case_controlDF = case_control_Series.to_frame("case_control")
         case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
 
         case_controlMD = determine_cases_and_controls(verbose,
             afterExclusionMD, case_control_dict, case_controlDF)
 
-        tcase_control = time.clock()
+
         if verbose:
+            tcase_control = time.clock()
             print("Time to label case and control samples is %s"%(
                 tcase_control - tkeep))
     else:
@@ -1044,14 +570,16 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
         prepped_for_matchMD= filter_prep_for_matchMD(verbose,
             case_controlMD, inputDict["match"], inputDict["nullvalues"])
 
-        tprepped = time.clock()
+
         if verbose:
+            tprepped = time.clock()
             print("Time to filter Metadata information for samples with null values is %s"%(
                 tprepped - tcase_control))
     else:
         case_controlMD.to_dataframe().to_csv(output, sep="\t")
-        tend = time.clock()
+
         if verbose:
+            tend = time.clock()
             print("Time to do everything %s"%(tend - tstart))
 
     if "match" in inputDict:
@@ -1059,9 +587,10 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
             matchedMD = match_samples(verbose, prepped_for_matchMD,
                 inputDict["match"])
             matchedMD.to_dataframe().to_csv(output, sep="\t")
-        tmatch = time.clock()
-        tend = time.clock()
+
         if verbose:
+            tmatch = time.clock()
+            tend = time.clock()
             print("Time to match is %s"%(tmatch- tprepped))
             print("Time to do everything %s"%(tend - tstart))
 
@@ -1131,63 +660,7 @@ def mainControler(verbose, unit, inputdata, keep, control, case,
         return "AllInOne"
     AllInOne(verbose, inputdata, keep, control, case,
         nullvalues, match, output)
-    if isinstance(keep, str):
-        if isinstance(control, str) and isinstance(case, str):
-                if isinstance(match, str):
-                    if isinstance(nullvalues, str):
-                        if verbose:
-                            print("Calling Everything")
-                        if unit:
-                            return "Everything"
-                        Everything(verbose, inputdata, keep, control, case,
-                            nullvalues, match, output)
-                    else:
-                        if verbose:
-                            print("Calling ExcludeControlCaseAndMatch")
-                        if unit:
-                            return "ExcludeControlCaseAndMatch"
-                        ExcludeControlCaseAndMatch(verbose, inputdata, keep,
-                            control, case, match, output)
-                else:
-                    if verbose:
-                        print("Calling KeepAndControlCase")
-                    if unit:
-                        return "KeepAndControlCase"
-                    KeepAndControlCase(verbose, inputdata, keep, control,
-                        case, output)
-        else:
-            if verbose:
-                print("Calling KeepOnly")
-            if unit:
-                return "KeepOnly"
-            KeepOnly(verbose, inputdata, keep, output)
-    elif isinstance(control, str) and isinstance(case, str):
-        if isinstance(match, str):
-            if isinstance(nullvalues, str):
-                if verbose:
-                    print("Calling ControlCaseNullAndMatch")
-                if unit:
-                    return "ControlCaseNullAndMatch"
-                ControlCaseNullAndMatch(verbose, inputdata, control, case,
-                    nullvalues, match, output)
-            else:
-                if verbose:
-                    print("Calling ControlCaseAndMatch")
-                if unit:
-                    return "ControlCaseAndMatch"
-                ControlCaseAndMatch(verbose, inputdata, control, case,
-                    match, output)
-        else:
-            if verbose:
-                print("Calling ControlAndCaseOnly")
-            if unit:
-                return "ControlAndCaseOnly"
-            ControlAndCaseOnly(verbose, inputdata, control, case, output)
-    else:
-        if verbose:
-            print("No Functions Called")
-        if unit:
-            return "No Functions Called"
+
 
 
 

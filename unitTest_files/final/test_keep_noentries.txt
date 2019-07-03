@@ -1,0 +1,2 @@
+antibiotic_history IN ('I have not had antibiotics within the last year.')
+sex IN ('Third Sex that does not exist')

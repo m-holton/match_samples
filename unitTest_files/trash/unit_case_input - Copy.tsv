@@ -1,0 +1,12 @@
+id	age_years	sex	disease	bmi_category 	test_site	antibiotic_history
+1	30	male	schizophrenia	overweight	fecal	6 months
+2	26	male	none	normal	fecal	3 months
+3	30	male	schizophrenia	overweight	none	I have not had antibiotics within the last year.
+4	26	male	flu	normal	Unspecified	1 year
+5	Unspecified	male	none	obese	oral	I have not had antibiotics within the last year.
+6	20	male	depression	obese	oral	I have not had antibiotics within the last year.
+7	30	male	schizophrenia	normal	vaginal	I have not had antibiotics within the last year.
+8	30	male	none	normal	skin	I have not had antibiotics within the last year.
+9	30	female	depression	normal	fecal	I have not had antibiotics within the last year.
+10	30	female	none	normal	skin	I have not had antibiotics within the last year.
+11	333	male	psychopathy	normal	skin	I have not had antibiotics within the last year.

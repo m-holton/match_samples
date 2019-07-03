@@ -1,0 +1,3 @@
+range	age_years	3
+exact	NotInColumn
+exact	sex

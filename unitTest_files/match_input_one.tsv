@@ -1,6 +1,0 @@
-id  name  age  diet  antibiotic case_control
-1 Tom 30 vegan no case
-2 Sally 25 vegan no case
-3 John  23  omni  no  control
-4 Mark 30 omni  yes control
-5 Julia 41  omni  no  control

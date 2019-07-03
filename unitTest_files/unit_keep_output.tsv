@@ -1,0 +1,7 @@
+id	age_years	sex	disease	bmi_category 	test_site	antibiotic_history
+5	Unspecified	male	none	obese	oral	I have not had antibiotics within the last year.
+6	20	male	depression	obese	oral	I have not had antibiotics within the last year.
+7	30	male	schizophrenia	normal	vaginal	I have not had antibiotics within the last year.
+8	30	male	none	normal	skin	I have not had antibiotics within the last year.
+9	30	female	depression	normal	fecal	I have not had antibiotics within the last year.
+10	30	female	none	normal	skin	I have not had antibiotics within the last year.

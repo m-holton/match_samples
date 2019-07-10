@@ -1,2 +1,2 @@
-disease IN ('depression')
-disease IN ('schizophrenia')
+disease IN ('depression', 'schizophrenia')
+sex IN ('male', 'female')

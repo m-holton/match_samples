@@ -3,7 +3,7 @@ id	age_years	sex	disease	bmi_category 	test_site	antibiotic_history	case_control
 2	26	male	none	normal	fecal	3 months	control
 3	30	male	schizophrenia	overweight	none	I have not had antibiotics within the last year.	case
 4	26	male	flu	normal	Unspecified	1 year	Unspecified
-5	Unspecified	male	none	obese	oral	I have not had antibiotics within the last year.	Unspecified
+5	Unspecified	male	none	obese	oral	I have not had antibiotics within the last year.	control
 6	20	male	depression	obese	oral	I have not had antibiotics within the last year.	case
 7	30	male	schizophrenia	normal	vaginal	I have not had antibiotics within the last year.	case
 8	30	male	none	normal	skin	I have not had antibiotics within the last year.	control

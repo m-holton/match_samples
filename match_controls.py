@@ -48,6 +48,8 @@ class Stable_Marriage:
             dictionary[k] = sorted(dictionary[k])
             dictionary[k] = sorted(dictionary[k],
                 key=lambda x:value_frequency[x])
+        if verbose:
+            print("Ordered dictionary is %s"%(dictionary))
         return dictionary
 
     def order_keys(self, verbose, dictionary):
@@ -73,8 +75,10 @@ class Stable_Marriage:
             contains keys in order of greatest to least amount of samples they
                 match to
         '''
-        keys_greatest_to_least = sorted(dictionary,
+        keys_greatest_to_least = sorted(dictionary, 
             key=lambda x: len(dictionary[x]), reverse=True)
+        if verbose:
+            print("Ordered samples are %s"%(keys_greatest_to_least))
         return keys_greatest_to_least
 
     def stableMarriageRunner(self, verbose, case_dictionary,
@@ -125,6 +129,8 @@ class Stable_Marriage:
         one_to_one_match_dictionary = {}
         while free_keys:
             key = free_keys.pop()
+            if verbose:
+                print("Popped the key %s"%(key))
             if case_dictionary[key] == []:
                 continue
             #get the highest ranked woman that has not yet been proposed to
@@ -142,6 +148,7 @@ class Stable_Marriage:
                 #reorder keys
                 free_keys = self.order_keys(verbose, case_dictionary)
 
+            '''
             else:
                 key_in_use = one_to_one_match_dictionary[entry]
                 if pref_counts_case[key] < pref_counts_case[key_in_use]:
@@ -149,6 +156,11 @@ class Stable_Marriage:
                     free_keys.append(key_in_use)
                 else:
                     free_keys.append(key)
+            '''
+                    
+        if verbose:
+            print("Dictionary of matches after solving stable marriage problem is %s"%(
+                one_to_one_match_dictionary))
 
         return one_to_one_match_dictionary
 
@@ -204,7 +216,7 @@ def get_user_input_query_lines(verbose, dictofFiles):
                     print("file path entered is %s"%(dictofFiles[key]))
             try:
                 dict_of_file_lines[key] = open("./%s"%(dictofFiles[key]),
-                    "r").readlines()
+                    "r").read().splitlines()
             except:
                 raise ValueError("File could not be opened")
     return dict_of_file_lines
@@ -236,6 +248,8 @@ def keep_samples(verbose, original_MD, keep_query_lines):
     '''
 
     initial_size = original_MD.id_count
+    if len(keep_query_lines) < 1:
+        raise ValueError("The keep query file is empty")
     ids = original_MD.get_ids(" AND ".join(keep_query_lines))
     shrunk_MD = original_MD.filter_ids(ids)
     if verbose:
@@ -287,12 +301,14 @@ def determine_cases_and_controls(verbose, afterExclusion_MD, query_line_dict):
             if verbose:
                 print("Wrong key used for query. Must be 'case' or 'control'.")
             continue
+        
         #resets shrunk_MD so that filtering down to control samples does not
             #influence filtering down to case
         shrunk_MD = afterExclusion_MD
         #get query and filtering down to control or case samples based on key
         query_lines = query_line_dict[key]
-
+        if len(query_lines) < 1:
+            raise ValueError("The %s query file is empty"%(key))
         ids = shrunk_MD.get_ids(" AND ".join(query_lines))
         shrunk_MD = shrunk_MD.filter_ids(ids)
         if verbose:
@@ -554,7 +570,7 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
             "control":inputDict["control"]}
 
         case_controlMD = determine_cases_and_controls(verbose,
-            afterExclusionMD, case_control_dict, case_controlDF)
+            afterExclusionMD, case_control_dict)
 
 
         if verbose:
@@ -654,10 +670,11 @@ def mainControler(verbose, unit, inputdata, keep, control, case,
 
     '''
 
-    if verbose:
-        print("Calling AllInOne")
     if unit:
         return "AllInOne"
+    
+    if verbose:
+        print("Calling AllInOne")
     AllInOne(verbose, inputdata, keep, control, case,
         nullvalues, match, output)
 

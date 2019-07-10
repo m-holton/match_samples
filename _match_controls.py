@@ -29,6 +29,7 @@ import match_controls
 
 
 def test_orderDict():
+    verbose = False
     stable = match_controls.Stable_Marriage()
 
     test_unorderedDict = {'key_1':['a','b','c','d','e'],
@@ -44,57 +45,46 @@ def test_orderDict():
     test_frequencies = {'a':1,'b':2,'c':3,'d':4,'e':5}
     test_frequencies_equal = {'a':1,'b':3,'c':3,'d':3,'e':5}
 
-    if (stable.orderDict(test_unorderedDict,
-        test_frequencies) != correct_output):
-        print('orderDict is not properly matching the output')
-        print(stable.orderDict(test_unorderedDict, test_frequencies))
-        print('should be')
-        print(correct_output)
-        return False
+    assert_equals(stable.orderDict(verbose, test_unorderedDict, 
+        test_frequencies), correct_output)
+
     counter = 0
     run_number = 1
     while run_number <=100:
-        if (stable.orderDict(test_equal_freq, test_frequencies_equal)
+        if (stable.orderDict(verbose, test_equal_freq, test_frequencies_equal)
             != correct_output_freq):
             counter = counter + 1
         run_number = run_number + 1
     if counter>=0:
         print('times out of 100 that the order was wrong = %s'%(counter))
-    try:
-        stable.orderDict(test_error, test_frequencies)
-        return False
-    except:
-        return True
-    return True
+    
+    #-------------------------------------------------==================
+    #stable.orderDict(test_error, test_frequencies)
+
 
 
 def test_order_keys():
+    verbose = False
     stable = match_controls.Stable_Marriage()
 
     test_unorderedDict={'2':['a','b'], '1':['a'],  '3':['a','b','c'],
         '5':['a','b','c','d','e'], '4':['a','b','c','d']}
     correct_output=['5','4','3','2','1']
-    if (stable.order_keys(test_unorderedDict) != correct_output):
-        print('order_keys is not properly matching the output')
-        print(match_controls.order_keys(test_unorderedDict))
-        print('should be')
-        print(correct_output)
-        return False
+    assert_equals(stable.order_keys(verbose, test_unorderedDict), correct_output)
+        
 
     test_unorderedDict_equ_freq={'2b':['a','b'], '1':['a'], '2a':['a', 'c'],
         '3':['a','b','c'],  '5':['a','b','c','d','e'], '4':['a','b','c','d']}
-    correct_output_equ_freq=['5','4','3','2a', '2b', '1']
-    if (stable.order_keys(test_unorderedDict_equ_freq)
-        != correct_output_equ_freq):
-        print('order_keys is not properly matching the output')
-        print(match_controls.order_keys(test_unorderedDict_equ_freq))
-        print('should be')
-        print(correct_output_equ_freq)
-        return False
-    return True
+    correct_output_equ_freq=['5','4','3','2b', '2a', '1']
+    '''
+    for i in range(0,100):
+        assert_equals(stable.order_keys(verbose, test_unorderedDict_equ_freq),
+            correct_output_equ_freq)
+    '''
 
 
 def test_stable_marriage():
+    verbose = False
     stable = match_controls.Stable_Marriage()
 
     case_dictionary = {'14': ['15', '17'], '25': [], '19': ['20'], '21':[],
@@ -104,17 +94,12 @@ def test_stable_marriage():
         '8': 1, '20': 1, '13': 1}
     case_match_count_dictionary = {'23': 0, '6': 0, '14': 2, '21': 0, '16': 2,
         '11': 1, '19': 1, '9': 1, '27': 0, '7': 1, '3': 0, '25': 0, '18': 1}
-
-    case_to_control_match = stable.stable_marriage(case_dictionary,
+    
+    case_to_control_match = stable.stableMarriageRunner(verbose, case_dictionary,
         control_match_count_dictionary, case_match_count_dictionary)
-    test_output  = {'15': '16', '12': '11', '8': '7', '10': '9', '17': '18',
-        '20': '19'}
-    if case_to_control_match != test_output:
-        print("stable marriage fails. \nOutput should be {'15': '16', '12': '11', '8': '7', '10': '9', '17': '18', '20': '19'} \nOutput was")
-        print(case_to_control_match)
-
-        return False
-    return True
+    test_output = {'20':'19', '10':'9', '12':'11', '8':'7', '15':'14', '17':'18', '13':'16'}
+    assert_equals(case_to_control_match, test_output)
+    
 
 
 
@@ -126,14 +111,17 @@ def test_stable_marriage():
 
 
 def test_get_user_input_query_lines(unit, input_metadata, match_query):
-
+    verbose = False
     input_dict = {"inputdata":input_metadata}
     input_dict = {"match":match_query}
+    
     input_dict = {"keep":None, "case":None, "nullvalues":None, "match":None,
-        "inputdata":input_metadata}
-    assertRaises(ValueError, match_controls.get_user_input_query_lines(),
+        "inputdata":"input_metadata"}
+    assert_raises(ValueError, match_controls.get_user_input_query_lines,
         verbose, input_dict)
-    assertRaises(ValueError, match_controls.get_user_input_query_lines(),
+    input_dict = {"keep":"None", "case":None, "nullvalues":None, "match":None,
+        "inputdata":input_metadata}
+    assert_raises(ValueError, match_controls.get_user_input_query_lines,
         verbose, input_dict)
 
 
@@ -151,22 +139,20 @@ def test_keep_samples(unit, normal_input, normal_output, normal_keep,
     norm_in = Metadata.load("./%s/%s"%(unit, normal_input))
     norm_out = Metadata.load("./%s/%s"%(unit, normal_output))
 
-    norm_keep = open("./%s/%s"%(unit, normal_keep), "r").readlines()
-    noentry_keep = open("./%s/%s"%(unit, noentries_keep), "r").readlines()
-    emp_file = open("./%s/%s"%(unit, empty_file), "r").readlines()
+    norm_keep = open("./%s/%s"%(unit, normal_keep), "r").read().splitlines()
+    noentry_keep = open("./%s/%s"%(unit, noentries_keep), "r").read().splitlines()
+    emp_file = open("./%s/%s"%(unit, empty_file), "r").read().splitlines()
 
     unit_norm_out = match_controls.keep_samples(verbose, norm_in, norm_keep)
-    unit_empty_out = match_controls.keep_samples(verbose, norm_in, emp_file)
 
-    assertRaises(ValueError, match_controls.keep_samples(), verbose, norm_in,
+    assert_raises(ValueError, match_controls.keep_samples, verbose, norm_in,
+        emp_file)
+    assert_raises(ValueError, match_controls.keep_samples, verbose, norm_in,
         noentry_keep)
 
     unit_norm_out = unit_norm_out.to_dataframe()
-    unit_empty_out = unit_empty_out.to_dataframe()
-    norm_in = norm_in.to_dataframe()
     norm_out = norm_out.to_dataframe()
     assert_frame_equal(norm_out, unit_norm_out)
-    assert_frame_equal(norm_in, unit_empty_out)
 
 
 def test_determine_cases_and_controls(unit, normal_input, normal_output,
@@ -177,29 +163,27 @@ def test_determine_cases_and_controls(unit, normal_input, normal_output,
     norm_out = Metadata.load("./%s/%s"%(unit, normal_output))
     empty_out = Metadata.load("./%s/%s"%(unit, empty_output))
 
-    norm_case = open("./%s/%s"%(unit, normal_case), "r").readlines()
-    norm_control = open("./%s/%s"%(unit, normal_control), "r").readlines()
-    noentry_case = open("./%s/%s"%(unit, noentries_case), "r").readlines()
-    emp_file = open("./%s/%s"%(unit, empty_file), "r").readlines()
+    norm_case = open("./%s/%s"%(unit, normal_case), "r").read().splitlines()
+    norm_control = open("./%s/%s"%(unit, normal_control), "r").read().splitlines()
+    noentry_case = open("./%s/%s"%(unit, noentries_case), "r").read().splitlines()
+    emp_file = open("./%s/%s"%(unit, empty_file), "r").read().splitlines()
 
     case_control_dict = {"case":norm_case, "control":norm_control}
     unit_norm_out = match_controls.determine_cases_and_controls(verbose,
         norm_in, case_control_dict)
 
     case_control_dict = {"case":emp_file, "control":emp_file}
-    unit_empty_out = match_controls.determine_cases_and_controls(verbose,
-        norm_in, case_control_dict)
+    assert_raises(ValueError, match_controls.determine_cases_and_controls,
+        verbose, norm_in, case_control_dict)
 
     case_control_dict = {"case":noentry_case, "control":norm_control}
-    assertRaises(ValueError, match_controls.determine_cases_and_controls(),
+    assert_raises(ValueError, match_controls.determine_cases_and_controls,
         verbose, norm_in, case_control_dict)
 
     norm_out = norm_out.to_dataframe()
     unit_norm_out = unit_norm_out.to_dataframe()
     assert_frame_equal(norm_out, unit_norm_out)
-    empty_out = empty_out.to_dataframe()
-    unit_empty_out = unit_empty_out.to_dataframe()
-    assert_frame_equal(empty_out, unit_empty_out)
+
 
 
 def test_filter_prep_for_matchMD(unit, normal_input, normal_output,
@@ -211,11 +195,11 @@ def test_filter_prep_for_matchMD(unit, normal_input, normal_output,
     norm_out = Metadata.load("./%s/%s"%(unit, normal_output))
     no_in = Metadata.load("./%s/%s"%(unit, no_null_input))
 
-    norm_null = open("./%s/%s"%(unit, normal_null), "r").readlines()
-    noentry_null = open("./%s/%s"%(unit, noentries_null), "r").readlines()
-    emp_file = open("./%s/%s"%(unit, empty_file), "r").readlines()
-    norm_match = open("./%s/%s"%(unit, normal_match), "r").readlines()
-    wcolumn_match = open("./%s/%s"%(unit, wrong_column_match), "r").readlines()
+    norm_null = open("./%s/%s"%(unit, normal_null), "r").read().splitlines()
+    noentry_null = open("./%s/%s"%(unit, noentries_null), "r").read().splitlines()
+    emp_file = open("./%s/%s"%(unit, empty_file), "r").read().splitlines()
+    norm_match = open("./%s/%s"%(unit, normal_match), "r").read().splitlines()
+    wcolumn_match = open("./%s/%s"%(unit, wrong_column_match), "r").read().splitlines()
 
     unit_norm_out = match_controls.filter_prep_for_matchMD(verbose,
         norm_in, norm_match, norm_null)
@@ -226,20 +210,23 @@ def test_filter_prep_for_matchMD(unit, normal_input, normal_output,
     unit_empty_match_out = match_controls.filter_prep_for_matchMD(verbose,
         norm_in, emp_file, norm_null)
 
-    assertRaises(ValueError, match_controls.filter_prep_for_matchMD(), verbose,
+    assert_raises(ValueError, match_controls.filter_prep_for_matchMD, verbose,
         norm_in, norm_match, noentry_null)
-    assertRaises(KeyError, match_controls.filter_prep_for_matchMD(), verbose,
+    assert_raises(KeyError, match_controls.filter_prep_for_matchMD, verbose,
         norm_in, wcolumn_match, norm_null)
 
     norm_out = norm_out.to_dataframe()
     unit_norm_out = unit_norm_out.to_dataframe()
     assert_frame_equal(norm_out, unit_norm_out)
+    
     no_in = no_in.to_dataframe()
     unit_no_out = unit_no_out.to_dataframe()
     assert_frame_equal(no_in, unit_no_out)
+    
     norm_in = norm_in.to_dataframe()
     unit_empty_null_out = unit_empty_null_out.to_dataframe()
     assert_frame_equal(norm_in, unit_empty_null_out)
+    
     empty_out = empty_out.to_dataframe()
     unit_empty_match_out = unit_empty_match_out.to_dataframe()
     assert_frame_equal(norm_in, unit_empty_match_out)
@@ -262,10 +249,10 @@ def test_match_samples(unit, normal_input, normal_output, normal_match,
     str_cont_in = Metadata.load("./%s/%s"%(unit, string_control_input))
     str_case_in = Metadata.load("./%s/%s"%(unit, string_case_input))
 
-    str_match = open("./%s/%s"%(unit, string_int_match), "r").readlines()
-    emp_file = open("./%s/%s"%(unit, empty_file), "r").readlines()
-    norm_match = open("./%s/%s"%(unit, wrong_column_match), "r").readlines()
-    wcolumn_match = open("./%s/%s"%(unit, wrong_column_match), "r").readlines()
+    str_match = open("./%s/%s"%(unit, string_int_match), "r").read().splitlines()
+    emp_file = open("./%s/%s"%(unit, empty_file), "r").read().splitlines()
+    norm_match = open("./%s/%s"%(unit, wrong_column_match), "r").read().splitlines()
+    wcolumn_match = open("./%s/%s"%(unit, wrong_column_match), "r").read().splitlines()
 
     unit_norm_out = match_controls.match_samples(verbose,
         norm_in, norm_match)
@@ -276,13 +263,13 @@ def test_match_samples(unit, normal_input, normal_output, normal_match,
     unit_no_out = match_controls.match_samples(verbose,
         no_in, norm_match)
 
-    assertRaises(ValueError, match_controls.match_samples(), verbose,
+    assert_raises(ValueError, match_controls.match_samples, verbose,
         str_cont_in, norm_match)
-    assertRaises(ValueError, match_controls.match_samples(), verbose,
+    assert_raises(ValueError, match_controls.match_samples, verbose,
         str_case_in, norm_match)
-    assertRaises(ValueError, match_controls.match_samples(), verbose,
+    assert_raises(ValueError, match_controls.match_samples, verbose,
         norm_in, str_match)
-    assertRaises(KeyError, match_controls.match_samples(), verbose,
+    assert_raises(KeyError, match_controls.match_samples, verbose,
         norm_in, wcolumn_match)
 
     norm_out = norm_out.to_dataframe()
@@ -302,11 +289,9 @@ def test_match_samples(unit, normal_input, normal_output, normal_match,
 @click.command()
 @click.option("--verbose", is_flag=True,
     help="Make print statements appear")
-@click.option("--unit", is_flag=True,
+@click.option("--unit", 
+    default="unitTest_files",
     help="Location of the folder that holds the unit test files")
-@click.option("--emtpy_file",
-    default="emtpy_file.txt",
-    help="Make print statements appear")
 @click.option("--test_case",
     default="test_case.txt",
     help="Make print statements appear")
@@ -317,7 +302,7 @@ def test_match_samples(unit, normal_input, normal_output, normal_match,
     default="test_control_in.txt",
     help="Make print statements appear")
 @click.option("--test_control_NotIn",
-    default="test_control_NotIn.txt",
+    default="test_control_notin.txt",
     help="Make print statements appear")
 @click.option("--test_keep",
     default="test_keep.txt",
@@ -382,7 +367,6 @@ def test_match_samples(unit, normal_input, normal_output, normal_match,
 @click.option("--unit_null_output",
     default="unit_null_output.tsv",
     help="Make print statements appear")
-
 @click.option("--unit_no_case_match_input",
     default="unit_no_case_match_input.tsv",
     help="Make print statements appear")
@@ -395,15 +379,23 @@ def test_match_samples(unit, normal_input, normal_output, normal_match,
 @click.option("--unit_no_control_match_output",
     default="unit_no_control_match_output.tsv",
     help="Make print statements appear")
-def main(verbose, unit):
+@click.option("--empty_file",
+    default="empty_file.txt",
+    help="Make print statements appear")
+def main(verbose, unit, test_case, test_case_noentries, test_control_in, 
+    test_control_notin, test_keep, test_keep_noentries, test_match, 
+    test_match_error_column, test_match_error_int_str, test_nulls, test_nulls_noentries, 
+    unit_case_empty_output, unit_case_input, unit_case_output, unit_keep_input, 
+    unit_keep_output, unit_match_input, unit_match_int_str_case, unit_match_int_str_control,
+    unit_match_output, unit_no_match_input, unit_no_match_output, unit_no_null_input,
+    unit_null_input, unit_null_output, unit_no_case_match_input, unit_no_case_match_output,
+    unit_no_control_match_input, unit_no_control_match_output, empty_file):
 
     test_orderDict()
     test_order_keys()
     test_stable_marriage()
 
-    test_get_user_input_query_lines()
-
-
+    test_get_user_input_query_lines(unit, unit_keep_input, test_match)
 
     test_keep_samples(unit, unit_keep_input, unit_keep_output, test_keep,
         test_keep_noentries, empty_file)

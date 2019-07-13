@@ -55,7 +55,7 @@ def test_orderDict():
             != correct_output_freq):
             counter = counter + 1
         run_number = run_number + 1
-    if counter>=0:
+    if verbose:
         print('times out of 100 that the order was wrong = %s'%(counter))
     
     #-------------------------------------------------==================
@@ -217,6 +217,8 @@ def test_filter_prep_for_matchMD(unit, normal_input, normal_output,
 
     norm_out = norm_out.to_dataframe()
     unit_norm_out = unit_norm_out.to_dataframe()
+    norm_out["age_years"] = norm_out["age_years"].astype(int)
+    norm_out["age_years"] = norm_out["age_years"].astype(str)
     assert_frame_equal(norm_out, unit_norm_out)
     
     no_in = no_in.to_dataframe()
@@ -227,7 +229,6 @@ def test_filter_prep_for_matchMD(unit, normal_input, normal_output,
     unit_empty_null_out = unit_empty_null_out.to_dataframe()
     assert_frame_equal(norm_in, unit_empty_null_out)
     
-    empty_out = empty_out.to_dataframe()
     unit_empty_match_out = unit_empty_match_out.to_dataframe()
     assert_frame_equal(norm_in, unit_empty_match_out)
 
@@ -251,7 +252,7 @@ def test_match_samples(unit, normal_input, normal_output, normal_match,
 
     str_match = open("./%s/%s"%(unit, string_int_match), "r").read().splitlines()
     emp_file = open("./%s/%s"%(unit, empty_file), "r").read().splitlines()
-    norm_match = open("./%s/%s"%(unit, wrong_column_match), "r").read().splitlines()
+    norm_match = open("./%s/%s"%(unit, normal_match), "r").read().splitlines()
     wcolumn_match = open("./%s/%s"%(unit, wrong_column_match), "r").read().splitlines()
 
     unit_norm_out = match_controls.match_samples(verbose,
@@ -275,12 +276,15 @@ def test_match_samples(unit, normal_input, normal_output, normal_match,
     norm_out = norm_out.to_dataframe()
     unit_norm_out = unit_norm_out.to_dataframe()
     assert_frame_equal(norm_out, unit_norm_out)
+    
     no_case_out = no_case_out.to_dataframe()
     unit_case_out = unit_case_out.to_dataframe()
     assert_frame_equal(no_case_out, unit_case_out)
+    
     no_control_out = no_control_out.to_dataframe()
     unit_control_out = unit_control_out.to_dataframe()
     assert_frame_equal(no_control_out, unit_control_out)
+    
     no_out = no_out.to_dataframe()
     unit_no_out = unit_no_out.to_dataframe()
     assert_frame_equal(no_out, unit_no_out)
@@ -367,17 +371,17 @@ def test_match_samples(unit, normal_input, normal_output, normal_match,
 @click.option("--unit_null_output",
     default="unit_null_output.tsv",
     help="Make print statements appear")
-@click.option("--unit_no_case_match_input",
-    default="unit_no_case_match_input.tsv",
+@click.option("--unit_no_cases_match_input",
+    default="unit_no_cases_match_input.tsv",
     help="Make print statements appear")
-@click.option("--unit_no_case_match_output",
-    default="unit_no_case_match_output.tsv",
+@click.option("--unit_no_cases_match_output",
+    default="unit_no_cases_match_output.tsv",
     help="Make print statements appear")
-@click.option("--unit_no_control_match_input",
-    default="unit_no_control_match_input.tsv",
+@click.option("--unit_no_controls_match_input",
+    default="unit_no_controls_match_input.tsv",
     help="Make print statements appear")
-@click.option("--unit_no_control_match_output",
-    default="unit_no_control_match_output.tsv",
+@click.option("--unit_no_controls_match_output",
+    default="unit_no_controls_match_output.tsv",
     help="Make print statements appear")
 @click.option("--empty_file",
     default="empty_file.txt",
@@ -388,8 +392,8 @@ def main(verbose, unit, test_case, test_case_noentries, test_control_in,
     unit_case_empty_output, unit_case_input, unit_case_output, unit_keep_input, 
     unit_keep_output, unit_match_input, unit_match_int_str_case, unit_match_int_str_control,
     unit_match_output, unit_no_match_input, unit_no_match_output, unit_no_null_input,
-    unit_null_input, unit_null_output, unit_no_case_match_input, unit_no_case_match_output,
-    unit_no_control_match_input, unit_no_control_match_output, empty_file):
+    unit_null_input, unit_null_output, unit_no_cases_match_input, unit_no_cases_match_output,
+    unit_no_controls_match_input, unit_no_controls_match_output, empty_file):
 
     test_orderDict()
     test_order_keys()
@@ -409,8 +413,8 @@ def main(verbose, unit, test_case, test_case_noentries, test_control_in,
         unit_match_int_str_control, unit_match_int_str_case,
         test_match_error_column, test_match_error_int_str,
         unit_no_match_input, unit_no_match_output, empty_file,
-        unit_no_case_match_input, unit_no_case_match_output,
-        unit_no_control_match_input, unit_no_control_match_output)
+        unit_no_cases_match_input, unit_no_cases_match_output,
+        unit_no_controls_match_input, unit_no_controls_match_output)
 
 
 

@@ -147,8 +147,10 @@ class Stable_Marriage:
                         case_dictionary[case_key].remove(entry)
                 #reorder keys
                 free_keys = self.order_keys(verbose, case_dictionary)
-
-            '''
+                for control in one_to_one_match_dictionary:
+                    if one_to_one_match_dictionary[control] in free_keys:
+                        free_keys.remove(one_to_one_match_dictionary[control])
+                        
             else:
                 key_in_use = one_to_one_match_dictionary[entry]
                 if pref_counts_case[key] < pref_counts_case[key_in_use]:
@@ -156,7 +158,7 @@ class Stable_Marriage:
                     free_keys.append(key_in_use)
                 else:
                     free_keys.append(key)
-            '''
+           
                     
         if verbose:
             print("Dictionary of matches after solving stable marriage problem is %s"%(
@@ -495,6 +497,12 @@ def match_samples(verbose, prepped_for_match_MD, conditions_for_match_lines):
             control_match_count_dictionary.update(
                 {id_control:(control_match_count_dictionary[id_control]+1)})
 
+    if verbose:
+        print("case_dictionary is %s"%(case_dictionary))
+        print("control_match_count_dictionary is %s"%(control_match_count_dictionary))
+        print("case_match_count_dictionary is %s"%(case_match_count_dictionary))
+
+        
     stable = Stable_Marriage()
     case_to_control_match = stable.stableMarriageRunner(verbose,
         case_dictionary, control_match_count_dictionary,

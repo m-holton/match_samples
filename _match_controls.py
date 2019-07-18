@@ -28,29 +28,31 @@ from pandas.util.testing import assert_frame_equal
 import match_controls
 
 
-def test_orderDict():
+def test_orderDict(verbose):
     '''
+    
+    Parameters
+    ----------
+    verbose: boolean
+        Tells function if it should output print statements or not.
+            True outputs print statements.
 
     '''
-    verbose = False
     stable = match_controls.Stable_Marriage()
 
     test_unorderedDict = {'key_1':['a','b','c','d','e'],
         'key_2':['a','c','e','d','b'],  'key_3':['b','e','e','c','a']}
+    test_frequencies = {'a':1,'b':2,'c':3,'d':4,'e':5}
     correct_output = {'key_1':['a','b','c','d','e'],
         'key_2':['a','b','c','d','e'], 'key_3':['a','b','c','e','e']}
 
-    test_error = {'key_4':['b','f','e','c','a']}
-
-    test_equal_freq = {'key_5':['c','b','e','d','a']}
-    correct_output_freq = {'key_5':['a','b','c','d','e']}
-
-    test_frequencies = {'a':1,'b':2,'c':3,'d':4,'e':5}
-    test_frequencies_equal = {'a':1,'b':3,'c':3,'d':3,'e':5}
-
     assert_equals(stable.orderDict(verbose, test_unorderedDict,
         test_frequencies), correct_output)
-
+    
+    test_equal_freq = {'key_5':['c','b','e','d','a']}
+    test_frequencies_equal = {'a':1,'b':3,'c':3,'d':3,'e':5}
+    correct_output_freq = {'key_5':['a','b','c','d','e']}
+    
     counter = 0
     run_number = 1
     while run_number <=100:
@@ -61,16 +63,19 @@ def test_orderDict():
     if verbose:
         print('times out of 100 that the order was wrong = %s'%(counter))
 
-    #-------------------------------------------------==================
-    #stable.orderDict(test_error, test_frequencies)
+    
 
 
 
-def test_order_keys():
+def test_order_keys(verbose):
     '''
+    Parameters
+    ----------
+    verbose: boolean
+        Tells function if it should output print statements or not.
+            True outputs print statements.
 
     '''
-    verbose = False
     stable = match_controls.Stable_Marriage()
 
     test_unorderedDict={'2':['a','b'], '1':['a'],  '3':['a','b','c'],
@@ -90,11 +95,15 @@ def test_order_keys():
     '''
 
 
-def test_stable_marriage():
+def test_stable_marriage(verbose):
     '''
+    Parameters
+    ----------
+    verbose: boolean
+        Tells function if it should output print statements or not.
+            True outputs print statements.
 
     '''
-    verbose = False
     stable = match_controls.Stable_Marriage()
 
     case_dictionary = {'14': ['15', '17'], '25': [], '19': ['20'], '21':[],
@@ -102,14 +111,22 @@ def test_stable_marriage():
         '16': ['13', '15'], '27': [], '11': ['12']}
     control_match_count_dictionary = {'10': 1, '15': 2, '17': 2, '12': 1,
         '8': 1, '20': 1, '13': 1}
-    case_match_count_dictionary = {'23': 0, '6': 0, '14': 2, '21': 0, '16': 2,
+    case_match_count_dictionary = {'23': 0, '6': 0, '14': 2, '21': 0, '16': 2,  
         '11': 1, '19': 1, '9': 1, '27': 0, '7': 1, '3': 0, '25': 0, '18': 1}
-
     case_to_control_match = stable.stableMarriageRunner(verbose,
         case_dictionary, control_match_count_dictionary,
         case_match_count_dictionary)
     test_output = {'20':'19', '10':'9', '12':'11', '8':'7', '15':'14',
         '17':'18', '13':'16'}
+    assert_equals(case_to_control_match, test_output)
+    
+    case_dictionary = {'2': ['10', '1'], '4': ['3'], '6': [], '9':[]}
+    control_match_count_dictionary = {'10': 1, '1': 1, '3': 1}
+    case_match_count_dictionary = {'9': 0, '4': 1, '6': 0, '2': 2}
+    case_to_control_match = stable.stableMarriageRunner(verbose,
+        case_dictionary, control_match_count_dictionary,
+        case_match_count_dictionary)
+    test_output = {'10':'2', '3':'4'}
     assert_equals(case_to_control_match, test_output)
 
 
@@ -122,7 +139,7 @@ def test_stable_marriage():
 
 
 
-def test_get_user_input_query_lines(unit, input_metadata, match_query):
+def test_get_user_input_query_lines(verbose, unit, input_metadata, match_query):
     '''
 
     Parameters
@@ -138,7 +155,6 @@ def test_get_user_input_query_lines(unit, input_metadata, match_query):
             of the match_controls.py
     match_query: string
     '''
-    verbose = False
     input_dict = {"inputdata":input_metadata}
     input_dict = {"match":match_query}
 
@@ -152,7 +168,7 @@ def test_get_user_input_query_lines(unit, input_metadata, match_query):
         verbose, input_dict)
 
 
-def test_keep_samples(unit, normal_input, normal_output, normal_keep,
+def test_keep_samples(verbose, unit, normal_input, normal_output, normal_keep,
     noentries_keep, empty_file):
     '''
 
@@ -180,8 +196,6 @@ def test_keep_samples(unit, normal_input, normal_output, normal_keep,
     empty_file: string
         Name of the empty file used in various tests
     '''
-    verbose = False
-
     norm_in = Metadata.load("./%s/%s"%(unit, normal_input))
     norm_out = Metadata.load("./%s/%s"%(unit, normal_output))
 
@@ -202,7 +216,7 @@ def test_keep_samples(unit, normal_input, normal_output, normal_keep,
     assert_frame_equal(norm_out, unit_norm_out)
 
 
-def test_determine_cases_and_controls(unit, normal_input, normal_output,
+def test_determine_cases_and_controls(verbose, unit, normal_input, normal_output,
     normal_control, normal_case, noentries_case, empty_file):
     '''
 
@@ -231,8 +245,6 @@ def test_determine_cases_and_controls(unit, normal_input, normal_output,
     empty_file: string
         Name of the empty file used in various tests
     '''
-    verbose = False
-
     norm_in = Metadata.load("./%s/%s"%(unit, normal_input))
     norm_out = Metadata.load("./%s/%s"%(unit, normal_output))
 
@@ -261,7 +273,7 @@ def test_determine_cases_and_controls(unit, normal_input, normal_output,
 
 
 
-def test_filter_prep_for_matchMD(unit, normal_input, normal_output,
+def test_filter_prep_for_matchMD(verbose, unit, normal_input, normal_output,
     no_null_input, normal_null, normal_match, wrong_column_match,
     noentries_null, empty_file):
     '''
@@ -303,8 +315,6 @@ def test_filter_prep_for_matchMD(unit, normal_input, normal_output,
     empty_file: string
         Name of the empty file used in various tests
     '''
-    verbose = False
-
     norm_in = Metadata.load("./%s/%s"%(unit, normal_input))
     norm_out = Metadata.load("./%s/%s"%(unit, normal_output))
     no_in = Metadata.load("./%s/%s"%(unit, no_null_input))
@@ -349,7 +359,7 @@ def test_filter_prep_for_matchMD(unit, normal_input, normal_output,
     assert_frame_equal(norm_in, unit_empty_match_out)
 
 
-def test_match_samples(unit, normal_input, normal_output, normal_match,
+def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     string_control_input, string_case_input, wrong_column_match,
     string_int_match, no_match_input, no_match_output, empty_file,
     no_case_input, no_case_output, no_control_input, no_control_output):
@@ -415,8 +425,6 @@ def test_match_samples(unit, normal_input, normal_output, normal_match,
             output when there are no control samples. The file stores the
             correct output.
     '''
-    verbose = False
-
     norm_in = Metadata.load("./%s/%s"%(unit, normal_input))
     norm_out = Metadata.load("./%s/%s"%(unit, normal_output))
     no_case_in = Metadata.load("./%s/%s"%(unit, no_case_input))
@@ -473,7 +481,7 @@ def test_match_samples(unit, normal_input, normal_output, normal_match,
 @click.command()
 @click.option("--verbose", is_flag=True,
     help="Tells function if it should output print statements or not. True outputs print statements.")
-@click.option("--unitTest_files",
+@click.option("--unittest_files",
     default="unitTest_files",
     help="Location of the folder that holds the unit test files")
 @click.option("--test_case",
@@ -563,7 +571,7 @@ def test_match_samples(unit, normal_input, normal_output, normal_match,
 @click.option("--empty_file",
     default="empty_file.txt",
     help="Name of the empty file used in various tests")
-def main(verbose, unitTest_files, test_case, test_case_noentries, test_control_in,
+def main(verbose, unittest_files, test_case, test_case_noentries, test_control_in,
     test_control_notin, test_keep, test_keep_noentries, test_match,
     test_match_error_column, test_match_error_int_str, test_nulls,
     test_nulls_noentries, unit_case_input, unit_case_output, unit_keep_input,
@@ -573,21 +581,22 @@ def main(verbose, unitTest_files, test_case, test_case_noentries, test_control_i
     unit_null_output, unit_no_cases_match_input, unit_no_cases_match_output,
     unit_no_controls_match_input, unit_no_controls_match_output, empty_file):
 
-    test_orderDict()
-    test_order_keys()
-    test_stable_marriage()
+    test_orderDict(verbose)
+    test_order_keys(verbose)
+    test_stable_marriage(verbose)
 
-    test_get_user_input_query_lines(unitTest_files, unit_keep_input, test_match)
+    test_get_user_input_query_lines(verbose, unittest_files, unit_keep_input, 
+        test_match)
 
-    test_keep_samples(unitTest_files, unit_keep_input, unit_keep_output, test_keep,
-        test_keep_noentries, empty_file)
-    test_determine_cases_and_controls(unitTest_files, unit_case_input, unit_case_output,
-        test_control_in, test_case, test_case_noentries, empty_file)
-    test_filter_prep_for_matchMD(unitTest_files, unit_null_input, unit_null_output,
-        unit_no_null_input, test_nulls, test_match, test_match_error_column,
-        test_nulls_noentries, empty_file)
-    test_match_samples(unitTest_files, unit_match_input, unit_match_output, test_match,
-        unit_match_int_str_control, unit_match_int_str_case,
+    test_keep_samples(verbose, unittest_files, unit_keep_input, unit_keep_output, 
+        test_keep, test_keep_noentries, empty_file)
+    test_determine_cases_and_controls(verbose, unittest_files, unit_case_input, 
+        unit_case_output, test_control_in, test_case, test_case_noentries, empty_file)
+    test_filter_prep_for_matchMD(verbose, unittest_files, unit_null_input,
+        unit_null_output, unit_no_null_input, test_nulls, test_match, 
+        test_match_error_column, test_nulls_noentries, empty_file)
+    test_match_samples(verbose, unittest_files, unit_match_input, unit_match_output,
+        test_match, unit_match_int_str_control, unit_match_int_str_case,
         test_match_error_column, test_match_error_int_str,
         unit_no_match_input, unit_no_match_output, empty_file,
         unit_no_cases_match_input, unit_no_cases_match_output,

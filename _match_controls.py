@@ -4,32 +4,23 @@
 #
 # ----------------------------------------------------------------------------
 
-import getopt
-import sys
-import pandas as pd
-import numpy as np
-import qiime2
 import time
-import unittest
 import click
 
-from qiime2 import Metadata
-from collections import defaultdict
+import pandas as pd
+import numpy as np
 
-
-import math
-import itertools
-import time
-import operator
-
-from nose.tools import assert_almost_equal, assert_raises, assert_equals
+from nose.tools import assert_raises, assert_equals
 from pandas.util.testing import assert_frame_equal
 
 import match_controls
-
+from qiime2 import Metadata
 
 def test_orderDict(verbose):
     '''
+    Tests the function that orders the lists associated with each key
+        in a dictionary based of the frequency through out the entire
+        dictionary of each entry in the lists
     
     Parameters
     ----------
@@ -53,6 +44,9 @@ def test_orderDict(verbose):
     test_frequencies_equal = {'a':1,'b':3,'c':3,'d':3,'e':5}
     correct_output_freq = {'key_5':['a','b','c','d','e']}
     
+    assert_equals(stable.orderDict(verbose, test_equal_freq,
+        test_frequencies_equal), correct_output_freq)
+    
     counter = 0
     run_number = 1
     while run_number <=100:
@@ -63,12 +57,11 @@ def test_orderDict(verbose):
     if verbose:
         print('times out of 100 that the order was wrong = %s'%(counter))
 
-    
-
-
-
 def test_order_keys(verbose):
     '''
+    Tests the function that orders keys based one their number of 
+        entries
+        
     Parameters
     ----------
     verbose: boolean
@@ -97,6 +90,8 @@ def test_order_keys(verbose):
 
 def test_stable_marriage(verbose):
     '''
+    Tests the stable marriage function
+    
     Parameters
     ----------
     verbose: boolean
@@ -129,18 +124,9 @@ def test_stable_marriage(verbose):
     test_output = {'10':'2', '3':'4'}
     assert_equals(case_to_control_match, test_output)
 
-
-
-
-
-
-
-
-
-
-
 def test_get_user_input_query_lines(verbose, unit, input_metadata, match_query):
     '''
+    Tests the fuction that reads in the sql query files
 
     Parameters
     ----------
@@ -171,6 +157,7 @@ def test_get_user_input_query_lines(verbose, unit, input_metadata, match_query):
 def test_keep_samples(verbose, unit, normal_input, normal_output, normal_keep,
     noentries_keep, empty_file):
     '''
+    Test the programs filtering out of unwanted samples based on sql queries
 
     Parameters
     ----------
@@ -219,6 +206,7 @@ def test_keep_samples(verbose, unit, normal_input, normal_output, normal_keep,
 def test_determine_cases_and_controls(verbose, unit, normal_input, normal_output,
     normal_control, normal_case, noentries_case, empty_file):
     '''
+    Tests the programs labeling of case and control samples
 
     Parameters
     ----------
@@ -271,13 +259,12 @@ def test_determine_cases_and_controls(verbose, unit, normal_input, normal_output
     unit_norm_out = unit_norm_out.to_dataframe()
     assert_frame_equal(norm_out, unit_norm_out)
 
-
-
 def test_filter_prep_for_matchMD(verbose, unit, normal_input, normal_output,
     no_null_input, normal_null, normal_match, wrong_column_match,
     noentries_null, empty_file):
     '''
-
+    Tests the null filtering functionality
+    
     Parameters
     ----------
     verbose: boolean
@@ -358,13 +345,13 @@ def test_filter_prep_for_matchMD(verbose, unit, normal_input, normal_output,
     unit_empty_match_out = unit_empty_match_out.to_dataframe()
     assert_frame_equal(norm_in, unit_empty_match_out)
 
-
 def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     string_control_input, string_case_input, wrong_column_match,
     string_int_match, no_match_input, no_match_output, empty_file,
     no_case_input, no_case_output, no_control_input, no_control_output):
     '''
-
+    Tests the match functionality 
+    
     Parameters
     ----------
     verbose: boolean
@@ -480,7 +467,8 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
 
 @click.command()
 @click.option("--verbose", is_flag=True,
-    help="Tells function if it should output print statements or not. True outputs print statements.")
+    help="Tells function if it should output print statements or not."
+         "True outputs print statements.")
 @click.option("--unittest_files",
     default="unitTest_files",
     help="Location of the folder that holds the unit test files")
@@ -489,7 +477,8 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     help="Name of the query file that contains the normal case query")
 @click.option("--test_case_noentries",
     default="test_case_noentries.txt",
-    help="Name of the query file that results in no cases being found. This tests the that filtering everything out gives an error.")
+    help="Name of the query file that results in no cases being found."
+         "This tests the that filtering everything out gives an error.")
 @click.option("--test_control_in",
     default="test_control_in.txt",
     help="Name of the query file that contains the normal control query using IN")

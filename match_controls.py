@@ -1,16 +1,15 @@
-'''
-Created on Jun 24, 2018
+# ----------------------------------------------------------------------------
+#
+# by Mark Holton
+#
+# ----------------------------------------------------------------------------
 
-@author: Mark Holton
-'''
-
-import getopt
-import sys
-import pandas as pd
-import numpy as np
 import time
 import click
-from collections import defaultdict
+
+import pandas as pd
+import numpy as np
+
 import qiime2
 from qiime2 import Metadata
 
@@ -55,9 +54,9 @@ class Stable_Marriage:
     def order_keys(self, verbose, dictionary):
         '''
         orders the keys of a dictionary so that they can be used properly as
-            the freemen of stable marriage. In order greatest to least since
-            pop is used to get least freeman and pop takes the right most
-            entry.
+            the freemen of stable marriage. In order greatest to least number
+            of entries since pop is used to get least freeman and pop takes 
+            the right most entry.
 
         Parameters
         ----------
@@ -103,13 +102,13 @@ class Stable_Marriage:
                 controls
 
         pref_counts_control: dictionary
-            pref_counts_control is a dictionary with the frequency control
-                match to something in control_dictionary. How many case
+            pref_counts_control is a dictionary with the frequency each control
+                sample matches to something in control_dictionary. How many case
                 samples each control sample matches to.
 
         pref_counts_case: dictionary
-            pref_counts_case is a dictionary with the frequency cases match to
-                something in case_dictionary
+            pref_counts_case is a dictionary with the frequency each case sample 
+                matches to something in case_dictionary
 
         Returns
         -------
@@ -161,8 +160,8 @@ class Stable_Marriage:
            
                     
         if verbose:
-            print("Dictionary of matches after solving stable marriage problem is %s"%(
-                one_to_one_match_dictionary))
+            print("Dictionary of matches after solving stable marriage problem "
+                "is %s"%(one_to_one_match_dictionary))
 
         return one_to_one_match_dictionary
 
@@ -191,15 +190,13 @@ def get_user_input_query_lines(verbose, dictofFiles):
 
     Returns
     -------
-    dict_of_file_lines: ditioary of arrays of strings
+    dict_of_file_lines: dictionary of arrays of strings
         The dictionary has the keys that have some value in dictofFiles. The
             elements are an array of the lines of the file the key corrisponds
             to.
 
 
     '''
-    #dictOfReturnValues = {"inputdata":None, "keep":None, "control":None,
-        #"case":None, "nullvalues":None, "match":None}
     dict_of_file_lines = {}
     for key in dictofFiles:
         if dictofFiles[key] is None:
@@ -255,7 +252,9 @@ def keep_samples(verbose, original_MD, keep_query_lines):
     ids = original_MD.get_ids(" AND ".join(keep_query_lines))
     shrunk_MD = original_MD.filter_ids(ids)
     if verbose:
-        print("size of original MetaData Object = %s   size of filtered MetaData Object = %s"%(initial_size, shrunk_MD.id_count))
+        print("size of original MetaData Object = %s"
+            "size of filtered MetaData Object = %s"
+            %(initial_size, shrunk_MD.id_count))
         print("filtered out %s samples"%(initial_size-shrunk_MD.id_count))
         print("kept %s samples"%(shrunk_MD.id_count))
 
@@ -303,7 +302,6 @@ def determine_cases_and_controls(verbose, afterExclusion_MD, query_line_dict):
             if verbose:
                 print("Wrong key used for query. Must be 'case' or 'control'.")
             continue
-        
         #resets shrunk_MD so that filtering down to control samples does not
             #influence filtering down to case
         shrunk_MD = afterExclusion_MD
@@ -315,15 +313,12 @@ def determine_cases_and_controls(verbose, afterExclusion_MD, query_line_dict):
         shrunk_MD = shrunk_MD.filter_ids(ids)
         if verbose:
             print("%s %s samples "%(shrunk_MD.id_count,key))
-
-
         #replaces the true values created by the loop above to case or control
         ids = shrunk_MD.ids
         case_controlDF.loc[ids, "case_control"] = key
 
     #turns case_controlDF into a metadata object
     case_controlMD = Metadata(case_controlDF)
-
     #merges afterExclution_MD and case_controlMD into one new metadata object
     mergedMD = Metadata.merge(afterExclusion_MD, case_controlMD)
 
@@ -362,21 +357,23 @@ def filter_prep_for_matchMD(verbose, merged_MD, match_condition_lines,
     returned_MD = merged_MD
     if verbose:
         totalNumOfSamples = returned_MD.id_count
-        print("%s samples before filtered out null samples"%(
-            returned_MD.id_count))
+        print("%s samples before filtered out null samples"
+              %(returned_MD.id_count))
     if len(null_value_lines) == 0:
         if verbose:
-            print("%s samples filtered out due to null samples"%(
-                totalNumOfSamples - returned_MD.id_count))
-            print("%s samples after filtering out null samples"%(
-                returned_MD.id_count))
+            print("%s samples filtered out due to null samples"
+                  %(totalNumOfSamples - returned_MD.id_count))
+            print("%s samples after filtering out null samples"
+                  %(returned_MD.id_count))
         return returned_MD
     for condition in match_condition_lines:
         column = condition.split("\t")[1].strip()
         try:
             returned_MD.get_column(column)
         except:
-            raise KeyError("Column %s not found in your input data. Correct this error in your --match/-m file"%(column))
+            raise KeyError("Column %s not found in your input data. "
+                           "Correct this error in your --match file"
+                           %(column))
 
         #Get the ids of samples in the metadata object that have non null
             #values for every column used for matching
@@ -388,10 +385,10 @@ def filter_prep_for_matchMD(verbose, merged_MD, match_condition_lines,
         returned_MD = returned_MD.filter_ids(ids)
 
     if verbose:
-        print("%s samples filtered out due to null samples"%(totalNumOfSamples
-            - returned_MD.id_count))
-        print("%s samples after filtering out null samples"%(
-            returned_MD.id_count))
+        print("%s samples filtered out due to null samples"
+              %(totalNumOfSamples - returned_MD.id_count))
+        print("%s samples after filtering out null samples"
+              %(returned_MD.id_count))
 
     return returned_MD
 
@@ -450,8 +447,9 @@ def match_samples(verbose, prepped_for_match_MD, conditions_for_match_lines):
             try:
                 matchDF[column_name]
             except:
-                raise KeyError("Column %s not found in your input data. Correct this error in your --match/-m file"%(
-                    column_name))
+                raise KeyError("Column %s not found in your input data. "
+                               "Correct this error in your --match file"
+                               %(column_name))
 
             # get the type of data for the given column. This determine how a
                 #match is determined
@@ -461,26 +459,24 @@ def match_samples(verbose, prepped_for_match_MD, conditions_for_match_lines):
                 try:
                     row_num = float(case_row[column_name])
                 except:
-                    raise ValueError("column %s contains a string that can not be converted to a numerical value"%(
-                        column_name))
+                    raise ValueError("column %s contains a string that can not be "
+                                     "converted to a numerical value"
+                                     %(column_name))
                 try:
                     fnum = float(num)
                 except:
-                    raise ValueError("input number for condition %s is not a valid number"%(
-                        column_name))
+                    raise ValueError("input number for condition %s is not a "
+                                     "valid number"%(column_name))
                 try:
                     nums_in_column = pd.to_numeric(controlDF[column_name])
                 except:
-                    raise ValueError("column %s contains a string that can not be converted to a numerical value"%(
-                        column_name))
+                    raise ValueError("column %s contains a string that can not be "
+                                     "converted to a numerical value"%(column_name))
 
                 # filters controls based on if the value in the control is not
                     #within a given distance form the case
-                controlDF = controlDF[
-                                    (nums_in_column >= (row_num - fnum))
-                                    &
-                                    (nums_in_column <= (row_num + fnum))
-                                    ]
+                controlDF = controlDF[(nums_in_column >= (row_num - fnum))
+                                      & (nums_in_column <= (row_num + fnum))]
             else:
                 # filters controls if the strings for the control and case
                     #don't match
@@ -498,9 +494,12 @@ def match_samples(verbose, prepped_for_match_MD, conditions_for_match_lines):
                 {id_control:(control_match_count_dictionary[id_control]+1)})
 
     if verbose:
-        print("case_dictionary is %s"%(case_dictionary))
-        print("control_match_count_dictionary is %s"%(control_match_count_dictionary))
-        print("case_match_count_dictionary is %s"%(case_match_count_dictionary))
+        print("case_dictionary is %s"
+              %(case_dictionary))
+        print("control_match_count_dictionary is %s"
+              %(control_match_count_dictionary))
+        print("case_match_count_dictionary is %s"
+              %(case_match_count_dictionary))
 
         
     stable = Stable_Marriage()
@@ -567,8 +566,8 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
 
         if verbose:
             tkeep = time.clock()
-            print("Time to filter out unwanted samples is %s"%(
-                tkeep - tloadedFiles))
+            print("Time to filter out unwanted samples is %s"
+                  %(tkeep - tloadedFiles))
     else:
         tkeep = tloadedFiles
         afterExclusionMD = inputDict["inputdata"]
@@ -583,8 +582,8 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
 
         if verbose:
             tcase_control = time.clock()
-            print("Time to label case and control samples is %s"%(
-                tcase_control - tkeep))
+            print("Time to label case and control samples is %s"
+                  %(tcase_control - tkeep))
     else:
         case_controlMD = afterExclusionMD
         case_controlMD.to_dataframe().to_csv(output, sep="\t")
@@ -597,8 +596,8 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
 
         if verbose:
             tprepped = time.clock()
-            print("Time to filter Metadata information for samples with null values is %s"%(
-                tprepped - tcase_control))
+            print("Time to filter Metadata information for samples "
+                  "with null values is %s"%(tprepped - tcase_control))
     else:
         case_controlMD.to_dataframe().to_csv(output, sep="\t")
 
@@ -624,18 +623,21 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
 @click.command()
 @click.option("--verbose", is_flag=True,
     help="Make print statements appear")
-@click.option("--unit", is_flag=True,
-    help="Signals that unit tests are being run. This makes mainControler not call any other functions in match_controls.py")
 @click.option("--keep", default=None, type = str,
-    help="name of file with sqlite lines used to determine what samples to exclude or keep")
+    help="name of file with sqlite lines used to determine "
+         "what samples to exclude or keep")
 @click.option("--control", default=None, type = str,
-    help="name of file with sqlite lines used to determine what samples to label control")
+    help="name of file with sqlite lines used to determine "
+         "what samples to label control")
 @click.option("--case", default=None, type = str,
-    help="name of file with sqlite lines used to determine what samples to label case")
+    help="name of file with sqlite lines used to determine "
+         "what samples to label case")
 @click.option("--nullvalues", default=None, type = str,
-    help="name of file with sqlite lines used to determine what samples to exclude or keep")
+    help="name of file with sqlite lines used to determine "
+         "what samples to exclude or keep")
 @click.option("--match", default=None, type = str,
-    help="name of file with sqlite lines used to determine what samples to exclude or keep")
+    help="name of file with sqlite lines used to determine "
+         "what samples to exclude or keep")
 @click.option("--inputdata", required = True, type = str,
     help="Name of file with sample metadata to analyze.")
 @click.option("--output", required = True, type = str,
@@ -648,9 +650,6 @@ def mainControler(verbose, unit, inputdata, keep, control, case,
     verbose: boolean
         Tells function if it should output print statements or not.
             True outputs print statements.
-    unit: boolean
-        Signals that unit tests are being run. This makes mainControler
-            not call any other functions in match_controls.py
     inputdata: string
         Name of file with sample metadata to analyze.
     keep: string
@@ -677,10 +676,6 @@ def mainControler(verbose, unit, inputdata, keep, control, case,
         string is the name of the function called
 
     '''
-
-    if unit:
-        return "AllInOne"
-    
     if verbose:
         print("Calling AllInOne")
     AllInOne(verbose, inputdata, keep, control, case,

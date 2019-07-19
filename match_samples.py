@@ -539,15 +539,14 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
         name of file with sqlite lines used to determine what samples
             to label case
     nullvalues: string
-        name of file with sqlite lines used to determine what samples
-            to exclude or keep
+        name of file with strings that represent null values so that 
+            samples where one of these null values are in a category
+            that is used to determine matches are filtered out
     match: string
-        name of file with sqlite lines used to determine what samples
-            to exclude or keep
+        name of file which contains information on what conditions 
+            must be met to constitue a match
     output: string
         Name of file to export data to.
-
-
     '''
 
     tstart = time.clock()

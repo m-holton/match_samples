@@ -1,3 +1,0 @@
-exact	Gender	
-range	age	5
-exact	special_diet	

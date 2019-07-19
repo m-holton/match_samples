@@ -1,4 +1,0 @@
-range	AGE_YEARS	20
-range	BMI_CORRECTED	8
-exact	SEX
-exact	ANTIBIOTIC_HISTORY

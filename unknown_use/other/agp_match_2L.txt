@@ -1,2 +1,0 @@
-range	age_years	1 
-exact	bmi_cat 

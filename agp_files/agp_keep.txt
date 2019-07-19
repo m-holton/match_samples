@@ -1,2 +1,0 @@
-age_years <= 30  
-age_years >=  20  

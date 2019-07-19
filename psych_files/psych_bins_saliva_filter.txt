@@ -1,1 +1,0 @@
-GroupAssignment IN ('Healthy Control', 'Substance Use')

@@ -13,7 +13,7 @@ import numpy as np
 from nose.tools import assert_raises, assert_equals
 from pandas.util.testing import assert_frame_equal
 
-import match_controls
+import match_samples
 from qiime2 import Metadata
 
 def test_orderDict(verbose):

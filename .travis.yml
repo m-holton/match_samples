@@ -1,3 +1,4 @@
+# based off https://github.com/qiime2/qiime2/blob/master/.travis.yml
 dist: xenial # needed for 3.7 in travis
 language: python
 python:

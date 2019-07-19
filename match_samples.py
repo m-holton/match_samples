@@ -642,7 +642,7 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
     help="Name of file with sample metadata to analyze.")
 @click.option("--output", required = True, type = str,
     help="Name of file to export data to.")
-def mainControler(verbose, unit, inputdata, keep, control, case,
+def mainController(verbose, unit, inputdata, keep, control, case,
     nullvalues, match, output):
     '''
     Parameters
@@ -686,4 +686,4 @@ def mainControler(verbose, unit, inputdata, keep, control, case,
 
 
 if __name__ == "__main__":
-    mainControler()
+    mainController()

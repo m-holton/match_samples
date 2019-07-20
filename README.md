@@ -55,7 +55,7 @@ There are two types of matches range and exact.
 An exact match is where a case and control sample have the exact same value for the given catagory.
 A range match is where the case sample's value is with in the given number range of the control sample's value for the given catagory.
 Range matches require the third column to contain a number like 3 or 5.2. The number can not be a string such as five.
-Separate each column with a tab.
+Separate each column with a tab. An example of a match file is
 
 range age 3
 
@@ -63,4 +63,5 @@ exact sex
 
 exact sample_type
 
+This would match case and control samples that have the same value for sex and sample_type and their values for age are within 3 of eachother. 
 

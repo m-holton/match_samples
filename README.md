@@ -44,7 +44,7 @@ nullvalues should contain one line that is a list of null values.
 The list should be surrounded by (), each value surrounded by '', and multiple value separated by commas.
 Example ('Unspecified', 'null', 'NULL')
 
-match's format is like a table
+match's format is like a table 
 
 | type of match | catagory | number if type of match is range |
 |-|-|-|
@@ -54,6 +54,13 @@ match's format is like a table
 There are two types of matches range and exact. 
 An exact match is where a case and control sample have the exact same value for the given catagory.
 A range match is where the case sample's value is with in the given number range of the control sample's value for the given catagory.
+Range matches require the third column to contain a number like 3 or 5.2. The number can not be a string such as five.
+Separate each column with a tab.
 
+range age 3
+
+exact sex
+
+exact sample_type
 
 

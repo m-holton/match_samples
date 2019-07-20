@@ -29,7 +29,7 @@ def test_orderDict(verbose):
             True outputs print statements.
 
     '''
-    stable = match_controls.Stable_Marriage()
+    stable = match_samples.Stable_Marriage()
 
     test_unorderedDict = {'key_1':['a','b','c','d','e'],
         'key_2':['a','c','e','d','b'],  'key_3':['b','e','e','c','a']}
@@ -69,7 +69,7 @@ def test_order_keys(verbose):
             True outputs print statements.
 
     '''
-    stable = match_controls.Stable_Marriage()
+    stable = match_samples.Stable_Marriage()
 
     test_unorderedDict={'2':['a','b'], '1':['a'],  '3':['a','b','c'],
         '5':['a','b','c','d','e'], '4':['a','b','c','d']}
@@ -99,7 +99,7 @@ def test_stable_marriage(verbose):
             True outputs print statements.
 
     '''
-    stable = match_controls.Stable_Marriage()
+    stable = match_samples.Stable_Marriage()
 
     case_dictionary = {'14': ['15', '17'], '25': [], '19': ['20'], '21':[],
         '6': [], '9': ['10'], '3': [], '7': ['8'], '18': ['17'], '23': [],
@@ -138,7 +138,7 @@ def test_get_user_input_query_lines(verbose, unit, input_metadata, match_query):
     input_metadata: string
         Name of the tsv file that will be loaded into a metadata object. This
             object will be used to test the keeping of samples functionality
-            of the match_controls.py
+            of the match_samples.py
     match_query: string
     '''
     input_dict = {"inputdata":input_metadata}
@@ -146,11 +146,11 @@ def test_get_user_input_query_lines(verbose, unit, input_metadata, match_query):
 
     input_dict = {"keep":None, "case":None, "nullvalues":None, "match":None,
         "inputdata":"input_metadata"}
-    assert_raises(ValueError, match_controls.get_user_input_query_lines,
+    assert_raises(ValueError, match_samples.get_user_input_query_lines,
         verbose, input_dict)
     input_dict = {"keep":"None", "case":None, "nullvalues":None, "match":None,
         "inputdata":input_metadata}
-    assert_raises(ValueError, match_controls.get_user_input_query_lines,
+    assert_raises(ValueError, match_samples.get_user_input_query_lines,
         verbose, input_dict)
 
 
@@ -169,7 +169,7 @@ def test_keep_samples(verbose, unit, normal_input, normal_output, normal_keep,
     normal_input: string
         Name of the tsv file that will be loaded into a metadata object. This
             object will be used to test the keeping of samples functionality
-            of the match_controls.py
+            of the match_samples.py
     normal_output: string
         Name of the tsv file that will be loaded into a metadata object. This
             object will be used to test that valid inputs for keeping samples
@@ -191,11 +191,11 @@ def test_keep_samples(verbose, unit, normal_input, normal_output, normal_keep,
         "r").read().splitlines()
     emp_file = open("./%s/%s"%(unit, empty_file), "r").read().splitlines()
 
-    unit_norm_out = match_controls.keep_samples(verbose, norm_in, norm_keep)
+    unit_norm_out = match_samples.keep_samples(verbose, norm_in, norm_keep)
 
-    assert_raises(ValueError, match_controls.keep_samples, verbose, norm_in,
+    assert_raises(ValueError, match_samples.keep_samples, verbose, norm_in,
         emp_file)
-    assert_raises(ValueError, match_controls.keep_samples, verbose, norm_in,
+    assert_raises(ValueError, match_samples.keep_samples, verbose, norm_in,
         noentry_keep)
 
     unit_norm_out = unit_norm_out.to_dataframe()
@@ -218,7 +218,7 @@ def test_determine_cases_and_controls(verbose, unit, normal_input, normal_output
     normal_input: string
         Name of the tsv file that will be loaded into a metadata object. This
             object will be used to test the case and control labeling
-            functionality of the match_controls.py
+            functionality of the match_samples.py
     normal_output: string
         Name of the tsv file that will be loaded into a metadata object. This
             object will be used to test that valid case and control inputs get
@@ -244,15 +244,15 @@ def test_determine_cases_and_controls(verbose, unit, normal_input, normal_output
     emp_file = open("./%s/%s"%(unit, empty_file), "r").read().splitlines()
 
     case_control_dict = {"case":norm_case, "control":norm_control}
-    unit_norm_out = match_controls.determine_cases_and_controls(verbose,
+    unit_norm_out = match_samples.determine_cases_and_controls(verbose,
         norm_in, case_control_dict)
 
     case_control_dict = {"case":emp_file, "control":emp_file}
-    assert_raises(ValueError, match_controls.determine_cases_and_controls,
+    assert_raises(ValueError, match_samples.determine_cases_and_controls,
         verbose, norm_in, case_control_dict)
 
     case_control_dict = {"case":noentry_case, "control":norm_control}
-    assert_raises(ValueError, match_controls.determine_cases_and_controls,
+    assert_raises(ValueError, match_samples.determine_cases_and_controls,
         verbose, norm_in, case_control_dict)
 
     norm_out = norm_out.to_dataframe()
@@ -314,18 +314,18 @@ def test_filter_prep_for_matchMD(verbose, unit, normal_input, normal_output,
     wcolumn_match = open("./%s/%s"%(unit, wrong_column_match),
         "r").read().splitlines()
 
-    unit_norm_out = match_controls.filter_prep_for_matchMD(verbose,
+    unit_norm_out = match_samples.filter_prep_for_matchMD(verbose,
         norm_in, norm_match, norm_null)
-    unit_no_out = match_controls.filter_prep_for_matchMD(verbose,
+    unit_no_out = match_samples.filter_prep_for_matchMD(verbose,
         no_in, norm_match, norm_null)
-    unit_empty_null_out = match_controls.filter_prep_for_matchMD(verbose,
+    unit_empty_null_out = match_samples.filter_prep_for_matchMD(verbose,
         norm_in, norm_match, emp_file)
-    unit_empty_match_out = match_controls.filter_prep_for_matchMD(verbose,
+    unit_empty_match_out = match_samples.filter_prep_for_matchMD(verbose,
         norm_in, emp_file, norm_null)
 
-    assert_raises(ValueError, match_controls.filter_prep_for_matchMD, verbose,
+    assert_raises(ValueError, match_samples.filter_prep_for_matchMD, verbose,
         norm_in, norm_match, noentry_null)
-    assert_raises(KeyError, match_controls.filter_prep_for_matchMD, verbose,
+    assert_raises(KeyError, match_samples.filter_prep_for_matchMD, verbose,
         norm_in, wcolumn_match, norm_null)
 
     norm_out = norm_out.to_dataframe()
@@ -362,7 +362,7 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     normal_input: string
         Name of the tsv file that will be loaded into a metadata object. This
             object will be used to test the matching of case and control
-            labeled samples functionality of the match_controls.py
+            labeled samples functionality of the match_samples.py
     normal_output: string
         Name of the tsv file that will be loaded into a metadata object. This
             object will be used to test that valid inputs for matching case
@@ -430,22 +430,22 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     wcolumn_match = open("./%s/%s"%(unit, wrong_column_match),
         "r").read().splitlines()
 
-    unit_norm_out = match_controls.match_samples(verbose,
+    unit_norm_out = match_samples.match_samples(verbose,
         norm_in, norm_match)
-    unit_case_out = match_controls.match_samples(verbose,
+    unit_case_out = match_samples.match_samples(verbose,
         no_case_in, norm_match)
-    unit_control_out = match_controls.match_samples(verbose,
+    unit_control_out = match_samples.match_samples(verbose,
         no_control_in, norm_match)
-    unit_no_out = match_controls.match_samples(verbose,
+    unit_no_out = match_samples.match_samples(verbose,
         no_in, norm_match)
 
-    assert_raises(ValueError, match_controls.match_samples, verbose,
+    assert_raises(ValueError, match_samples.match_samples, verbose,
         str_cont_in, norm_match)
-    assert_raises(ValueError, match_controls.match_samples, verbose,
+    assert_raises(ValueError, match_samples.match_samples, verbose,
         str_case_in, norm_match)
-    assert_raises(ValueError, match_controls.match_samples, verbose,
+    assert_raises(ValueError, match_samples.match_samples, verbose,
         norm_in, str_match)
-    assert_raises(KeyError, match_controls.match_samples, verbose,
+    assert_raises(KeyError, match_samples.match_samples, verbose,
         norm_in, wcolumn_match)
 
     norm_out = norm_out.to_dataframe()
@@ -598,127 +598,3 @@ if __name__ == '__main__':
     main()
 
 
-
-'''
-verbose: boolean
-    Tells function if it should output print statements or not.
-        True outputs print statements.
-unit: string
-    Location of the folder that holds the unit test files
-
-test_case: string
-    Name of the query file that contains the normal case query
-test_case_noentries: string
-    Name of the query file that results in no cases being found. This tests
-        the that filtering everything out gives an error.
-test_control_in: string
-    Name of the query file that contains the normal control query using IN
-test_control_notin: string
-    Name of the query file that contains the sql queries to do a normal
-        control queries using NOT IN
-test_keep: string
-    Name of the query file that contains the sql queries to do a normal keep
-test_keep_noentries: string
-    Name of the query file that contains the sql queries that keeps not samples
-test_match: string
-    Name of the file that contains the lines to match the samples normally
-test_match_error_column: string
-    Name of the file that contains the lines to match samples but one of the
-        columns in the file is not in the metadata input
-test_match_error_int_str: string
-    Name of the file that contains the lines to match samples but the number
-        for the age_years range is a string that can not be type cased to a
-        float
-test_nulls: string
-    Name of the file that contains the null values used to prepare metadata
-        objects for match in filter_prep_for_matchMD
-test_nulls_noentries: string
-    Name of the file that contains the null values used to prepare metadata
-        objects for match in filter_prep_for_matchMD. The null values will
-        filter every sample out which should result in an error.
-
-
-
-unit_case_input: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test the case and control labeling functionality
-        of the match_controls.py
-unit_case_output: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test that valid case and control inputs get
-        the correct output
-
-unit_keep_input: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test the keeping of samples functionality
-        of the match_controls.py
-unit_keep_output: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test that valid inputs for keeping samples gets
-        the correct output
-
-unit_match_input: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test the matching of case and control labeled
-        samples functionality of the match_controls.py
-unit_match_output: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test that valid inputs for matching case
-        and control samples yields the correct output
-
-
-unit_match_int_str_case: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test
-unit_match_int_str_control: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test
-
-unit_no_match_input: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test the match function when there are no
-        possible matches. It is the input metadata for the funtion.
-unit_no_match_output: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test if the match funtion gives the correct
-        output when there are no possible matches. The file stores the correct
-        output.
-
-unit_null_input: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be as input to test that valid inputs for filtering out
-        samples with null values in the columns used for matching gets
-        the correct output.
-unit_null_output: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be compared to output of the funtion that preps the
-        metadata object for matching. It test that valid inputs for filtering
-        out samples with null values in the columns used for matching gets
-        the correct output.
-
-unit_no_null_input: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test if giving a file with no null entries as
-        input for null filtering returns an output equal to the input.
-
-unit_no_cases_match_input: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test the match function when there are no
-        case samples. It is the input metadata for the funtion.
-unit_no_cases_match_output: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test if the match funtion gives the correct
-        output when there are no case samples. The file stores the correct
-        output.
-unit_no_controls_match_input: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test the match function when there are no
-        control samples. It is the input metadata for the funtion.
-unit_no_controls_match_output: string
-    Name of the tsv file that will be loaded into a metadata object. This
-        object will be used to test if the match funtion gives the correct
-        output when there are no control samples. The file stores the correct
-        output.
-empty_file: string
-    Name of the empty file used in various tests
-'''

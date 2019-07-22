@@ -23,5 +23,5 @@ before_install:
 # command to install dependencies
 # command to run tests
 script:
-  - python tests/test_match_samples.py
+  - python test_match_samples.py
  

@@ -68,7 +68,7 @@ This would match case and control samples that have the same value for sex and s
 
 ## Program Functions
 
-1. AllInOne
+1. mainController
    - Calls the other functions depending on which inputs are given
 2. get_user_input_query_lines
    - Loads input files into a dictionary that AllInOne uses

@@ -2,6 +2,8 @@
 match_samples.py is the main program. _match_samples.py contains the unit tests for match_samples.py
 unitTest_files contains the files used in the unit tests.
 
+match_samples allows users to filter down a metadata file, label samples case or control, and match case to control samples. 
+
 ## Input 
 The program takes up to eight inputs. 
 
@@ -9,18 +11,28 @@ The program takes up to eight inputs.
    - flag that tells the program to display information such as how many samples were filtered out by the function that filters down the input metadata based on the keep file
 2. output 
    - the location and name of file to outport to
+   - required
 3. inputdata 
    - the metadata that contains the samples that will be processed by the program
+   - required
 4. keep 
    - name of file with sqlite lines used to determine what samples to exclude or keep
 5. control 
    - name of file with sqlite lines used to determine what samples to label control
+   - if given case must also be given
 6. case 
    - name of file with sqlite lines used to determine what samples to label case
+   - if given control must also be given
 7. nullvalues 
    - name of file with strings that represent null values so that samples where one of these null values are in a category that is used to determine matches are filtered out
+   - if given then match must also be given
 8. match 
    - name of file which contains information on what conditions must be met to constitue a match
+   - if given case and control must also be given
+9. one 
+   - flag that tells program to call stableMarriageRunner and do one to one matches
+10. only_matches
+   - flag that makes program filter out none matched samples at the end of matching before the metadata is outputted
 
 ## Input File Format
 inputdata must be a tab separated file such as a .tsv. T
@@ -85,6 +97,7 @@ This would match case and control samples that have the same value for sex and s
    - elements with equal frequency are then sorted in alphanumeric ordering  
 8. order_keys
    - order the keys in a dictionary based on how many elements are associated with the key in the dictionary
+   - keys with equal number of elements are not sorted alphanumericly so the one to one matches can be slightly different for runs with identical inputs
 9. stableMarriageRunner
    - Enacts the one to one matches using a stable marriage framework 
 

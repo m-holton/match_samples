@@ -1,0 +1,2 @@
+range	age_years	4
+exact	sex

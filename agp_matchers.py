@@ -126,6 +126,39 @@ def match_multiple(focus, background, categories, category_types,
     return matches
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import unittest
 import pandas.testing as pdt
 
@@ -211,6 +244,34 @@ class MatchTests(unittest.TestCase):
         # no matches for focus index 2
         with self.assertRaisesRegex(ValueError, "No matches for 2"):
             match(focus, background, 'discrete', on_failure='raise')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class MultipleMatchTests(unittest.TestCase):

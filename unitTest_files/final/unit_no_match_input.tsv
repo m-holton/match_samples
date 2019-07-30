@@ -1,7 +1,0 @@
-id	age_years	sex	disease	bmi_category 	test_site	antibiotic_history	case_control
-13	30	male	none	normal	vaginal	I have not had antibiotics within the last year.	control
-14	40	male	schizophrenia	normal	fecal	I have not had antibiotics within the last year.	case
-15	50	female	none	overweight	oral	I have not had antibiotics within the last year.	control
-16	50	female	schizophrenia	underweight	skin	I have not had antibiotics within the last year.	case
-17	70	male	none	obese	oral	I have not had antibiotics within the last year.	control
-18	71	female	schizophrenia	obese	fecal	I have not had antibiotics within the last year.	case

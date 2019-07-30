@@ -165,11 +165,7 @@ class Stable_Marriage:
 
         return one_to_one_match_dictionary
 
-
-
-
-
-
+    
 
 
 def get_user_input_query_lines(verbose, dictofFiles):
@@ -393,7 +389,8 @@ def filter_prep_for_matchMD(verbose, merged_MD, match_condition_lines,
     return returned_MD
 
 
-def match_samples(verbose, prepped_for_match_MD, conditions_for_match_lines):
+def match(verbose, prepped_for_match_MD, conditions_for_match_lines, 
+          one_to_one, only_matches):
     '''
     matches case samples to controls and puts the case's id in column matched
         to on the control sample's row
@@ -411,12 +408,20 @@ def match_samples(verbose, prepped_for_match_MD, conditions_for_match_lines):
     conditions_for_match_lines : array of strings
         contains information on what conditions must be met to constitue a
             match
+            
+    one_to_one: boolean
+        determines if match does one to one matching using stable marriage
+    
+    only_matches: boolean
+        determines if the returned metadata object should only include 
+            samples with matches
 
     Returns
     -------
-    masterDF : dataframe
-        masterDF with matches represented by a column called matched to.
-            Values in matched to are the sample ids of the sample samples
+    matchedMD : Metadata object
+        Metadata based of the samples in prepped_for_match_MD with 
+            matches represented by a column called matched to. Values 
+            in matched to are the sample ids of the sample samples 
             matches to
 
     '''
@@ -486,7 +491,7 @@ def match_samples(verbose, prepped_for_match_MD, conditions_for_match_lines):
         case_dictionary.update({case_index:controlDF.index.values})
         case_match_count_dictionary.update(
             {case_index:(controlDF.index.values.size)})
-
+        
         for id_control in controlDF.index:
             if id_control not in control_match_count_dictionary:
                 control_match_count_dictionary.update({id_control:0})
@@ -501,32 +506,55 @@ def match_samples(verbose, prepped_for_match_MD, conditions_for_match_lines):
         print("case_match_count_dictionary is %s"
               %(case_match_count_dictionary))
 
-        
-    stable = Stable_Marriage()
-    case_to_control_match = stable.stableMarriageRunner(verbose,
-        case_dictionary, control_match_count_dictionary,
-        case_match_count_dictionary)
+    if one_to_one:
+        stable = Stable_Marriage()
+        case_to_control_match = stable.stableMarriageRunner(verbose,
+            case_dictionary, control_match_count_dictionary,
+            case_match_count_dictionary)
 
+        if verbose:
+            print("%s sample pairs matched together"%(
+                len(case_to_control_match.keys())))
+
+        for key in case_to_control_match:
+            key_value = case_to_control_match[key]
+            matchDF.at[key, "matched_to"] = str(key_value)
+            matchDF.at[key_value, "matched_to"] = str(key)
+    else:
+        for case in case_dictionary:
+            for control in case_dictionary[case]:
+                if control in control_dictionary:
+                    control_dictionary[control].append(case)
+                else:
+                    control_dictionary[control] = [case]
+            matchDF.at[case, "matched_to"] = ", ".join(sorted(case_dictionary[case]))
+    for control in control_dictionary:
+        matchDF.at[control, "matched_to"] = ", ".join(sorted(control_dictionary[control]))
+            
+    matchedMD = Metadata(matchDF)
+    if only_matches:
+        ids = matchedMD.get_ids("matched_to NOT IN ('none')")
+        #shrinks the MD to only have matched samples
+        matchedMD = matchedMD.filter_ids(ids)
     if verbose:
-        print("%s sample pairs matched together"%(
-            len(case_to_control_match.keys())))
-
-    for key in case_to_control_match:
-        key_value = case_to_control_match[key]
-        matchDF.loc[key, "matched_to"] = str(key_value)
-        matchDF.loc[key_value, "matched_to"] = str(key)
-
-    return Metadata(matchDF)
+        print("matched_to column")
+        print(matchedMD.to_dataframe()["matched_to"])
+        
+    return matchedMD
 
 
-def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
-    output):
+
+def AllInOne(verbose, one, inputdata, keep, control, case, nullvalues, match_parameters,
+             output, only_matches):
     '''
     Parameters
     ----------
     verbose: boolean
         Tells function if it should output print statements or not.
             True outputs print statements.
+    one: boolean
+        When given as a parameter match_samples will do one to  
+             one matching instead of all matches
     inputdata: string
         Name of file with sample metadata to analyze.
     keep: string
@@ -542,16 +570,19 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
         name of file with strings that represent null values so that 
             samples where one of these null values are in a category
             that is used to determine matches are filtered out
-    match: string
+    match_parameters: string
         name of file which contains information on what conditions 
             must be met to constitue a match
     output: string
         Name of file to export data to.
+    only_matches: boolean
+        When given as a parameter match_samples will filter out
+            non-matched samples from output file
     '''
 
     tstart = time.clock()
     inputDict = {"inputdata":inputdata, "keep":keep, "control":control,
-        "case":case, "nullvalues":nullvalues, "match":match}
+        "case":case, "nullvalues":nullvalues, "match":match_parameters}
     #loads and opens input files
     inputDict = get_user_input_query_lines(verbose, inputDict)
 
@@ -568,7 +599,8 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
             print("Time to filter out unwanted samples is %s"
                   %(tkeep - tloadedFiles))
     else:
-        tkeep = tloadedFiles
+        if verbose:
+            tkeep = tloadedFiles
         afterExclusionMD = inputDict["inputdata"]
 
     if "case" in inputDict and "control" in inputDict:
@@ -577,7 +609,6 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
 
         case_controlMD = determine_cases_and_controls(verbose,
             afterExclusionMD, case_control_dict)
-
 
         if verbose:
             tcase_control = time.clock()
@@ -588,26 +619,30 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
         case_controlMD.to_dataframe().to_csv(output, sep="\t")
         return 0
 
-    if "nullvalues" in inputDict and "match" in inputDict:
-        prepped_for_matchMD= filter_prep_for_matchMD(verbose,
-            case_controlMD, inputDict["match"], inputDict["nullvalues"])
+    if "nullvalues" in inputDict: 
+        if "match" in inputDict:
+            prepped_for_matchMD= filter_prep_for_matchMD(verbose,
+                case_controlMD, inputDict["match"], inputDict["nullvalues"])
 
+            if verbose:
+                tprepped = time.clock()
+                print("Time to filter Metadata information for samples "
+                      "with null values is %s"%(tprepped - tcase_control))
+        else:
+            case_controlMD.to_dataframe().to_csv(output, sep="\t")
 
-        if verbose:
-            tprepped = time.clock()
-            print("Time to filter Metadata information for samples "
-                  "with null values is %s"%(tprepped - tcase_control))
+            if verbose:
+                tend = time.clock()
+                print("Time to do everything %s"%(tend - tstart))
     else:
-        case_controlMD.to_dataframe().to_csv(output, sep="\t")
-
+        prepped_for_matchMD = case_controlMD
         if verbose:
-            tend = time.clock()
-            print("Time to do everything %s"%(tend - tstart))
+            tprepped = tcase_control
 
     if "match" in inputDict:
         if inputDict["match"] != False:
-            matchedMD = match_samples(verbose, prepped_for_matchMD,
-                inputDict["match"])
+            matchedMD = match(verbose, prepped_for_matchMD, 
+                              inputDict["match"], one, only_matches)
             matchedMD.to_dataframe().to_csv(output, sep="\t")
 
         if verbose:
@@ -622,6 +657,12 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
 @click.command()
 @click.option("--verbose", is_flag=True,
     help="Make print statements appear")
+@click.option("--one", is_flag=True,
+    help="When given as a parameter match_samples will do one to "
+         "one matching instead of all matches")
+@click.option("--only_matches", is_flag=True,
+    help="When given as a parameter match_samples will filter out"
+         "non-matched samples from output file")
 @click.option("--keep", default=None, type = str,
     help="name of file with sqlite lines used to determine "
          "what samples to exclude or keep")
@@ -641,14 +682,17 @@ def AllInOne(verbose, inputdata, keep, control, case, nullvalues, match,
     help="Name of file with sample metadata to analyze.")
 @click.option("--output", required = True, type = str,
     help="Name of file to export data to.")
-def mainController(verbose, unit, inputdata, keep, control, case,
-    nullvalues, match, output):
+def mainController(verbose, one, inputdata, keep, control, case,
+    nullvalues, match, output, only_matches):
     '''
     Parameters
     ----------
     verbose: boolean
         Tells function if it should output print statements or not.
             True outputs print statements.
+    one: boolean
+        When given as a parameter match_samples will do one to  
+             one matching instead of all matches
     inputdata: string
         Name of file with sample metadata to analyze.
     keep: string
@@ -669,17 +713,15 @@ def mainController(verbose, unit, inputdata, keep, control, case,
             must be met to constitue a match
     output: string
         Name of file to export data to.
-
-    Returns
-    -------
-    string
-        string is the name of the function called
+    only_matches: boolean
+        When given as a parameter match_samples will filter out
+            non-matched samples from output file
 
     '''
     if verbose:
         print("Calling AllInOne")
-    AllInOne(verbose, inputdata, keep, control, case,
-        nullvalues, match, output)
+    AllInOne(verbose, one, inputdata, keep, control, case,
+        nullvalues, match, output, only_matches)
 
 
 

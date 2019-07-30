@@ -49,6 +49,8 @@ def test_orderDict(verbose):
     
     counter = 0
     run_number = 1
+    if verbose:
+        print("Running orderDict 100 times to test order when frequencies are equal.")
     while run_number <=100:
         if (stable.orderDict(verbose, test_equal_freq, test_frequencies_equal)
             != correct_output_freq):
@@ -123,6 +125,7 @@ def test_stable_marriage(verbose):
         case_match_count_dictionary)
     test_output = {'10':'2', '3':'4'}
     assert_equals(case_to_control_match, test_output)
+    
 
 def test_get_user_input_query_lines(verbose, unit, input_metadata, match_query):
     '''
@@ -348,7 +351,9 @@ def test_filter_prep_for_matchMD(verbose, unit, normal_input, normal_output,
 def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     string_control_input, string_case_input, wrong_column_match,
     string_int_match, no_match_input, no_match_output, empty_file,
-    no_case_input, no_case_output, no_control_input, no_control_output):
+    no_case_input, no_case_output, no_control_input, no_control_output, 
+    all_matches_input, all_matches_output, 
+    only_all_matches_output, only_one_match_output, all_matches):
     '''
     Tests the match functionality 
     
@@ -411,6 +416,29 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
             object will be used to test if the match funtion gives the correct
             output when there are no control samples. The file stores the
             correct output.
+    all_matches_input: string
+        Name of the tsv file that will be loaded into a metadata object. This 
+            object will be used as input to test the 'one' and 'only_matches' 
+            flags' effect on the function match.
+    all_matches_output: string
+        Name of the tsv file that will be loaded into a metadata object. This 
+            object will be used to test if the match funtion gives the correct 
+            output when one is False and only_matches is False. The file 
+            stores the correct output.
+    only_all_matches_output: string
+        Name of the tsv file that will be loaded into a metadata object. This 
+            object will be used to test if the match funtion gives the correct 
+            output when one is False and only_matches is True. The file stores 
+            the correct output.
+    only_one_match_output: string
+        Name of the tsv file that will be loaded into a metadata object. This 
+            object will be used to test if the match funtion gives the correct 
+            output when one is True and only_matches is True. The file stores 
+            the correct output.
+    all_matches: string
+        Name of the file that contains the lines to match the samples used when
+            testing the exporting all matches instead of one to one and 
+            exporting only samples that got matched
     '''
     norm_in = Metadata.load("./%s/%s"%(unit, normal_input))
     norm_out = Metadata.load("./%s/%s"%(unit, normal_output))
@@ -422,6 +450,21 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     no_out = Metadata.load("./%s/%s"%(unit, no_match_output))
     str_cont_in = Metadata.load("./%s/%s"%(unit, string_control_input))
     str_case_in = Metadata.load("./%s/%s"%(unit, string_case_input))
+    
+    #apg match tests
+    all_in = Metadata.load("./%s/%s"%(unit, all_matches_input))
+    all_out = Metadata.load("./%s/%s"%(unit, all_matches_output))
+    all_only_matches_out = Metadata.load("./%s/%s"%(unit, only_all_matches_output))
+    one_only_match_out = Metadata.load("./%s/%s"%(unit, only_one_match_output))
+    all_match = open("./%s/%s"%(unit, all_matches),"r").read().splitlines()
+    unit_all_out = match_samples.match(verbose, all_in, all_match, False, False)
+    unit_only_all_out = match_samples.match(verbose, all_in, all_match, False, True)
+    unit_only_one_out = match_samples.match(verbose, all_in, all_match, True, True)
+    assert_frame_equal(all_out.to_dataframe(),  unit_all_out.to_dataframe())
+    assert_frame_equal(all_only_matches_out.to_dataframe(),  
+                       unit_only_all_out.to_dataframe())
+    assert_frame_equal(one_only_match_out.to_dataframe(),  
+                       unit_only_one_out.to_dataframe())
 
     str_match = open("./%s/%s"%(unit, string_int_match),
         "r").read().splitlines()
@@ -430,23 +473,23 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     wcolumn_match = open("./%s/%s"%(unit, wrong_column_match),
         "r").read().splitlines()
 
-    unit_norm_out = match_samples.match_samples(verbose,
-        norm_in, norm_match)
-    unit_case_out = match_samples.match_samples(verbose,
-        no_case_in, norm_match)
-    unit_control_out = match_samples.match_samples(verbose,
-        no_control_in, norm_match)
-    unit_no_out = match_samples.match_samples(verbose,
-        no_in, norm_match)
+    unit_norm_out = match_samples.match(verbose,
+        norm_in, norm_match, True, False)
+    unit_case_out = match_samples.match(verbose,
+        no_case_in, norm_match, True, False)
+    unit_control_out = match_samples.match(verbose,
+        no_control_in, norm_match, True, False)
+    unit_no_out = match_samples.match(verbose,
+        no_in, norm_match, True, False)
 
-    assert_raises(ValueError, match_samples.match_samples, verbose,
-        str_cont_in, norm_match)
-    assert_raises(ValueError, match_samples.match_samples, verbose,
-        str_case_in, norm_match)
-    assert_raises(ValueError, match_samples.match_samples, verbose,
-        norm_in, str_match)
-    assert_raises(KeyError, match_samples.match_samples, verbose,
-        norm_in, wcolumn_match)
+    assert_raises(ValueError, match_samples.match, verbose,
+        str_cont_in, norm_match, True, False)
+    assert_raises(ValueError, match_samples.match, verbose,
+        str_case_in, norm_match, True, False)
+    assert_raises(ValueError, match_samples.match, verbose,
+        norm_in, str_match, True, False)
+    assert_raises(KeyError, match_samples.match, verbose,
+        norm_in, wcolumn_match, True, False)
 
     norm_out = norm_out.to_dataframe()
     unit_norm_out = unit_norm_out.to_dataframe()
@@ -560,15 +603,32 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
 @click.option("--empty_file",
     default="empty_file.txt",
     help="Name of the empty file used in various tests")
+@click.option("--all_matches_input",
+    default="all_matches_input.tsv",
+    help="Name of the tsv file that will be loaded into a metadata object. This object will be used as input to test the 'one' and 'only_matches' flags' effect on the function match.")
+@click.option("--all_matches_output",
+    default="all_matches_output.tsv",
+    help="Name of the tsv file that will be loaded into a metadata object. This object will be used to test if the match funtion gives the correct output when one is False and only_matches is False. The file stores the correct output.")
+@click.option("--only_all_matches_output",
+    default="only_all_matches_output.tsv",
+    help="Name of the tsv file that will be loaded into a metadata object. This object will be used to test if the match funtion gives the correct output when one is False and only_matches is True. The file stores the correct output.")
+@click.option("--only_one_match_output",
+    default="only_one_match_output.tsv",
+    help="Name of the tsv file that will be loaded into a metadata object. This object will be used to test if the match funtion gives the correct output when one is True and only_matches is True. The file stores the correct output.")
+@click.option("--all_matches",
+    default="all_matches.txt",
+    help="Name of the file that contains the lines to match the samples used when testing the exporting all matches instead of one to one and exporting only samples that got matched")
 def main(verbose, unittest_files, test_case, test_case_noentries, test_control_in,
-    test_control_notin, test_keep, test_keep_noentries, test_match,
-    test_match_error_column, test_match_error_int_str, test_nulls,
-    test_nulls_noentries, unit_case_input, unit_case_output, unit_keep_input,
-    unit_keep_output, unit_match_input, unit_match_int_str_case,
-    unit_match_int_str_control, unit_match_output, unit_no_match_input,
-    unit_no_match_output, unit_no_null_input, unit_null_input,
-    unit_null_output, unit_no_cases_match_input, unit_no_cases_match_output,
-    unit_no_controls_match_input, unit_no_controls_match_output, empty_file):
+        test_control_notin, test_keep, test_keep_noentries, test_match,
+        test_match_error_column, test_match_error_int_str, test_nulls,
+        test_nulls_noentries, unit_case_input, unit_case_output, unit_keep_input,
+        unit_keep_output, unit_match_input, unit_match_int_str_case,
+        unit_match_int_str_control, unit_match_output, unit_no_match_input,
+        unit_no_match_output, unit_no_null_input, unit_null_input,
+        unit_null_output, unit_no_cases_match_input, unit_no_cases_match_output,
+        unit_no_controls_match_input, unit_no_controls_match_output, empty_file,
+        all_matches_input, all_matches_output, only_all_matches_output, 
+        only_one_match_output, all_matches):
 
     test_orderDict(verbose)
     test_order_keys(verbose)
@@ -589,7 +649,9 @@ def main(verbose, unittest_files, test_case, test_case_noentries, test_control_i
         test_match_error_column, test_match_error_int_str,
         unit_no_match_input, unit_no_match_output, empty_file,
         unit_no_cases_match_input, unit_no_cases_match_output,
-        unit_no_controls_match_input, unit_no_controls_match_output)
+        unit_no_controls_match_input, unit_no_controls_match_output,
+        all_matches_input, all_matches_output, only_all_matches_output, 
+        only_one_match_output, all_matches)
 
 
 

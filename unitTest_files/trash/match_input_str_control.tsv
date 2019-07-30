@@ -1,6 +1,0 @@
-id	name	age	bmi	diet	antibiotic	case_control
-1	Tom	30	normal	vegan	no	case
-2	Sally	20	normal	vegan	no	case
-3	John	ten	normal	omni	no	control
-4	Mark	18	overweight	omni	no	control
-5	Julia	23	normal	omni	no	control

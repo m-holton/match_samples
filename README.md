@@ -68,8 +68,8 @@ This would match case and control samples that have the same value for sex and s
 
 ## Program Functions
 
-1. AllInOne
-   -
+1. mainController
+   - Calls the other functions depending on which inputs are given
 2. get_user_input_query_lines
    - Loads input files into a dictionary that AllInOne uses
 3. keep_samples
@@ -77,14 +77,15 @@ This would match case and control samples that have the same value for sex and s
 4. determine_cases_and_controls
    - Labels samples case or control in a new catagory added to the metadata file
 5. filter_prep_for_matchMD
-   -
-6. match_samples
-   - matches samples and then calls the stable marriage class functions
+   - Filters out samples that have null values for any of the metadata categories that are used to match samples
+6. matcher
+   - Matches samples and then calls the stable marriage class functions
 7. orderDict
-   -
+   - orders the elements for each key in a dictionary based on the frequency the element over the entire dictionary
+   - elements with equal frequency are then sorted in alphanumeric ordering  
 8. order_keys
-   -
+   - order the keys in a dictionary based on how many elements are associated with the key in the dictionary
 9. stableMarriageRunner
-   -
+   - Enacts the one to one matches using a stable marriage framework 
 
 

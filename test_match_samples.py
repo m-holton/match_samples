@@ -457,9 +457,9 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     all_only_matches_out = Metadata.load("./%s/%s"%(unit, only_all_matches_output))
     one_only_match_out = Metadata.load("./%s/%s"%(unit, only_one_match_output))
     all_match = open("./%s/%s"%(unit, all_matches),"r").read().splitlines()
-    unit_all_out = match_samples.match(verbose, all_in, all_match, False, False)
-    unit_only_all_out = match_samples.match(verbose, all_in, all_match, False, True)
-    unit_only_one_out = match_samples.match(verbose, all_in, all_match, True, True)
+    unit_all_out = match_samples.matcher(verbose, all_in, all_match, False, False)
+    unit_only_all_out = match_samples.matcher(verbose, all_in, all_match, False, True)
+    unit_only_one_out = match_samples.matcher(verbose, all_in, all_match, True, True)
     assert_frame_equal(all_out.to_dataframe(),  unit_all_out.to_dataframe())
     assert_frame_equal(all_only_matches_out.to_dataframe(),  
                        unit_only_all_out.to_dataframe())
@@ -473,22 +473,22 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     wcolumn_match = open("./%s/%s"%(unit, wrong_column_match),
         "r").read().splitlines()
 
-    unit_norm_out = match_samples.match(verbose,
+    unit_norm_out = match_samples.matcher(verbose,
         norm_in, norm_match, True, False)
-    unit_case_out = match_samples.match(verbose,
+    unit_case_out = match_samples.matcher(verbose,
         no_case_in, norm_match, True, False)
-    unit_control_out = match_samples.match(verbose,
+    unit_control_out = match_samples.matcher(verbose,
         no_control_in, norm_match, True, False)
-    unit_no_out = match_samples.match(verbose,
+    unit_no_out = match_samples.matcher(verbose,
         no_in, norm_match, True, False)
 
-    assert_raises(ValueError, match_samples.match, verbose,
+    assert_raises(ValueError, match_samples.matcher, verbose,
         str_cont_in, norm_match, True, False)
-    assert_raises(ValueError, match_samples.match, verbose,
+    assert_raises(ValueError, match_samples.matcher, verbose,
         str_case_in, norm_match, True, False)
-    assert_raises(ValueError, match_samples.match, verbose,
+    assert_raises(ValueError, match_samples.matcher, verbose,
         norm_in, str_match, True, False)
-    assert_raises(KeyError, match_samples.match, verbose,
+    assert_raises(KeyError, match_samples.matcher, verbose,
         norm_in, wcolumn_match, True, False)
 
     norm_out = norm_out.to_dataframe()

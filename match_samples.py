@@ -20,7 +20,7 @@ class Stable_Marriage:
         '''
         orders the elements of each array that is associated with a sample
             key by how often they get matched to other samples least to
-            greatest. Ties are sorted Alphanumbericly
+            greatest. Ties are sorted alphanumbericly
 
         Parameters
         ----------
@@ -389,7 +389,7 @@ def filter_prep_for_matchMD(verbose, merged_MD, match_condition_lines,
     return returned_MD
 
 
-def match(verbose, prepped_for_match_MD, conditions_for_match_lines, 
+def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines, 
           one_to_one, only_matches):
     '''
     matches case samples to controls and puts the case's id in column matched
@@ -543,9 +543,37 @@ def match(verbose, prepped_for_match_MD, conditions_for_match_lines,
     return matchedMD
 
 
-
-def AllInOne(verbose, one, inputdata, keep, control, case, nullvalues, match_parameters,
-             output, only_matches):
+@click.command()
+@click.option("--verbose", is_flag=True,
+    help="Make print statements appear.")
+@click.option("--one", is_flag=True,
+    help="When given as a parameter match_samples will do one to "
+         "one matching instead of all matches.")
+@click.option("--only_matches", is_flag=True,
+    help="When given as a parameter match_samples will filter out"
+         "non-matched samples from output file.")
+@click.option("--keep", default=None, type = str,
+    help="Name of file with sqlite lines used to determine "
+         "what samples to exclude or keep.")
+@click.option("--control", default=None, type = str,
+    help="Name of file with sqlite lines used to determine "
+         "what samples to label control.")
+@click.option("--case", default=None, type = str,
+    help="Mame of file with sqlite lines used to determine "
+         "what samples to label case.")
+@click.option("--nullvalues", default=None, type = str,
+    help="Name of file with list used to determine "
+         "what values are null.")
+@click.option("--match", default=None, type = str,
+    help="Name of file with lines used to determine "
+         "what categories to match upon and how to match "
+         "samples based on each category.")
+@click.option("--inputdata", required = True, type = str,
+    help="Name of file with sample metadata to analyze.")
+@click.option("--output", required = True, type = str,
+    help="Name of file to export data to.")
+def mainController(verbose, one, inputdata, keep, control, case,
+    nullvalues, match, output, only_matches):
     '''
     Parameters
     ----------
@@ -558,19 +586,19 @@ def AllInOne(verbose, one, inputdata, keep, control, case, nullvalues, match_par
     inputdata: string
         Name of file with sample metadata to analyze.
     keep: string
-        name of file with sqlite lines used to determine what samples
-            to exclude or keep
+        name of file with sqlite lines used to determine what samples to
+            exclude or keep
     control: string
-        name of file with sqlite lines used to determine what samples
-            to label control
+        name of file with sqlite lines used to determine what samples to
+            label control
     case: string
-        name of file with sqlite lines used to determine what samples
-            to label case
+        name of file with sqlite lines used to determine what samples to
+            label case
     nullvalues: string
         name of file with strings that represent null values so that 
             samples where one of these null values are in a category
             that is used to determine matches are filtered out
-    match_parameters: string
+    match: string
         name of file which contains information on what conditions 
             must be met to constitue a match
     output: string
@@ -578,11 +606,11 @@ def AllInOne(verbose, one, inputdata, keep, control, case, nullvalues, match_par
     only_matches: boolean
         When given as a parameter match_samples will filter out
             non-matched samples from output file
-    '''
 
+    '''
     tstart = time.clock()
     inputDict = {"inputdata":inputdata, "keep":keep, "control":control,
-        "case":case, "nullvalues":nullvalues, "match":match_parameters}
+        "case":case, "nullvalues":nullvalues, "match":match}
     #loads and opens input files
     inputDict = get_user_input_query_lines(verbose, inputDict)
 
@@ -650,78 +678,9 @@ def AllInOne(verbose, one, inputdata, keep, control, case, nullvalues, match_par
             tend = time.clock()
             print("Time to match is %s"%(tmatch- tprepped))
             print("Time to do everything %s"%(tend - tstart))
+            
+            
 
-
-
-
-@click.command()
-@click.option("--verbose", is_flag=True,
-    help="Make print statements appear")
-@click.option("--one", is_flag=True,
-    help="When given as a parameter match_samples will do one to "
-         "one matching instead of all matches")
-@click.option("--only_matches", is_flag=True,
-    help="When given as a parameter match_samples will filter out"
-         "non-matched samples from output file")
-@click.option("--keep", default=None, type = str,
-    help="name of file with sqlite lines used to determine "
-         "what samples to exclude or keep")
-@click.option("--control", default=None, type = str,
-    help="name of file with sqlite lines used to determine "
-         "what samples to label control")
-@click.option("--case", default=None, type = str,
-    help="name of file with sqlite lines used to determine "
-         "what samples to label case")
-@click.option("--nullvalues", default=None, type = str,
-    help="name of file with sqlite lines used to determine "
-         "what samples to exclude or keep")
-@click.option("--match", default=None, type = str,
-    help="name of file with sqlite lines used to determine "
-         "what samples to exclude or keep")
-@click.option("--inputdata", required = True, type = str,
-    help="Name of file with sample metadata to analyze.")
-@click.option("--output", required = True, type = str,
-    help="Name of file to export data to.")
-def mainController(verbose, one, inputdata, keep, control, case,
-    nullvalues, match, output, only_matches):
-    '''
-    Parameters
-    ----------
-    verbose: boolean
-        Tells function if it should output print statements or not.
-            True outputs print statements.
-    one: boolean
-        When given as a parameter match_samples will do one to  
-             one matching instead of all matches
-    inputdata: string
-        Name of file with sample metadata to analyze.
-    keep: string
-        name of file with sqlite lines used to determine what samples to
-            exclude or keep
-    control: string
-        name of file with sqlite lines used to determine what samples to
-            label control
-    case: string
-        name of file with sqlite lines used to determine what samples to
-            label case
-    nullvalues: string
-        name of file with strings that represent null values so that 
-            samples where one of these null values are in a category
-            that is used to determine matches are filtered out
-    match: string
-        name of file which contains information on what conditions 
-            must be met to constitue a match
-    output: string
-        Name of file to export data to.
-    only_matches: boolean
-        When given as a parameter match_samples will filter out
-            non-matched samples from output file
-
-    '''
-    if verbose:
-        print("Calling AllInOne")
-    AllInOne(verbose, one, inputdata, keep, control, case,
-        nullvalues, match, output, only_matches)
 
 
 

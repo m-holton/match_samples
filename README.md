@@ -78,10 +78,14 @@ exact    sample_type
 
 This would match case and control samples that have the same value for sex and sample_type and their values for age are within 3 of eachother. 
 
+## Output
+Output is a metadata object. This metadata objects reflects the fitering, labeling, and matching done by the program. 
+
 ## Program Functions
 
-1. mainController
+1. main
    - Calls the other functions depending on which inputs are given
+   - Returns the final metadata object 
 2. get_user_input_query_lines
    - Loads input files into a dictionary that AllInOne uses
 3. keep_samples

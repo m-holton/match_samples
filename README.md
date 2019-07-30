@@ -32,11 +32,11 @@ The program takes up to eight inputs.
 9. one 
    - flag that tells program to call stableMarriageRunner and do one to one matches
 10. only_matches
-   - flag that makes program filter out none matched samples at the end of matching before the metadata is outputted
+    - flag that makes program filter out none matched samples at the end of matching before the metadata is outputted
 
+   
 ## Input File Format
-inputdata must be a tab separated file such as a .tsv. T
-he top column contains the metadata catagories and the left most row contains the sample ids.
+inputdata must be a tab separated file such as a .tsv. The top column contains the metadata catagories and the left most row contains the sample ids.
 
 keep, control, and case should all contain one sqlite statement per line. 
 Two statements that are usefull to use are the IN and NOT IN statements. 

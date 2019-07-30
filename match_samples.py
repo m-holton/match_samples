@@ -546,12 +546,10 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
 @click.command()
 @click.option("--verbose", is_flag=True,
     help="Make print statements appear.")
-@click.option("--one", is_flag=True,
-    help="When given as a parameter match_samples will do one to "
-         "one matching instead of all matches.")
-@click.option("--only_matches", is_flag=True,
-    help="When given as a parameter match_samples will filter out"
-         "non-matched samples from output file.")
+@click.option("--inputdata", required = True, type = str,
+    help="Name of file with sample metadata to analyze.")
+@click.option("--output", required = True, type = str,
+    help="Name of file to export data to.")
 @click.option("--keep", default=None, type = str,
     help="Name of file with sqlite lines used to determine "
          "what samples to exclude or keep.")
@@ -568,23 +566,24 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
     help="Name of file with lines used to determine "
          "what categories to match upon and how to match "
          "samples based on each category.")
-@click.option("--inputdata", required = True, type = str,
-    help="Name of file with sample metadata to analyze.")
-@click.option("--output", required = True, type = str,
-    help="Name of file to export data to.")
-def mainController(verbose, one, inputdata, keep, control, case,
-    nullvalues, match, output, only_matches):
+@click.option("--one", is_flag=True,
+    help="When given as a parameter match_samples will do one to "
+         "one matching instead of all matches.")
+@click.option("--only_matches", is_flag=True,
+    help="When given as a parameter match_samples will filter out"
+         "non-matched samples from output file.")
+def mainController(verbose, inputdata, output, keep, control, case,
+    nullvalues, match, one, only_matches):
     '''
     Parameters
     ----------
     verbose: boolean
         Tells function if it should output print statements or not.
             True outputs print statements.
-    one: boolean
-        When given as a parameter match_samples will do one to  
-             one matching instead of all matches
     inputdata: string
         Name of file with sample metadata to analyze.
+    output: string
+        Name of file to export data to.
     keep: string
         name of file with sqlite lines used to determine what samples to
             exclude or keep
@@ -601,8 +600,9 @@ def mainController(verbose, one, inputdata, keep, control, case,
     match: string
         name of file which contains information on what conditions 
             must be met to constitue a match
-    output: string
-        Name of file to export data to.
+    one: boolean
+        When given as a parameter match_samples will do one to  
+             one matching instead of all matches
     only_matches: boolean
         When given as a parameter match_samples will filter out
             non-matched samples from output file
@@ -613,11 +613,11 @@ def mainController(verbose, one, inputdata, keep, control, case,
         "case":case, "nullvalues":nullvalues, "match":match}
     #loads and opens input files
     inputDict = get_user_input_query_lines(verbose, inputDict)
-
     if verbose:
         tloadedFiles = time.clock()
         print("Time to load input files is %s"%(tloadedFiles - tstart))
 
+        
     if "keep" in inputDict:
         afterExclusionMD = keep_samples(verbose, inputDict["inputdata"],
             inputDict["keep"])
@@ -631,6 +631,7 @@ def mainController(verbose, one, inputdata, keep, control, case,
             tkeep = tloadedFiles
         afterExclusionMD = inputDict["inputdata"]
 
+        
     if "case" in inputDict and "control" in inputDict:
         case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
@@ -645,8 +646,12 @@ def mainController(verbose, one, inputdata, keep, control, case,
     else:
         case_controlMD = afterExclusionMD
         case_controlMD.to_dataframe().to_csv(output, sep="\t")
+        if verbose:
+            tend = time.clock()
+            print("Time to do everything %s"%(tend - tstart))
         return 0
 
+    
     if "nullvalues" in inputDict: 
         if "match" in inputDict:
             prepped_for_matchMD= filter_prep_for_matchMD(verbose,
@@ -658,15 +663,16 @@ def mainController(verbose, one, inputdata, keep, control, case,
                       "with null values is %s"%(tprepped - tcase_control))
         else:
             case_controlMD.to_dataframe().to_csv(output, sep="\t")
-
             if verbose:
                 tend = time.clock()
                 print("Time to do everything %s"%(tend - tstart))
+            return 0
     else:
         prepped_for_matchMD = case_controlMD
         if verbose:
             tprepped = tcase_control
 
+            
     if "match" in inputDict:
         if inputDict["match"] != False:
             matchedMD = match(verbose, prepped_for_matchMD, 
@@ -678,7 +684,12 @@ def mainController(verbose, one, inputdata, keep, control, case,
             tend = time.clock()
             print("Time to match is %s"%(tmatch- tprepped))
             print("Time to do everything %s"%(tend - tstart))
-            
+    else:
+        prepped_for_matchMD.to_dataframe().to_csv(output, sep="\t")            
+        if verbose:
+            tmatch = time.clock()
+            tend = time.clock()
+            print("Time to do everything %s"%(tend - tstart))
             
 
 

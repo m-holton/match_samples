@@ -55,7 +55,7 @@ class Stable_Marriage:
         '''
         orders the keys of a dictionary so that they can be used properly as
             the freemen of stable marriage. In order greatest to least number
-            of entries since pop is used to get least freeman and pop takes 
+            of entries since pop is used to get least freeman and pop takes
             the right most entry.
 
         Parameters
@@ -74,7 +74,7 @@ class Stable_Marriage:
             contains keys in order of greatest to least amount of samples they
                 match to
         '''
-        keys_greatest_to_least = sorted(dictionary, 
+        keys_greatest_to_least = sorted(dictionary,
             key=lambda x: len(dictionary[x]), reverse=True)
         if verbose:
             print("Ordered samples are %s"%(keys_greatest_to_least))
@@ -107,7 +107,7 @@ class Stable_Marriage:
                 samples each control sample matches to.
 
         pref_counts_case: dictionary
-            pref_counts_case is a dictionary with the frequency each case sample 
+            pref_counts_case is a dictionary with the frequency each case sample
                 matches to something in case_dictionary
 
         Returns
@@ -149,7 +149,7 @@ class Stable_Marriage:
                 for control in one_to_one_match_dictionary:
                     if one_to_one_match_dictionary[control] in free_keys:
                         free_keys.remove(one_to_one_match_dictionary[control])
-                        
+
             else:
                 key_in_use = one_to_one_match_dictionary[entry]
                 if pref_counts_case[key] < pref_counts_case[key_in_use]:
@@ -157,15 +157,15 @@ class Stable_Marriage:
                     free_keys.append(key_in_use)
                 else:
                     free_keys.append(key)
-           
-                    
+
+
         if verbose:
             print("Dictionary of matches after solving stable marriage problem "
                 "is %s"%(one_to_one_match_dictionary))
 
         return one_to_one_match_dictionary
 
-    
+
 
 
 def get_user_input_query_lines(verbose, dictofFiles):
@@ -195,7 +195,8 @@ def get_user_input_query_lines(verbose, dictofFiles):
     ------
     ValueError
         If a metadata file can't be loaded into a metadata object
-        If a file can't be opened and have each of its lines read into the dictionary of input files
+        If a file can't be opened and have each of its lines read into the
+            dictionary of input files
 
     '''
     dict_of_file_lines = {}
@@ -219,7 +220,7 @@ def get_user_input_query_lines(verbose, dictofFiles):
                     "r").read().splitlines()
             except:
                 raise ValueError("File could not be opened")
-    
+
     return dict_of_file_lines
 
 
@@ -246,7 +247,7 @@ def keep_samples(verbose, original_MD, keep_query_lines):
     shrunk_MD : Metadata object
         original_MD input except that desired exclution has been applied so
             only the samples that match the input querys are kept
-            
+
     Raises
     ------
     ValueError
@@ -297,7 +298,8 @@ def determine_cases_and_controls(verbose, afterExclusion_MD, query_line_dict):
     Raises
     ------
     ValueError
-        If the input file of sql commands for determining case and controls is empty
+        If the input file of sql commands for determining case and controls is
+            empty
     '''
 
     ids = afterExclusion_MD.get_ids()
@@ -364,11 +366,12 @@ def filter_prep_for_matchMD(verbose, merged_MD, match_condition_lines,
     returned_MD : Metadata object
         Samples that do not have valid entries for columns that determine
             matching are removed. Everything else is the same as merged_MD.
-    
+
     Raises
     ------
     KeyError
-        match_condition_lines tells the program to match based on a column that does not exist in the metadata
+        match_condition_lines tells the program to match based on a column
+            that does not exist in the metadata
     '''
     returned_MD = merged_MD
     if verbose:
@@ -409,7 +412,7 @@ def filter_prep_for_matchMD(verbose, merged_MD, match_condition_lines,
     return returned_MD
 
 
-def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines, 
+def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
           one_to_one, only_matches):
     '''
     matches case samples to controls and puts the case's id in column matched
@@ -428,29 +431,33 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
     conditions_for_match_lines : array of strings
         contains information on what conditions must be met to constitue a
             match
-            
+
     one_to_one: boolean
         determines if match does one to one matching using stable marriage
-    
+
     only_matches: boolean
-        determines if the returned metadata object should only include 
+        determines if the returned metadata object should only include
             samples with matches
 
     Returns
     -------
     matchedMD : Metadata object
-        Metadata based of the samples in prepped_for_match_MD with 
-            matches represented by a column called matched to. Values 
-            in matched to are the sample ids of the sample samples 
+        Metadata based of the samples in prepped_for_match_MD with
+            matches represented by a column called matched to. Values
+            in matched to are the sample ids of the sample samples
             matches to
-    
+
     Raises
     ------
     KeyError
-        conditions_for_match_lines tells the program to match based on a column that does not exist in the metadata
-        conditions_for_match_lines has a range value that can not be converted to a float
-        For one of the columns that conditions_for_match_lines tells to match on using a range a control or case sample in prepped_for_match_MD has a value that can not be converted into a float
-        
+        conditions_for_match_lines tells the program to match based on a
+            column that does not exist in the metadata
+        conditions_for_match_lines has a range value that can not be converted
+            to a float
+        For one of the columns that conditions_for_match_lines tells to match
+            on using a range a control or case sample in prepped_for_match_MD
+            has a value that can not be converted into a float
+
     '''
     case_dictionary = {}
     control_dictionary = {}
@@ -465,9 +472,7 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
 
     # loops though case samples and matches them to controls
     for case_index, case_row in case_for_matchDF.iterrows():
-        #print('case index is %s'%(case_index))
-
-        # set matchDF to be only the samples of masterDF that are control samples
+        #set matchDF to be only the samples of masterDF that are control samples
         controlDF = matchDF[matchDF["case_control"].isin(["control"])]
         if controlDF.size == 0:
             return Metadata(matchDF)
@@ -491,8 +496,8 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
                 try:
                     row_num = float(case_row[column_name])
                 except:
-                    raise ValueError("column %s contains a string that can not be "
-                                     "converted to a numerical value"
+                    raise ValueError("column %s contains a string that can "
+                                     "not be converted to a numerical value"
                                      %(column_name))
                 try:
                     fnum = float(num)
@@ -502,8 +507,9 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
                 try:
                     nums_in_column = pd.to_numeric(controlDF[column_name])
                 except:
-                    raise ValueError("column %s contains a string that can not be "
-                                     "converted to a numerical value"%(column_name))
+                    raise ValueError("column %s contains a string that can "
+                                     "not be converted to a numerical value"
+                                     %(column_name))
 
                 # filters controls based on if the value in the control is not
                     #within a given distance form the case
@@ -518,7 +524,7 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
         case_dictionary.update({case_index:controlDF.index.values})
         case_match_count_dictionary.update(
             {case_index:(controlDF.index.values.size)})
-        
+
         for id_control in controlDF.index:
             if id_control not in control_match_count_dictionary:
                 control_match_count_dictionary.update({id_control:0})
@@ -554,10 +560,12 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
                     control_dictionary[control].append(case)
                 else:
                     control_dictionary[control] = [case]
-            matchDF.at[case, "matched_to"] = ", ".join(sorted(case_dictionary[case]))
+            matchDF.at[case, "matched_to"] = ", ".join(
+                sorted(case_dictionary[case]))
     for control in control_dictionary:
-        matchDF.at[control, "matched_to"] = ", ".join(sorted(control_dictionary[control]))
-            
+        matchDF.at[control, "matched_to"] = ", ".join(
+            sorted(control_dictionary[control]))
+
     matchedMD = Metadata(matchDF)
     if only_matches:
         ids = matchedMD.get_ids("matched_to NOT IN ('none')")
@@ -566,7 +574,7 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
     if verbose:
         print("matched_to column")
         print(matchedMD.to_dataframe()["matched_to"])
-        
+
     return matchedMD
 
 
@@ -621,29 +629,30 @@ def mainControler(verbose, inputdata, keep, control, case,
         name of file with sqlite lines used to determine what samples to
             label case
     nullvalues: string
-        name of file with strings that represent null values so that 
+        name of file with strings that represent null values so that
             samples where one of these null values are in a category
             that is used to determine matches are filtered out
     match: string
-        name of file which contains information on what conditions 
+        name of file which contains information on what conditions
             must be met to constitue a match
     one: boolean
-        When given as a parameter match_samples will do one to  
+        When given as a parameter match_samples will do one to
              one matching instead of all matches
     only_matches: boolean
         When given as a parameter match_samples will filter out
             non-matched samples from output file
     unit: boolean
         When given as a parameter will print out statements used
-            for unit tests of the mainControler function. These 
+            for unit tests of the mainControler function. These
             statements indicate what the program is doing.
-            
+
     Returns
     -------
-    Metadata object that contains the filtered, labeled, and or matched samples
+    Metadata object that contains the filtered, labeled, and or matched
+        samples
 
     '''
-        
+
     tstart = time.clock()
     inputDict = {"inputdata":inputdata, "keep":keep, "control":control,
         "case":case, "nullvalues":nullvalues, "match":match}
@@ -655,7 +664,7 @@ def mainControler(verbose, inputdata, keep, control, case,
         tloadedFiles = time.clock()
         print("Time to load input files is %s"%(tloadedFiles - tstart))
 
-        
+
     if "keep" in inputDict:
         if verbose or unit:
             print("Calling keep_samples")
@@ -673,7 +682,7 @@ def mainControler(verbose, inputdata, keep, control, case,
             tkeep = tloadedFiles
         afterExclusionMD = inputDict["inputdata"]
 
-        
+
     if "case" in inputDict and "control" in inputDict:
         if verbose or unit:
             print("Calling determine_cases_and_controls")
@@ -689,14 +698,15 @@ def mainControler(verbose, inputdata, keep, control, case,
                   %(tcase_control - tkeep))
     else:
         if verbose or unit:
-            print("Skipped determine_cases_and_controls and returning the metadata")
+            print("Skipped determine_cases_and_controls and returning the "
+                  "metadata")
         if verbose:
             tend = time.clock()
             print("Time to do everything %s"%(tend - tstart))
         return afterExclusionMD
 
-    
-    if "nullvalues" in inputDict: 
+
+    if "nullvalues" in inputDict:
         if "match" in inputDict:
             if verbose or unit:
                 print("Calling filter_prep_for_matchMD")
@@ -722,11 +732,11 @@ def mainControler(verbose, inputdata, keep, control, case,
         if verbose:
             tprepped = tcase_control
 
-            
+
     if "match" in inputDict:
         if verbose or unit:
                 print("Calling matcher")
-        matchedMD = matcher(verbose, prepped_for_matchMD, 
+        matchedMD = matcher(verbose, prepped_for_matchMD,
                             inputDict["match"], one, only_matches)
         if verbose:
             tmatch = time.clock()
@@ -743,7 +753,7 @@ def mainControler(verbose, inputdata, keep, control, case,
             tend = time.clock()
             print("Time to do everything %s"%(tend - tstart))
         return prepped_for_matchMD
-            
+
 
     if verbose or unit:
         print("Ended program without returning metadata")

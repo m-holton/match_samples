@@ -5,35 +5,33 @@ unitTest_files contains the files used in the unit tests.
 match_samples allows users to filter down a metadata file, label samples case or control, and match case to control samples. 
 
 ## Input 
-The program takes up to eight inputs. 
+The program takes up to ten inputs. 
 
 1. verbose 
    - flag that tells the program to display information such as how many samples were filtered out by the function that filters down the input metadata based on the keep file
-2. output 
-   - the location and name of file to outport to
-   - required
-3. inputdata 
+2. inputdata 
    - the metadata that contains the samples that will be processed by the program
    - required
-4. keep 
+3. keep 
    - name of file with sqlite lines used to determine what samples to exclude or keep
-5. control 
+4. control 
    - name of file with sqlite lines used to determine what samples to label control
    - if given case must also be given
-6. case 
+5. case 
    - name of file with sqlite lines used to determine what samples to label case
    - if given control must also be given
-7. nullvalues 
+6. nullvalues 
    - name of file with strings that represent null values so that samples where one of these null values are in a category that is used to determine matches are filtered out
    - if given then match must also be given
-8. match 
+7. match 
    - name of file which contains information on what conditions must be met to constitue a match
    - if given case and control must also be given
-9. one 
+8. one 
    - flag that tells program to call stableMarriageRunner and do one to one matches
-10. only_matches
-    - flag that makes program filter out none matched samples at the end of matching before the metadata is outputted
-
+9. only_matches
+   - flag that makes program filter out none matched samples at the end of matching before the metadata is outputted
+10. unit
+    -flag that will make the program print out statements used for unit tests of the mainControler function. These statements indicate what the program is doing.
    
 ## Input File Format
 inputdata must be a tab separated file such as a .tsv. The top column contains the metadata catagories and the left most row contains the sample ids.
@@ -83,7 +81,7 @@ Output is a metadata object. This metadata objects reflects the fitering, labeli
 
 ## Program Functions
 
-1. main
+1. mainControler
    - Calls the other functions depending on which inputs are given
    - Returns the final metadata object 
 2. get_user_input_query_lines

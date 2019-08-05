@@ -214,6 +214,7 @@ def get_user_input_query_lines(verbose, dictofFiles):
                     "r").read().splitlines()
             except:
                 raise ValueError("File could not be opened")
+    
     return dict_of_file_lines
 
 
@@ -548,8 +549,6 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
     help="Make print statements appear.")
 @click.option("--inputdata", required = True, type = str,
     help="Name of file with sample metadata to analyze.")
-@click.option("--output", required = True, type = str,
-    help="Name of file to export data to.")
 @click.option("--keep", default=None, type = str,
     help="Name of file with sqlite lines used to determine "
          "what samples to exclude or keep.")
@@ -572,8 +571,12 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
 @click.option("--only_matches", is_flag=True,
     help="When given as a parameter match_samples will filter out"
          "non-matched samples from output file.")
-def mainController(verbose, inputdata, output, keep, control, case,
-    nullvalues, match, one, only_matches):
+@click.option("--unit", is_flag=True,
+    help="When given as a parameter will print out statements used"
+         " for unit tests of the mainControler function. These "
+         "statements indicate what the program is doing.")
+def mainControler(verbose, inputdata, keep, control, case,
+    nullvalues, match, one, only_matches, unit):
     '''
     Parameters
     ----------
@@ -582,8 +585,6 @@ def mainController(verbose, inputdata, output, keep, control, case,
             True outputs print statements.
     inputdata: string
         Name of file with sample metadata to analyze.
-    output: string
-        Name of file to export data to.
     keep: string
         name of file with sqlite lines used to determine what samples to
             exclude or keep
@@ -606,19 +607,32 @@ def mainController(verbose, inputdata, output, keep, control, case,
     only_matches: boolean
         When given as a parameter match_samples will filter out
             non-matched samples from output file
+    unit: boolean
+        When given as a parameter will print out statements used
+            for unit tests of the mainControler function. These 
+            statements indicate what the program is doing.
+            
+    Returns
+    -------
+    Metadata object that contains the filtered, labeled, and or matched samples
 
     '''
+        
     tstart = time.clock()
     inputDict = {"inputdata":inputdata, "keep":keep, "control":control,
         "case":case, "nullvalues":nullvalues, "match":match}
     #loads and opens input files
     inputDict = get_user_input_query_lines(verbose, inputDict)
     if verbose:
+        print("The file parameters found are")
+        print(", ".join(inputDict.keys()))
         tloadedFiles = time.clock()
         print("Time to load input files is %s"%(tloadedFiles - tstart))
 
         
     if "keep" in inputDict:
+        if verbose or unit:
+            print("Calling keep_samples")
         afterExclusionMD = keep_samples(verbose, inputDict["inputdata"],
             inputDict["keep"])
 
@@ -627,12 +641,16 @@ def mainController(verbose, inputdata, output, keep, control, case,
             print("Time to filter out unwanted samples is %s"
                   %(tkeep - tloadedFiles))
     else:
+        if verbose or unit:
+            print("Skipped keep_samples")
         if verbose:
             tkeep = tloadedFiles
         afterExclusionMD = inputDict["inputdata"]
 
         
     if "case" in inputDict and "control" in inputDict:
+        if verbose or unit:
+            print("Calling determine_cases_and_controls")
         case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
 
@@ -644,16 +662,18 @@ def mainController(verbose, inputdata, output, keep, control, case,
             print("Time to label case and control samples is %s"
                   %(tcase_control - tkeep))
     else:
-        case_controlMD = afterExclusionMD
-        case_controlMD.to_dataframe().to_csv(output, sep="\t")
+        if verbose or unit:
+            print("Skipped determine_cases_and_controls and returning the metadata")
         if verbose:
             tend = time.clock()
             print("Time to do everything %s"%(tend - tstart))
-        return 0
+        return afterExclusionMD
 
     
     if "nullvalues" in inputDict: 
         if "match" in inputDict:
+            if verbose or unit:
+                print("Calling filter_prep_for_matchMD")
             prepped_for_matchMD= filter_prep_for_matchMD(verbose,
                 case_controlMD, inputDict["match"], inputDict["nullvalues"])
 
@@ -662,40 +682,48 @@ def mainController(verbose, inputdata, output, keep, control, case,
                 print("Time to filter Metadata information for samples "
                       "with null values is %s"%(tprepped - tcase_control))
         else:
-            case_controlMD.to_dataframe().to_csv(output, sep="\t")
+            if verbose or unit:
+                print("--nullvalues was given but --match was not so returning "
+                      "current metadata withouth null filtering")
             if verbose:
                 tend = time.clock()
                 print("Time to do everything %s"%(tend - tstart))
-            return 0
+            return case_controlMD
     else:
+        if verbose or unit:
+                print("Skipped filter_prep_for_matchMD")
         prepped_for_matchMD = case_controlMD
         if verbose:
             tprepped = tcase_control
 
             
     if "match" in inputDict:
-        if inputDict["match"] != False:
-            matchedMD = match(verbose, prepped_for_matchMD, 
-                              inputDict["match"], one, only_matches)
-            matchedMD.to_dataframe().to_csv(output, sep="\t")
-
+        if verbose or unit:
+                print("Calling matcher")
+        matchedMD = matcher(verbose, prepped_for_matchMD, 
+                            inputDict["match"], one, only_matches)
         if verbose:
             tmatch = time.clock()
             tend = time.clock()
             print("Time to match is %s"%(tmatch- tprepped))
             print("Time to do everything %s"%(tend - tstart))
+        if verbose or unit:
+                print("Returning metadata")
+        return matchedMD
     else:
-        prepped_for_matchMD.to_dataframe().to_csv(output, sep="\t")            
+        if verbose or unit:
+                print("Skipping matcher and returning metadata")
         if verbose:
-            tmatch = time.clock()
             tend = time.clock()
             print("Time to do everything %s"%(tend - tstart))
+        return prepped_for_matchMD
             
 
-
+    if verbose or unit:
+        print("Ended program without returning metadata")
 
 
 
 
 if __name__ == "__main__":
-    mainController()
+    mainControler()

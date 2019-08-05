@@ -1,0 +1,14 @@
+id	age_years	sex	disease	bmi_category 	test_site	antibiotic_history
+1	10	male	none	obese	oral	I have not had antibiotics within the last year.
+2	10	female	depression	obese	oral	I have not had antibiotics within the last year.
+3	20	male	none	obese	vaginal	I have not had antibiotics within the last year.
+4	20	male	depression	normal	vaginal	I have not had antibiotics within the last year.
+5	30	male	none	normal	fecal	I have not had antibiotics within the last year.
+6	90	male	depression	obese	fecal	I have not had antibiotics within the last year.
+7	40	female	none	normal	vaginal	I have not had antibiotics within the last year.
+8	40	female	depression	normal	vaginal	I have not had antibiotics within the last year.
+9	50	female	none	normal	fecal	I have not had antibiotics within the last year.
+10	50	female	depression	normal	skin	I have not had antibiotics within the last year.
+11	60	female	none	normal	fecal	I have not had antibiotics within the last year.
+12	60	female	depression	Unspecified	skin	I have not had antibiotics within the last year.
+13	500	female	depression	normal	skin	1 years

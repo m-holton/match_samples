@@ -12,6 +12,7 @@ import numpy as np
 
 from nose.tools import assert_raises, assert_equals
 from pandas.util.testing import assert_frame_equal
+from click.testing import CliRunner
 
 import match_samples
 from qiime2 import Metadata
@@ -451,21 +452,6 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     str_cont_in = Metadata.load("./%s/%s"%(unit, string_control_input))
     str_case_in = Metadata.load("./%s/%s"%(unit, string_case_input))
     
-    #apg match tests
-    all_in = Metadata.load("./%s/%s"%(unit, all_matches_input))
-    all_out = Metadata.load("./%s/%s"%(unit, all_matches_output))
-    all_only_matches_out = Metadata.load("./%s/%s"%(unit, only_all_matches_output))
-    one_only_match_out = Metadata.load("./%s/%s"%(unit, only_one_match_output))
-    all_match = open("./%s/%s"%(unit, all_matches),"r").read().splitlines()
-    unit_all_out = match_samples.matcher(verbose, all_in, all_match, False, False)
-    unit_only_all_out = match_samples.matcher(verbose, all_in, all_match, False, True)
-    unit_only_one_out = match_samples.matcher(verbose, all_in, all_match, True, True)
-    assert_frame_equal(all_out.to_dataframe(),  unit_all_out.to_dataframe())
-    assert_frame_equal(all_only_matches_out.to_dataframe(),  
-                       unit_only_all_out.to_dataframe())
-    assert_frame_equal(one_only_match_out.to_dataframe(),  
-                       unit_only_one_out.to_dataframe())
-
     str_match = open("./%s/%s"%(unit, string_int_match),
         "r").read().splitlines()
     emp_file = open("./%s/%s"%(unit, empty_file), "r").read().splitlines()
@@ -506,8 +492,122 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     no_out = no_out.to_dataframe()
     unit_no_out = unit_no_out.to_dataframe()
     assert_frame_equal(no_out, unit_no_out)
+    
+    #apg match tests
+    all_in = Metadata.load("./%s/%s"%(unit, all_matches_input))
+    all_out = Metadata.load("./%s/%s"%(unit, all_matches_output))
+    all_only_matches_out = Metadata.load("./%s/%s"%(unit, only_all_matches_output))
+    one_only_match_out = Metadata.load("./%s/%s"%(unit, only_one_match_output))
+    all_match = open("./%s/%s"%(unit, all_matches),"r").read().splitlines()
+    unit_all_out = match_samples.matcher(verbose, all_in, all_match, False, False)
+    unit_only_all_out = match_samples.matcher(verbose, all_in, all_match, False, True)
+    unit_only_one_out = match_samples.matcher(verbose, all_in, all_match, True, True)
+    assert_frame_equal(all_out.to_dataframe(),  unit_all_out.to_dataframe())
+    assert_frame_equal(all_only_matches_out.to_dataframe(),  
+                       unit_only_all_out.to_dataframe())
+    #assert_frame_equal(one_only_match_out.to_dataframe(),  
+    #                   unit_only_one_out.to_dataframe())
 
 
+def test_mainControler(verbose, unit, test_keep, test_case, test_control,
+              test_nulls, test_match, unit_main_input):
+
+    runner = CliRunner()
+    
+    #kccnm
+    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input), "--keep", "./%s/%s"%(unit, test_keep), "--control", "./%s/%s"%(unit, test_control), "--case", "./%s/%s"%(unit, test_case), "--nullvalues", "./%s/%s"%(unit, test_nulls), "--match", "./%s/%s"%(unit, test_match), "--one", "--unit"]
+    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    ans = ("Calling keep_samples\n"
+        "Calling determine_cases_and_controls\n"
+        "Calling filter_prep_for_matchMD\n" 
+        "Calling matcher\n"
+        "Returning metadata\n")
+    assert_equals(ans, unit_all_out.output)
+    
+    #kccm
+    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input), "--keep", "./%s/%s"%(unit, test_keep), "--control", "./%s/%s"%(unit, test_control), "--case", "./%s/%s"%(unit, test_case), "--match", "./%s/%s"%(unit, test_match), "--one", "--unit"]
+    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    ans = ("Calling keep_samples\n"
+        "Calling determine_cases_and_controls\n"
+        "Skipped filter_prep_for_matchMD\n" 
+        "Calling matcher\n"
+        "Returning metadata\n")
+    assert_equals(ans, unit_all_out.output)
+    
+    #kccn
+    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input), "--keep", "./%s/%s"%(unit, test_keep), "--control", "./%s/%s"%(unit, test_control), "--case", "./%s/%s"%(unit, test_case), "--nullvalues", "./%s/%s"%(unit, test_nulls), "--one", "--unit"]
+    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    ans = ("Calling keep_samples\n"
+        "Calling determine_cases_and_controls\n"
+        "--nullvalues was given but --match was not so returning "
+        "current metadata withouth null filtering\n")
+    assert_equals(ans, unit_all_out.output)
+    
+    #kcc
+    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input), "--keep", "./%s/%s"%(unit, test_keep), "--control", "./%s/%s"%(unit, test_control), "--case", "./%s/%s"%(unit, test_case), "--one", "--unit"]
+    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    ans = ("Calling keep_samples\n"
+        "Calling determine_cases_and_controls\n"
+        "Skipped filter_prep_for_matchMD\n" 
+        "Skipping matcher and returning metadata\n")
+    assert_equals(ans, unit_all_out.output)
+    
+    #kcontrol
+    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input), "--keep", "./%s/%s"%(unit, test_keep), "--control", "./%s/%s"%(unit, test_control), "--one", "--unit"]
+    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    ans = ("Calling keep_samples\n"
+        "Skipped determine_cases_and_controls and returning the metadata\n")
+    assert_equals(ans, unit_all_out.output)
+    
+    #kcase
+    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input), "--keep", "./%s/%s"%(unit, test_keep), "--case", "./%s/%s"%(unit, test_case), "--one", "--unit"]
+    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    ans = ("Calling keep_samples\n"
+        "Skipped determine_cases_and_controls and returning the metadata\n")
+    assert_equals(ans, unit_all_out.output)
+    
+    #k
+    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input), "--keep", "./%s/%s"%(unit, test_keep), "--one", "--unit"]
+    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    ans = ("Calling keep_samples\n"
+        "Skipped determine_cases_and_controls and returning the metadata\n")
+    assert_equals(ans, unit_all_out.output)
+    
+    #km
+    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input), "--keep", "./%s/%s"%(unit, test_keep), "--match", "./%s/%s"%(unit, test_match), "--one", "--unit"]
+    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    ans = ("Calling keep_samples\n"
+        "Skipped determine_cases_and_controls and returning the metadata\n")
+    assert_equals(ans, unit_all_out.output)
+    
+    #ccnm
+    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input), "--control", "./%s/%s"%(unit, test_control), "--case", "./%s/%s"%(unit, test_case), "--nullvalues", "./%s/%s"%(unit, test_nulls), "--match", "./%s/%s"%(unit, test_match), "--one", "--unit"]
+    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    ans = ("Skipped keep_samples\n"
+        "Calling determine_cases_and_controls\n"
+        "Calling filter_prep_for_matchMD\n" 
+        "Calling matcher\n"
+        "Returning metadata\n")
+    assert_equals(ans, unit_all_out.output)
+    
+    #ccm
+    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input), "--control", "./%s/%s"%(unit, test_control), "--case", "./%s/%s"%(unit, test_case), "--match", "./%s/%s"%(unit, test_match), "--one", "--unit"]
+    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    ans = ("Skipped keep_samples\n"
+        "Calling determine_cases_and_controls\n"
+        "Skipped filter_prep_for_matchMD\n" 
+        "Calling matcher\n"
+        "Returning metadata\n")
+    assert_equals(ans, unit_all_out.output)
+    
+    #none
+    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input), "--one", "--unit"]
+    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    ans = ("Skipped keep_samples\n"
+        "Skipped determine_cases_and_controls and returning the metadata\n")
+    assert_equals(ans, unit_all_out.output)
+    
+    
 @click.command()
 @click.option("--verbose", is_flag=True,
     help="Tells function if it should output print statements or not."
@@ -618,17 +718,22 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
 @click.option("--all_matches",
     default="all_matches.txt",
     help="Name of the file that contains the lines to match the samples used when testing the exporting all matches instead of one to one and exporting only samples that got matched")
+
+@click.option("--unit_main_input",
+    default="unit_main_input.tsv",
+    help="")
+
 def main(verbose, unittest_files, test_case, test_case_noentries, test_control_in,
-        test_control_notin, test_keep, test_keep_noentries, test_match,
-        test_match_error_column, test_match_error_int_str, test_nulls,
-        test_nulls_noentries, unit_case_input, unit_case_output, unit_keep_input,
-        unit_keep_output, unit_match_input, unit_match_int_str_case,
-        unit_match_int_str_control, unit_match_output, unit_no_match_input,
-        unit_no_match_output, unit_no_null_input, unit_null_input,
-        unit_null_output, unit_no_cases_match_input, unit_no_cases_match_output,
-        unit_no_controls_match_input, unit_no_controls_match_output, empty_file,
-        all_matches_input, all_matches_output, only_all_matches_output, 
-        only_one_match_output, all_matches):
+         test_control_notin, test_keep, test_keep_noentries, test_match,
+         test_match_error_column, test_match_error_int_str, test_nulls,
+         test_nulls_noentries, unit_case_input, unit_case_output, unit_keep_input,
+         unit_keep_output, unit_match_input, unit_match_int_str_case,
+         unit_match_int_str_control, unit_match_output, unit_no_match_input,
+         unit_no_match_output, unit_no_null_input, unit_null_input,
+         unit_null_output, unit_no_cases_match_input, unit_no_cases_match_output,
+         unit_no_controls_match_input, unit_no_controls_match_output, empty_file,
+         all_matches_input, all_matches_output, only_all_matches_output, 
+         only_one_match_output, all_matches, unit_main_input):
 
     test_orderDict(verbose)
     test_order_keys(verbose)
@@ -652,6 +757,8 @@ def main(verbose, unittest_files, test_case, test_case_noentries, test_control_i
         unit_no_controls_match_input, unit_no_controls_match_output,
         all_matches_input, all_matches_output, only_all_matches_output, 
         only_one_match_output, all_matches)
+    test_mainControler(verbose, unittest_files, test_keep, test_case, test_control_in,
+              test_nulls, test_match, unit_main_input)
 
 
 

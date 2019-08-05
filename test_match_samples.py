@@ -511,6 +511,29 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
 
 def test_mainControler(verbose, unit, test_keep, test_case, test_control,
               test_nulls, test_match, unit_main_input):
+    '''
+    Tests that match_samples.py's mainControler function follows the correct steps based on different inputs
+    
+    Parameters
+    ----------
+    verbose: boolean
+        Tells function if it should output print statements or not.
+            True outputs print statements.
+    unit: string
+        Location of the folder that holds the unit test files
+    test_case: string
+        Name of the query file that contains the normal case query
+    test_control_in: string
+        Name of the query file that contains the normal control query using IN
+    test_keep: string
+        Name of the query file that contains the sql queries to do a normal keep
+    test_match: string
+        Name of the file that contains the lines to match the samples normally
+    test_nulls: string
+        Name of the file that contains the null values used to prepare metadata objects for match in filter_prep_for_matchMD
+    unit_main_input: string
+        Name of the tsv file that will be loaded into a metadata object. This object will be used to test the logic of mainControler function.
+    '''
 
     runner = CliRunner()
     
@@ -718,11 +741,9 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
 @click.option("--all_matches",
     default="all_matches.txt",
     help="Name of the file that contains the lines to match the samples used when testing the exporting all matches instead of one to one and exporting only samples that got matched")
-
 @click.option("--unit_main_input",
     default="unit_main_input.tsv",
-    help="")
-
+    help="Name of the tsv file that will be loaded into a metadata object. This object will be used to test the logic of mainControler function.")
 def main(verbose, unittest_files, test_case, test_case_noentries, test_control_in,
          test_control_notin, test_keep, test_keep_noentries, test_match,
          test_match_error_column, test_match_error_int_str, test_nulls,

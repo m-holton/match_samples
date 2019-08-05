@@ -32,11 +32,11 @@ The program takes up to eight inputs.
 9. one 
    - flag that tells program to call stableMarriageRunner and do one to one matches
 10. only_matches
-   - flag that makes program filter out none matched samples at the end of matching before the metadata is outputted
+    - flag that makes program filter out none matched samples at the end of matching before the metadata is outputted
 
+   
 ## Input File Format
-inputdata must be a tab separated file such as a .tsv. T
-he top column contains the metadata catagories and the left most row contains the sample ids.
+inputdata must be a tab separated file such as a .tsv. The top column contains the metadata catagories and the left most row contains the sample ids.
 
 keep, control, and case should all contain one sqlite statement per line. 
 Two statements that are usefull to use are the IN and NOT IN statements. 
@@ -78,10 +78,14 @@ exact    sample_type
 
 This would match case and control samples that have the same value for sex and sample_type and their values for age are within 3 of eachother. 
 
+## Output
+Output is a metadata object. This metadata objects reflects the fitering, labeling, and matching done by the program. 
+
 ## Program Functions
 
-1. mainController
+1. main
    - Calls the other functions depending on which inputs are given
+   - Returns the final metadata object 
 2. get_user_input_query_lines
    - Loads input files into a dictionary that AllInOne uses
 3. keep_samples

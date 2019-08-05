@@ -191,6 +191,11 @@ def get_user_input_query_lines(verbose, dictofFiles):
             elements are an array of the lines of the file the key corrisponds
             to.
 
+    Raises
+    ------
+    ValueError
+        If a metadata file can't be loaded into a metadata object
+        If a file can't be opened and have each of its lines read into the dictionary of input files
 
     '''
     dict_of_file_lines = {}
@@ -241,6 +246,11 @@ def keep_samples(verbose, original_MD, keep_query_lines):
     shrunk_MD : Metadata object
         original_MD input except that desired exclution has been applied so
             only the samples that match the input querys are kept
+            
+    Raises
+    ------
+    ValueError
+        If the input keep file of sql commands is empty
     '''
 
     initial_size = original_MD.id_count
@@ -284,6 +294,10 @@ def determine_cases_and_controls(verbose, afterExclusion_MD, query_line_dict):
     mergedMD : Metadata object
         Metadata object with unwanted samples filtered out and a case_control
             column that reflects if the index is a case, control, or Undefined
+    Raises
+    ------
+    ValueError
+        If the input file of sql commands for determining case and controls is empty
     '''
 
     ids = afterExclusion_MD.get_ids()
@@ -350,6 +364,11 @@ def filter_prep_for_matchMD(verbose, merged_MD, match_condition_lines,
     returned_MD : Metadata object
         Samples that do not have valid entries for columns that determine
             matching are removed. Everything else is the same as merged_MD.
+    
+    Raises
+    ------
+    KeyError
+        match_condition_lines tells the program to match based on a column that does not exist in the metadata
     '''
     returned_MD = merged_MD
     if verbose:
@@ -369,8 +388,8 @@ def filter_prep_for_matchMD(verbose, merged_MD, match_condition_lines,
             returned_MD.get_column(column)
         except:
             raise KeyError("Column %s not found in your input data. "
-                           "Correct this error in your --match file"
-                           %(column))
+                         "Correct this error in your --match file"
+                             %(column))
 
         #Get the ids of samples in the metadata object that have non null
             #values for every column used for matching
@@ -424,7 +443,14 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
             matches represented by a column called matched to. Values 
             in matched to are the sample ids of the sample samples 
             matches to
-
+    
+    Raises
+    ------
+    KeyError
+        conditions_for_match_lines tells the program to match based on a column that does not exist in the metadata
+        conditions_for_match_lines has a range value that can not be converted to a float
+        For one of the columns that conditions_for_match_lines tells to match on using a range a control or case sample in prepped_for_match_MD has a value that can not be converted into a float
+        
     '''
     case_dictionary = {}
     control_dictionary = {}

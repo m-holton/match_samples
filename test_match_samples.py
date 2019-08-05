@@ -50,15 +50,13 @@ def test_orderDict(verbose):
     
     counter = 0
     run_number = 1
-    if verbose:
-        print("Running orderDict 100 times to test order when frequencies are equal.")
+    print("Running orderDict 100 times to test order when frequencies are equal.")
     while run_number <=100:
         if (stable.orderDict(verbose, test_equal_freq, test_frequencies_equal)
             != correct_output_freq):
             counter = counter + 1
         run_number = run_number + 1
-    if verbose:
-        print('times out of 100 that the order was wrong = %s'%(counter))
+    print('times out of 100 that the order was wrong = %s'%(counter))
 
 def test_order_keys(verbose):
     '''
@@ -74,21 +72,33 @@ def test_order_keys(verbose):
     '''
     stable = match_samples.Stable_Marriage()
 
-    test_unorderedDict={'2':['a','b'], '1':['a'],  '3':['a','b','c'],
+    test_unorderedDict=  {'2':['a','b'], '1':['a'],  '3':['a','b','c'],
         '5':['a','b','c','d','e'], '4':['a','b','c','d']}
-    correct_output=['5','4','3','2','1']
+    correct_output = ['5','4','3','2','1']
     assert_equals(stable.order_keys(verbose, test_unorderedDict),
         correct_output)
 
 
-    test_unorderedDict_equ_freq={'2b':['a','b'], '1':['a'], '2a':['a', 'c'],
+    test_unorderedDict_equ_freq = {'2b':['a','b'], '1':['a'], '2a':['a', 'c'],
         '3':['a','b','c'],  '5':['a','b','c','d','e'], '4':['a','b','c','d']}
-    correct_output_equ_freq=['5','4','3','2b', '2a', '1']
-    '''
-    for i in range(0,100):
-        assert_equals(stable.order_keys(verbose, test_unorderedDict_equ_freq),
-            correct_output_equ_freq)
-    '''
+    
+    correct_output_equ_freq_one = ['5','4','3','2b', '2a', '1']
+    correct_output_equ_freq_two = ['5','4','3','2a', '2b', '1']
+    
+    counter_one = 0
+    counter_two = 0
+    print("Running order_keys 100 times to test order when frequencies are equal.")
+    num_runs = 1000
+    for i in range(0,num_runs):
+        ans = stable.order_keys(verbose, test_unorderedDict_equ_freq)
+        if (ans == correct_output_equ_freq_one):
+            counter_one = counter_one + 1
+        if (ans == correct_output_equ_freq_two):
+            counter_two = counter_two + 1
+            
+    print('Times out of 100 that the order was wrong = %s'%(num_runs-counter_two-counter_one))
+    print("The ratio of solution one to solution two was %s/%s"%(counter_one, counter_two))
+
 
 
 def test_stable_marriage(verbose):
@@ -534,7 +544,6 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
     unit_main_input: string
         Name of the tsv file that will be loaded into a metadata object. This object will be used to test the logic of mainControler function.
     '''
-
     runner = CliRunner()
     
     #kccnm
@@ -765,11 +774,14 @@ def main(verbose, unittest_files, test_case, test_case_noentries, test_control_i
 
     test_keep_samples(verbose, unittest_files, unit_keep_input, unit_keep_output, 
         test_keep, test_keep_noentries, empty_file)
+    
     test_determine_cases_and_controls(verbose, unittest_files, unit_case_input, 
         unit_case_output, test_control_in, test_case, test_case_noentries, empty_file)
+    
     test_filter_prep_for_matchMD(verbose, unittest_files, unit_null_input,
         unit_null_output, unit_no_null_input, test_nulls, test_match, 
         test_match_error_column, test_nulls_noentries, empty_file)
+    
     test_match_samples(verbose, unittest_files, unit_match_input, unit_match_output,
         test_match, unit_match_int_str_control, unit_match_int_str_case,
         test_match_error_column, test_match_error_int_str,
@@ -778,6 +790,7 @@ def main(verbose, unittest_files, test_case, test_case_noentries, test_control_i
         unit_no_controls_match_input, unit_no_controls_match_output,
         all_matches_input, all_matches_output, only_all_matches_output, 
         only_one_match_output, all_matches)
+    
     test_mainControler(verbose, unittest_files, test_keep, test_case, test_control_in,
               test_nulls, test_match, unit_main_input)
 

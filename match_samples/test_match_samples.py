@@ -8,7 +8,6 @@ import time
 import click
 
 import pandas as pd
-import numpy as np
 
 from nose.tools import assert_raises, assert_equals
 from pandas.util.testing import assert_frame_equal

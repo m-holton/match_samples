@@ -8,7 +8,6 @@ import time
 import click
 
 import pandas as pd
-import numpy as np
 
 import qiime2
 from qiime2 import Metadata
@@ -590,7 +589,7 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
     help="Name of file with sqlite lines used to determine "
          "what samples to label control.")
 @click.option("--case", default=None, type = str,
-    help="Mame of file with sqlite lines used to determine "
+    help="Name of file with sqlite lines used to determine "
          "what samples to label case.")
 @click.option("--nullvalues", default=None, type = str,
     help="Name of file with list used to determine "

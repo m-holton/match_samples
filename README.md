@@ -1,5 +1,5 @@
 # match_samples.py
-match_samples.py is the main program. _match_samples.py contains the unit tests for match_samples.py
+match_samples.py is the main program. test_match_samples.py contains the unit tests for match_samples.py
 unitTest_files contains the files used in the unit tests.
 
 match_samples allows users to filter down a metadata file, label samples case or control, and match case to control samples. 

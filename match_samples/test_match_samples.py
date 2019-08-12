@@ -699,7 +699,7 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
     help="Tells function if it should output print statements or not."
          "True outputs print statements.")
 @click.option("--unittest_files",
-    default="unitTest_files",
+    default="match_samples/unitTest_files",
     help="Location of the folder that holds the unit test files")
 @click.option("--test_case",
     default="test_case.txt",

@@ -180,7 +180,7 @@ def get_user_input_query_lines(verbose, dictofFiles):
             outputs print statements.
 
     dictofFiles: dictionary of strings
-        Each key is what the string is for like inputdata being the input
+        Each key is what the string is for like metadata being the input
             metadata file. The element of the each key is a file path/name
 
     Returns
@@ -202,7 +202,9 @@ def get_user_input_query_lines(verbose, dictofFiles):
     for key in dictofFiles:
         if dictofFiles[key] is None:
             continue
-        if key == "inputdata":
+        if key == "metadata":
+            dict_of_file_lines[key] = dictofFiles[key]
+            '''
             #read metadata file into metadata object
             if verbose:
                 print("metadata file path entered is %s"%(dictofFiles[key]))
@@ -211,6 +213,7 @@ def get_user_input_query_lines(verbose, dictofFiles):
             except:
                 raise ValueError("metadata file could not load. The file "
                     + "must be a tab separated metadata file.")
+            '''
         else:
             if verbose:
                     print("file path entered is %s"%(dictofFiles[key]))
@@ -580,8 +583,8 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
 @click.command()
 @click.option("--verbose", is_flag=True,
     help="Make print statements appear.")
-@click.option("--inputdata", required = True, type = str,
-    help="Name of file with sample metadata to analyze.")
+#@click.option("--metadata", required = True, type = str,
+#    help="Name of file with sample metadata to analyze.")
 @click.option("--keep", default=None, type = str,
     help="Name of file with sqlite lines used to determine "
          "what samples to exclude or keep.")
@@ -608,15 +611,23 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
     help="When given as a parameter will print out statements used"
          " for unit tests of the mainControler function. These "
          "statements indicate what the program is doing.")
-def mainControler(verbose, inputdata, keep, control, case,
-    nullvalues, match, one, only_matches, unit):
+@click.option("--cc_column", default=None, type = str,
+    help="Name of the column in the metadata that contains the "
+         "case or control label")
+@click.option("--control_label", default=None, type = str,
+    help="What value refers to a control sample if using your own labels")
+@click.option("--case_label", default=None, type = str,
+    help="What value refers to a case sample if using your own labels")
+def mainControler(verbose, metadata: Metadata, keep, control, case,
+    nullvalues, match, one, only_matches, unit, cc_column, control_label,
+    case_label):
     '''
     Parameters
     ----------
     verbose: boolean
         Tells function if it should output print statements or not.
             True outputs print statements.
-    inputdata: string
+    metadata: string
         Name of file with sample metadata to analyze.
     keep: string
         name of file with sqlite lines used to determine what samples to
@@ -653,7 +664,7 @@ def mainControler(verbose, inputdata, keep, control, case,
     '''
 
     tstart = time.clock()
-    inputDict = {"inputdata":inputdata, "keep":keep, "control":control,
+    inputDict = {"metadata":metadata, "keep":keep, "control":control,
         "case":case, "nullvalues":nullvalues, "match":match}
     #loads and opens input files
     inputDict = get_user_input_query_lines(verbose, inputDict)
@@ -667,7 +678,7 @@ def mainControler(verbose, inputdata, keep, control, case,
     if "keep" in inputDict:
         if verbose or unit:
             print("Calling keep_samples")
-        afterExclusionMD = keep_samples(verbose, inputDict["inputdata"],
+        afterExclusionMD = keep_samples(verbose, inputDict["metadata"],
             inputDict["keep"])
 
         if verbose:
@@ -679,7 +690,7 @@ def mainControler(verbose, inputdata, keep, control, case,
             print("Skipped keep_samples")
         if verbose:
             tkeep = tloadedFiles
-        afterExclusionMD = inputDict["inputdata"]
+        afterExclusionMD = inputDict["metadata"]
 
 
     if "case" in inputDict and "control" in inputDict:

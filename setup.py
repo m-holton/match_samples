@@ -7,8 +7,8 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="match_samples",
-    version="1",
+    name="q2-match_samples",
+    version='1',
     packages=find_packages(),
     author="Mark Holton",
     author_email="mholton@ucsd.edu",

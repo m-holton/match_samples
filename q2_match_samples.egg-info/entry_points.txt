@@ -1,3 +1,0 @@
-[qiime2.plugins]
-q2-match_samples = match_samples.plugin_setup:plugin
-

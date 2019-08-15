@@ -14,6 +14,7 @@ from pandas.util.testing import assert_frame_equal
 from click.testing import CliRunner
 
 import match_samples
+import stand_alone_match_samples
 from qiime2 import Metadata
 
 def test_orderDict(verbose):
@@ -159,15 +160,15 @@ def test_get_user_input_query_lines(verbose, unit, input_metadata,
             of the match_samples.py
     match_query: string
     '''
-    input_dict = {"inputdata":input_metadata}
+    input_dict = {"metadata":input_metadata}
     input_dict = {"match":match_query}
 
     input_dict = {"keep":None, "case":None, "nullvalues":None, "match":None,
-        "inputdata":"input_metadata"}
+        "metadata":"input_metadata"}
     assert_raises(ValueError, match_samples.get_user_input_query_lines,
         verbose, input_dict)
     input_dict = {"keep":"None", "case":None, "nullvalues":None, "match":None,
-        "inputdata":input_metadata}
+        "metadata":input_metadata}
     assert_raises(ValueError, match_samples.get_user_input_query_lines,
         verbose, input_dict)
 
@@ -561,14 +562,14 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
     runner = CliRunner()
 
     #kccnm
-    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input),
+    args = ["--metadata", "./%s/%s"%(unit, unit_main_input),
         "--keep", "./%s/%s"%(unit, test_keep),
         "--control", "./%s/%s"%(unit, test_control),
         "--case", "./%s/%s"%(unit, test_case),
         "--nullvalues", "./%s/%s"%(unit, test_nulls),
         "--match", "./%s/%s"%(unit, test_match),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Calling determine_cases_and_controls\n"
         "Calling filter_prep_for_matchMD\n"
@@ -577,13 +578,13 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
     assert_equals(ans, unit_all_out.output)
 
     #kccm
-    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input),
+    args = ["--metadata", "./%s/%s"%(unit, unit_main_input),
         "--keep", "./%s/%s"%(unit, test_keep),
         "--control", "./%s/%s"%(unit, test_control),
         "--case", "./%s/%s"%(unit, test_case),
         "--match", "./%s/%s"%(unit, test_match),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Calling determine_cases_and_controls\n"
         "Skipped filter_prep_for_matchMD\n"
@@ -592,13 +593,13 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
     assert_equals(ans, unit_all_out.output)
 
     #kccn
-    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input),
+    args = ["--metadata", "./%s/%s"%(unit, unit_main_input),
         "--keep", "./%s/%s"%(unit, test_keep),
         "--control", "./%s/%s"%(unit, test_control),
         "--case", "./%s/%s"%(unit, test_case),
         "--nullvalues", "./%s/%s"%(unit, test_nulls),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Calling determine_cases_and_controls\n"
         "--nullvalues was given but --match was not so returning "
@@ -606,12 +607,12 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
     assert_equals(ans, unit_all_out.output)
 
     #kcc
-    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input),
+    args = ["--metadata", "./%s/%s"%(unit, unit_main_input),
         "--keep", "./%s/%s"%(unit, test_keep),
         "--control", "./%s/%s"%(unit, test_control),
         "--case", "./%s/%s"%(unit, test_case),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Calling determine_cases_and_controls\n"
         "Skipped filter_prep_for_matchMD\n"
@@ -619,52 +620,52 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
     assert_equals(ans, unit_all_out.output)
 
     #kcontrol
-    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input),
+    args = ["--metadata", "./%s/%s"%(unit, unit_main_input),
         "--keep", "./%s/%s"%(unit, test_keep),
         "--control", "./%s/%s"%(unit, test_control),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Skipped determine_cases_and_controls and returning the metadata\n")
     assert_equals(ans, unit_all_out.output)
 
     #kcase
-    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input),
+    args = ["--metadata", "./%s/%s"%(unit, unit_main_input),
         "--keep", "./%s/%s"%(unit, test_keep),
         "--case", "./%s/%s"%(unit, test_case),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Skipped determine_cases_and_controls and returning the metadata\n")
     assert_equals(ans, unit_all_out.output)
 
     #k
-    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input),
+    args = ["--metadata", "./%s/%s"%(unit, unit_main_input),
         "--keep", "./%s/%s"%(unit, test_keep),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Skipped determine_cases_and_controls and returning the metadata\n")
     assert_equals(ans, unit_all_out.output)
 
     #km
-    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input),
+    args = ["--metadata", "./%s/%s"%(unit, unit_main_input),
         "--keep", "./%s/%s"%(unit, test_keep),
         "--match", "./%s/%s"%(unit, test_match),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Skipped determine_cases_and_controls and returning the metadata\n")
     assert_equals(ans, unit_all_out.output)
 
     #ccnm
-    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input),
+    args = ["--metadata", "./%s/%s"%(unit, unit_main_input),
         "--control", "./%s/%s"%(unit, test_control),
         "--case", "./%s/%s"%(unit, test_case),
         "--nullvalues", "./%s/%s"%(unit, test_nulls),
         "--match", "./%s/%s"%(unit, test_match),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
     ans = ("Skipped keep_samples\n"
         "Calling determine_cases_and_controls\n"
         "Calling filter_prep_for_matchMD\n"
@@ -673,12 +674,12 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
     assert_equals(ans, unit_all_out.output)
 
     #ccm
-    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input),
+    args = ["--metadata", "./%s/%s"%(unit, unit_main_input),
         "--control", "./%s/%s"%(unit, test_control),
         "--case", "./%s/%s"%(unit, test_case),
         "--match", "./%s/%s"%(unit, test_match),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
     ans = ("Skipped keep_samples\n"
         "Calling determine_cases_and_controls\n"
         "Skipped filter_prep_for_matchMD\n"
@@ -687,8 +688,8 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
     assert_equals(ans, unit_all_out.output)
 
     #none
-    args = ["--inputdata", "./%s/%s"%(unit, unit_main_input), "--one", "--unit"]
-    unit_all_out = runner.invoke(match_samples.mainControler, args)
+    args = ["--metadata", "./%s/%s"%(unit, unit_main_input), "--one", "--unit"]
+    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
     ans = ("Skipped keep_samples\n"
         "Skipped determine_cases_and_controls and returning the metadata\n")
     assert_equals(ans, unit_all_out.output)

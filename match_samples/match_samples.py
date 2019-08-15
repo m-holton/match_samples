@@ -5,7 +5,6 @@
 # ----------------------------------------------------------------------------
 
 import time
-import click
 
 import pandas as pd
 
@@ -203,17 +202,18 @@ def get_user_input_query_lines(verbose, dictofFiles):
         if dictofFiles[key] is None:
             continue
         if key == "metadata":
-            dict_of_file_lines[key] = dictofFiles[key]
-            '''
-            #read metadata file into metadata object
-            if verbose:
-                print("metadata file path entered is %s"%(dictofFiles[key]))
-            try:
-                dict_of_file_lines[key] = Metadata.load(dictofFiles[key])
-            except:
-                raise ValueError("metadata file could not load. The file "
-                    + "must be a tab separated metadata file.")
-            '''
+            if isinstance(dictofFiles[key], str):
+                #read metadata file into metadata object
+                if verbose:
+                    print("metadata file path entered is %s"%(dictofFiles[key]))
+                try:
+                    dict_of_file_lines[key] = Metadata.load(dictofFiles[key])
+                except:
+                    raise ValueError("metadata file could not load. The file "
+                        + "must be a tab separated metadata file.")
+            else:
+                dict_of_file_lines[key] = dictofFiles[key]
+            
         else:
             if verbose:
                     print("file path entered is %s"%(dictofFiles[key]))
@@ -580,47 +580,8 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
     return matchedMD
 
 
-@click.command()
-@click.option("--verbose", is_flag=True,
-    help="Make print statements appear.")
-#@click.option("--metadata", required = True, type = str,
-#    help="Name of file with sample metadata to analyze.")
-@click.option("--keep", default=None, type = str,
-    help="Name of file with sqlite lines used to determine "
-         "what samples to exclude or keep.")
-@click.option("--control", default=None, type = str,
-    help="Name of file with sqlite lines used to determine "
-         "what samples to label control.")
-@click.option("--case", default=None, type = str,
-    help="Name of file with sqlite lines used to determine "
-         "what samples to label case.")
-@click.option("--nullvalues", default=None, type = str,
-    help="Name of file with list used to determine "
-         "what values are null.")
-@click.option("--match", default=None, type = str,
-    help="Name of file with lines used to determine "
-         "what categories to match upon and how to match "
-         "samples based on each category.")
-@click.option("--one", is_flag=True,
-    help="When given as a parameter match_samples will do one to "
-         "one matching instead of all matches.")
-@click.option("--only_matches", is_flag=True,
-    help="When given as a parameter match_samples will filter out"
-         "non-matched samples from output file.")
-@click.option("--unit", is_flag=True,
-    help="When given as a parameter will print out statements used"
-         " for unit tests of the mainControler function. These "
-         "statements indicate what the program is doing.")
-@click.option("--cc_column", default=None, type = str,
-    help="Name of the column in the metadata that contains the "
-         "case or control label")
-@click.option("--control_label", default=None, type = str,
-    help="What value refers to a control sample if using your own labels")
-@click.option("--case_label", default=None, type = str,
-    help="What value refers to a case sample if using your own labels")
-def mainControler(verbose, metadata: Metadata, keep, control, case,
-    nullvalues, match, one, only_matches, unit, cc_column, control_label,
-    case_label):
+def mainControler(verbose, metadata, keep, control, case,
+    nullvalues, match, one, only_matches, unit):
     '''
     Parameters
     ----------
@@ -662,7 +623,7 @@ def mainControler(verbose, metadata: Metadata, keep, control, case,
         samples
 
     '''
-
+    
     tstart = time.clock()
     inputDict = {"metadata":metadata, "keep":keep, "control":control,
         "case":case, "nullvalues":nullvalues, "match":match}
@@ -673,8 +634,6 @@ def mainControler(verbose, metadata: Metadata, keep, control, case,
         print(", ".join(inputDict.keys()))
         tloadedFiles = time.clock()
         print("Time to load input files is %s"%(tloadedFiles - tstart))
-
-
     if "keep" in inputDict:
         if verbose or unit:
             print("Calling keep_samples")
@@ -770,6 +729,3 @@ def mainControler(verbose, metadata: Metadata, keep, control, case,
 
 
 
-
-if __name__ == "__main__":
-    mainControler()

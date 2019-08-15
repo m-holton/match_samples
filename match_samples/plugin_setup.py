@@ -11,38 +11,6 @@ from qiime2.plugin import (Plugin, Metadata, Str, List, Citations, Range, Int,
 from q2_types.ordination import PCoAResults
 
 
-
-PARAMETERS = {'verbose': Bool, 'inputdata': Str, 'keep': Str, 
-              'control': Str, 'case': Str,
-              'nullvalues': Str, 'match': Str, 'one': Bool, 
-              'only_matches': Bool, 'unit': Bool}
-
-PARAMETERS_DESC = {
-    'verbose': ('Tells function if it should output print statements or not.'
-            'True outputs print statements.'), 
-        'inputdata': ('Name of file with sample metadata to analyze.'), 
-        'keep': ('Name of file with sqlite lines used to determine '
-            'what samples to exclude or keep.'), 
-        'control': ('Name of file with sqlite lines used to determine '
-            'what samples to label control.'), 
-        'case': ('Name of file with sqlite lines used to determine '
-            'what samples to label case.'),
-        'nullvalues': ('Name of file with list used to determine '
-            'what values are null.'), 
-        'match': ('Name of file with lines used to determine '
-            'what categories to match upon and how to match '
-            'samples based on each category.'), 
-        'one': ('When given as a parameter match_samples will do one to '
-            'one matching instead of all matches.'), 
-        'only_matches': ('When given as a parameter match_samples will filter out'
-            'non-matched samples from output file.'), 
-        'unit': ('When given as a parameter will print out statements used '
-            'for unit tests of the mainControler function. These '
-            'statements indicate what the program is doing.')
-}
-
-
-
 plugin = Plugin(
     name='match_samples',
     version='1',
@@ -62,55 +30,45 @@ parameters={
     'keep': Str, 
     'control': Str, 'case': Str,
     'nullvalues': Str, 'match': Str, 'one': Bool, 
-    'only_matches': Bool, 'unit': Bool
+    'only_matches': Bool, 'unit': Bool, 'metadata': Metadata
 }
-inputs={'metadata': Metadata}
+inputs={}
 outputs=[('outputMD', Metadata)]
-input_descriptions={'metadata': ('Name of file with sample metadata to analyze.')}
+input_descriptions={}
 parameter_descriptions={
+    'metadata': 'Sample metadata to analyze.',
     'verbose': ('Tells function if it should output print statements or not.'
         'True outputs print statements.'), 
-    'keep': ('Name of file with sqlite lines used to determine '
+    'keep': ('Path of file with sqlite lines used to determine '
         'what samples to exclude or keep.'), 
-    'control': ('Name of file with sqlite lines used to determine '
+    'control': ('Path of file with sqlite lines used to determine '
         'what samples to label control.'), 
-    'case': ('Name of file with sqlite lines used to determine '
+    'case': ('Path of file with sqlite lines used to determine '
         'what samples to label case.'),
-    'nullvalues': ('Name of file with list used to determine '
+    'nullvalues': ('Path of file with list used to determine '
         'what values are null.'), 
-    'match': ('Name of file with lines used to determine '
+    'match': ('Path of file with lines used to determine '
         'what categories to match upon and how to match '
         'samples based on each category.'), 
-    'one': ('When given as a parameter match_samples will do one to '
+    'one': ('When True match_samples will do one to '
         'one matching instead of all matches.'), 
-    'only_matches': ('When given as a parameter match_samples will filter out'
+    'only_matches': ('When True match_samples will filter out'
         'non-matched samples from output file.'), 
-    'unit': ('When given as a parameter will print out statements used '
+    'unit': ('When True program will print out statements used '
         'for unit tests of the mainControler function. These '
         'statements indicate what the program is doing.')
 }
-output_descriptions={'outputMD': ('Metadata object that contains the filtered, labeled, and or matched samples')}
+output_descriptions={'outputMD': 'Metadata object that contains the filtered, labeled, and or matched samples'}
 
-'''    
 plugin.methods.register_function(
-    name=name,
-    description=description,
     function=function,
     inputs=inputs,
-    input_descriptions=input_descriptions,
     parameters=parameters,
+    outputs=[],
+    input_descriptions=input_descriptions,
     parameter_descriptions=parameter_descriptions,
-    outputs=outputs,
-    output_descriptions=output_descriptions
-)
-'''
-
-plugin.methods.register_function(
+    output_descriptions={},
     name=name,
-    description=description,
-    function=function,
-    inputs=inputs,
-    outputs=outputs,
-    parameters=parameters
+    description=description
 )
 

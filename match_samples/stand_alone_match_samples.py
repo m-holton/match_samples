@@ -25,6 +25,8 @@ import match_samples
     help="Name of file with lines used to determine "
          "what categories to match upon and how to match "
          "samples based on each category.")
+@click.option("--output", default=None, type = str,
+    help="Path to file where metadata should be saved to")
 @click.option("--one", is_flag=True,
     help="When given as a parameter match_samples will do one to "
          "one matching instead of all matches.")
@@ -35,8 +37,6 @@ import match_samples
     help="When given as a parameter will print out statements used"
          " for unit tests of the mainControler function. These "
          "statements indicate what the program is doing.")
-@click.option("--output", default=None, type = str,
-    help="Path to file where metadata should be saved to")
 def standMainControler(verbose, metadata, keep, control, case,
     nullvalues, match, one, only_matches, unit, output):
     '''

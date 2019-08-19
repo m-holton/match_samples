@@ -45,8 +45,10 @@ class Stable_Marriage:
             dictionary[k] = sorted(dictionary[k])
             dictionary[k] = sorted(dictionary[k],
                 key=lambda x:value_frequency[x])
+        '''
         if verbose:
             print("Ordered dictionary is %s"%(dictionary))
+        '''
         return dictionary
 
     def order_keys(self, verbose, dictionary):
@@ -74,8 +76,10 @@ class Stable_Marriage:
         '''
         keys_greatest_to_least = sorted(dictionary,
             key=lambda x: len(dictionary[x]), reverse=True)
+        '''
         if verbose:
             print("Ordered samples are %s"%(keys_greatest_to_least))
+        '''
         return keys_greatest_to_least
 
     def stableMarriageRunner(self, verbose, case_dictionary,
@@ -126,8 +130,10 @@ class Stable_Marriage:
         one_to_one_match_dictionary = {}
         while free_keys:
             key = free_keys.pop()
+            '''
             if verbose:
                 print("Popped the key %s"%(key))
+            '''
             if case_dictionary[key] == []:
                 continue
             #get the highest ranked woman that has not yet been proposed to
@@ -156,11 +162,11 @@ class Stable_Marriage:
                 else:
                     free_keys.append(key)
 
-
+        '''
         if verbose:
             print("Dictionary of matches after solving stable marriage problem "
                 "is %s"%(one_to_one_match_dictionary))
-
+        '''
         return one_to_one_match_dictionary
 
 
@@ -206,11 +212,12 @@ def get_user_input_query_lines(verbose, dictofFiles):
                 #read metadata file into metadata object
                 if verbose:
                     print("metadata file path entered is %s"%(dictofFiles[key]))
-                try:
-                    dict_of_file_lines[key] = Metadata.load(dictofFiles[key])
-                except:
+                #try:
+                dict_of_file_lines[key] = Metadata.load(dictofFiles[key])
+                '''except:
                     raise ValueError("metadata file could not load. The file "
                         + "must be a tab separated metadata file.")
+                '''
             else:
                 dict_of_file_lines[key] = dictofFiles[key]
             
@@ -263,8 +270,9 @@ def keep_samples(verbose, original_MD, keep_query_lines):
     shrunk_MD = original_MD.filter_ids(ids)
     if verbose:
         print("size of original MetaData Object = %s"
-            "size of filtered MetaData Object = %s"
-            %(initial_size, shrunk_MD.id_count))
+            %(initial_size))
+        print("size of filtered MetaData Object = %s"
+            %(shrunk_MD.id_count))
         print("filtered out %s samples"%(initial_size-shrunk_MD.id_count))
         print("kept %s samples"%(shrunk_MD.id_count))
 
@@ -410,6 +418,10 @@ def filter_prep_for_matchMD(verbose, merged_MD, match_condition_lines,
               %(totalNumOfSamples - returned_MD.id_count))
         print("%s samples after filtering out null samples"
               %(returned_MD.id_count))
+        print("%s case samples after filtering out null samples"
+              %(len(returned_MD.get_ids("'case_control' IN ('case')"))))
+        print("%s control samples after filtering out null samples"
+              %(len(returned_MD.get_ids("'case_control' IN ('control')"))))
 
     return returned_MD
 
@@ -533,6 +545,7 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
             control_match_count_dictionary.update(
                 {id_control:(control_match_count_dictionary[id_control]+1)})
 
+    '''
     if verbose:
         print("case_dictionary is %s"
               %(case_dictionary))
@@ -540,7 +553,8 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
               %(control_match_count_dictionary))
         print("case_match_count_dictionary is %s"
               %(case_match_count_dictionary))
-
+    '''
+    
     if one_to_one:
         stable = Stable_Marriage()
         case_to_control_match = stable.stableMarriageRunner(verbose,
@@ -573,10 +587,11 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
         ids = matchedMD.get_ids("matched_to NOT IN ('none')")
         #shrinks the MD to only have matched samples
         matchedMD = matchedMD.filter_ids(ids)
+    '''
     if verbose:
         print("matched_to column")
         print(matchedMD.to_dataframe()["matched_to"])
-
+    '''
     return matchedMD
 
 

@@ -36,7 +36,8 @@ The program takes up to ten inputs.
 ## Input File Format
 inputdata must be a tab separated file such as a .tsv. The top column contains the metadata catagories and the left most row contains the sample ids.
 
-keep, control, and case should all contain one sqlite statement per line. 
+keep, control, and case should all contain sqlite statement that can be used in a WHERE statement.
+Statements on different lines are joined by an AND.
 Two statements that are usefull to use are the IN and NOT IN statements. 
 The format for these statements is a metadata catagory followed by IN or NOT IN and then a list of values. 
 For example the metadata input file has a column named sex that records the sex of the orginism the sample came from.

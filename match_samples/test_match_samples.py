@@ -162,13 +162,14 @@ def test_get_user_input_query_lines(verbose, unit, input_metadata,
     '''
     input_dict = {"metadata":input_metadata}
     input_dict = {"match":match_query}
+    metadata = '%s/%s'%(unit,input_metadata)
 
     input_dict = {"keep":None, "case":None, "nullvalues":None, "match":None,
         "metadata":"input_metadata"}
     assert_raises(ValueError, match_samples.get_user_input_query_lines,
         verbose, input_dict)
     input_dict = {"keep":"None", "case":None, "nullvalues":None, "match":None,
-        "metadata":input_metadata}
+        "metadata":metadata}
     assert_raises(ValueError, match_samples.get_user_input_query_lines,
         verbose, input_dict)
 

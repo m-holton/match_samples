@@ -1,0 +1,13 @@
+README.md
+setup.py
+match_samples/__init__.py
+match_samples/match_samples.py
+match_samples/plugin_setup.py
+match_samples/stand_alone_match_samples.py
+match_samples/test_match_samples.py
+q2_match_samples.egg-info/PKG-INFO
+q2_match_samples.egg-info/SOURCES.txt
+q2_match_samples.egg-info/dependency_links.txt
+q2_match_samples.egg-info/entry_points.txt
+q2_match_samples.egg-info/not-zip-safe
+q2_match_samples.egg-info/top_level.txt

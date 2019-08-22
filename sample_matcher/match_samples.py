@@ -8,9 +8,8 @@ import time
 
 import pandas as pd
 
-import qiime2
 from qiime2 import Metadata
-
+from qiime2.plugins.metadata.visualizers import tabulate
 
 class Stable_Marriage:
 
@@ -136,7 +135,7 @@ class Stable_Marriage:
             '''
             if case_dictionary[key] == []:
                 continue
-            #get the highest ranked woman that has not yet been proposed to
+            #get the highest ranked control that has not yet been proposed to
             entry = case_dictionary[key].pop()
 
             if entry not in one_to_one_match_dictionary:
@@ -263,17 +262,22 @@ def keep_samples(verbose, original_MD, keep_query_lines):
         If the input keep file of sql commands is empty
     '''
 
-    initial_size = original_MD.id_count
     if len(keep_query_lines) < 1:
         raise ValueError("The keep query file is empty")
-    ids = original_MD.get_ids(" AND ".join(keep_query_lines))
-    shrunk_MD = original_MD.filter_ids(ids)
+    shrunk_MD = original_MD
     if verbose:
         print("size of original MetaData Object = %s"
-            %(initial_size))
+            %(shrunk_MD.id_count))
+    for line in keep_query_lines:
+        initial_size = shrunk_MD.id_count
+        ids = shrunk_MD.get_ids(line)
+        shrunk_MD = shrunk_MD.filter_ids(ids)
+        if verbose:
+            print(line)
+            print("\tfiltered out %s samples"%(initial_size-shrunk_MD.id_count))    
+    if verbose:
         print("size of filtered MetaData Object = %s"
             %(shrunk_MD.id_count))
-        print("filtered out %s samples"%(initial_size-shrunk_MD.id_count))
         print("kept %s samples"%(shrunk_MD.id_count))
 
 
@@ -332,10 +336,17 @@ def determine_cases_and_controls(verbose, afterExclusion_MD, query_line_dict):
         query_lines = query_line_dict[key]
         if len(query_lines) < 1:
             raise ValueError("The %s query file is empty"%(key))
-        ids = shrunk_MD.get_ids(" AND ".join(query_lines))
-        shrunk_MD = shrunk_MD.filter_ids(ids)
+            
+        for line in query_lines:
+            initial_size = shrunk_MD.id_count
+            ids = shrunk_MD.get_ids(line)
+            shrunk_MD = shrunk_MD.filter_ids(ids)
+            if verbose:
+                print(line)
+                print("\tFilters down number of potental %s samples to %s"%(key, initial_size-shrunk_MD.id_count)) 
+            
         if verbose:
-            print("%s %s samples "%(shrunk_MD.id_count,key))
+            print("Final number of %s samples is %s"%(shrunk_MD.id_count,key))
         #replaces the true values created by the loop above to case or control
         ids = shrunk_MD.ids
         case_controlDF.loc[ids, "case_control"] = key
@@ -390,10 +401,7 @@ def filter_prep_for_matchMD(verbose, merged_MD, match_condition_lines,
               %(returned_MD.id_count))
     if len(null_value_lines) == 0:
         if verbose:
-            print("%s samples filtered out due to null samples"
-                  %(totalNumOfSamples - returned_MD.id_count))
-            print("%s samples after filtering out null samples"
-                  %(returned_MD.id_count))
+            print("No null values given so no samples were filtered out")
         return returned_MD
     for condition in match_condition_lines:
         column = condition.split("\t")[1].strip()
@@ -482,7 +490,7 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
     case_for_matchDF = matchDF[matchDF["case_control"].isin(["case"])]
     # creates column to show matches. since it will contain the sample number
         #it was matched too the null value will be 0
-    matchDF["matched_to"] = "none"
+    matchDF["matched_to"] = 'none'
 
     # loops though case samples and matches them to controls
     for case_index, case_row in case_for_matchDF.iterrows():
@@ -534,10 +542,10 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
                     #don't match
                 controlDF = controlDF[controlDF[column_name].isin(
                     [case_row[column_name]])]
-
-        case_dictionary.update({case_index:controlDF.index.values})
-        case_match_count_dictionary.update(
-            {case_index:(controlDF.index.values.size)})
+        if controlDF.index.values.size > 0:
+            case_dictionary.update({case_index:controlDF.index.values})
+            case_match_count_dictionary.update(
+                {case_index:(controlDF.index.values.size)})
 
         for id_control in controlDF.index:
             if id_control not in control_match_count_dictionary:
@@ -570,6 +578,9 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
             matchDF.at[key, "matched_to"] = str(key_value)
             matchDF.at[key_value, "matched_to"] = str(key)
     else:
+        if verbose:
+            print("%s cases matched"%(
+                len(case_dictionary.keys())))
         for case in case_dictionary:
             for control in case_dictionary[case]:
                 if control in control_dictionary:
@@ -578,10 +589,13 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
                     control_dictionary[control] = [case]
             matchDF.at[case, "matched_to"] = ", ".join(
                 sorted(case_dictionary[case]))
-    for control in control_dictionary:
-        matchDF.at[control, "matched_to"] = ", ".join(
-            sorted(control_dictionary[control]))
-
+    
+        for control in control_dictionary:
+            matchDF.at[control, "matched_to"] = ", ".join(
+                sorted(control_dictionary[control]))
+    
+    
+    
     matchedMD = Metadata(matchDF)
     if only_matches:
         ids = matchedMD.get_ids("matched_to NOT IN ('none')")
@@ -596,7 +610,7 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
 
 
 def mainControler(verbose, metadata, keep, control, case,
-    nullvalues, match, one, only_matches, unit):
+    nullvalues, match, one, only_matches, unit, output):
     '''
     Parameters
     ----------
@@ -631,6 +645,8 @@ def mainControler(verbose, metadata, keep, control, case,
         When given as a parameter will print out statements used
             for unit tests of the mainControler function. These
             statements indicate what the program is doing.
+    output: string
+        File location for visualization of metadata to be outputted to. 
 
     Returns
     -------
@@ -687,7 +703,7 @@ def mainControler(verbose, metadata, keep, control, case,
         if verbose:
             tend = time.clock()
             print("Time to do everything %s"%(tend - tstart))
-        return afterExclusionMD
+        return tabulate(afterExclusionMD)
 
 
     if "nullvalues" in inputDict:
@@ -708,7 +724,7 @@ def mainControler(verbose, metadata, keep, control, case,
             if verbose:
                 tend = time.clock()
                 print("Time to do everything %s"%(tend - tstart))
-            return case_controlMD
+            return tabulate(case_controlMD)
     else:
         if verbose or unit:
                 print("Skipped filter_prep_for_matchMD")
@@ -729,14 +745,14 @@ def mainControler(verbose, metadata, keep, control, case,
             print("Time to do everything %s"%(tend - tstart))
         if verbose or unit:
                 print("Returning metadata")
-        return matchedMD
+        return tabulate(matchedMD)
     else:
         if verbose or unit:
                 print("Skipping matcher and returning metadata")
         if verbose:
             tend = time.clock()
             print("Time to do everything %s"%(tend - tstart))
-        return prepped_for_matchMD
+        return tabulate(prepped_for_matchMD)
 
 
     if verbose or unit:

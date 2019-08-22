@@ -5,6 +5,7 @@
 # ----------------------------------------------------------------------------
 
 import match_samples
+from .match_samples import mainControler
 
 from qiime2.plugin import (Plugin, Metadata, Str, List, Citations, Range, Int,
                            Bool, Properties)
@@ -12,7 +13,7 @@ from q2_types.ordination import PCoAResults
 
 
 plugin = Plugin(
-    name='match_samples',
+    name='match-samples',
     version='1',
     package='match_samples',
     website='https://github.com/brainiac5mimic/match_samples',    
@@ -21,19 +22,18 @@ plugin = Plugin(
     short_description='Filter, label and match samples in a metadata file'
 )
 
-
+function=mainControler
 name='match_samples'
-description='foobar'
-function=match_samples.mainControler
+description='mainControler takes the inputs in, determines what needs to be run, and outputs a visialization of the processed metadata '
 parameters={
     'verbose': Bool,  
     'keep': Str, 
     'control': Str, 'case': Str,
     'nullvalues': Str, 'match': Str, 'one': Bool, 
-    'only_matches': Bool, 'unit': Bool, 'metadata': Metadata
+    'only_matches': Bool, 'unit': Bool, 'metadata': Metadata, 'output': Str
 }
 inputs={}
-outputs=[('outputMD', Metadata)]
+outputs=[('outputMDV', Visualization)]
 input_descriptions={}
 parameter_descriptions={
     'metadata': 'Sample metadata to analyze.',
@@ -56,9 +56,12 @@ parameter_descriptions={
         'non-matched samples from output file.'), 
     'unit': ('When True program will print out statements used '
         'for unit tests of the mainControler function. These '
-        'statements indicate what the program is doing.')
+        'statements indicate what the program is doing.'),
+    'output': ('Path to file where outputted visualization should be stored')
+
 }
-output_descriptions={'outputMD': 'Metadata object that contains the filtered, labeled, and or matched samples'}
+output_descriptions={'outputMDV': 'Visualization of a Metadata object that contains the filtered, labeled, and or matched samples'}
+
 
 plugin.methods.register_function(
     function=function,

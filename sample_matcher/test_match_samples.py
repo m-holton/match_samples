@@ -16,6 +16,7 @@ from click.testing import CliRunner
 import match_samples
 import stand_alone_match_samples
 from qiime2 import Metadata
+import qiime2
 
 def test_orderDict(verbose):
     '''
@@ -142,6 +143,8 @@ def test_stable_marriage(verbose):
     assert_equals(case_to_control_match, test_output)
 
 
+    
+    
 def test_get_user_input_query_lines(verbose, unit, input_metadata,
     match_query):
     '''
@@ -166,7 +169,8 @@ def test_get_user_input_query_lines(verbose, unit, input_metadata,
 
     input_dict = {"keep":None, "case":None, "nullvalues":None, "match":None,
         "metadata":"input_metadata"}
-    assert_raises(ValueError, match_samples.get_user_input_query_lines,
+    assert_raises(qiime2.metadata.io.MetadataFileError,
+        match_samples.get_user_input_query_lines,
         verbose, input_dict)
     input_dict = {"keep":"None", "case":None, "nullvalues":None, "match":None,
         "metadata":metadata}
@@ -203,6 +207,7 @@ def test_keep_samples(verbose, unit, normal_input, normal_output, normal_keep,
     empty_file: string
         Name of the empty file used in various tests
     '''
+    print("./%s/%s"%(unit, normal_input))
     norm_in = Metadata.load("./%s/%s"%(unit, normal_input))
     norm_out = Metadata.load("./%s/%s"%(unit, normal_output))
 
@@ -325,7 +330,7 @@ def test_filter_prep_for_matchMD(verbose, unit, normal_input, normal_output,
     norm_in = Metadata.load("./%s/%s"%(unit, normal_input))
     norm_out = Metadata.load("./%s/%s"%(unit, normal_output))
     no_in = Metadata.load("./%s/%s"%(unit, no_null_input))
-
+    print('hello')
     norm_null = open("./%s/%s"%(unit, normal_null), "r").read().splitlines()
     noentry_null = open("./%s/%s"%(unit, noentries_null),
         "r").read().splitlines()
@@ -701,7 +706,7 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
     help="Tells function if it should output print statements or not."
          "True outputs print statements.")
 @click.option("--unittest_files",
-    default="match_samples/unitTest_files",
+    default="unitTest_files",
     help="Location of the folder that holds the unit test files")
 @click.option("--test_case",
     default="test_case.txt",

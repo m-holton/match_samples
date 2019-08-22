@@ -4,7 +4,7 @@
 #
 # ----------------------------------------------------------------------------
 
-import match_samples
+import sample_matcher
 from .match_samples import mainControler
 
 from qiime2.plugin import (Plugin, Metadata, Str, List, Citations, Range, Int,

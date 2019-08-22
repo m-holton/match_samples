@@ -207,7 +207,6 @@ def test_keep_samples(verbose, unit, normal_input, normal_output, normal_keep,
     empty_file: string
         Name of the empty file used in various tests
     '''
-    print("./%s/%s"%(unit, normal_input))
     norm_in = Metadata.load("./%s/%s"%(unit, normal_input))
     norm_out = Metadata.load("./%s/%s"%(unit, normal_output))
 
@@ -330,7 +329,6 @@ def test_filter_prep_for_matchMD(verbose, unit, normal_input, normal_output,
     norm_in = Metadata.load("./%s/%s"%(unit, normal_input))
     norm_out = Metadata.load("./%s/%s"%(unit, normal_output))
     no_in = Metadata.load("./%s/%s"%(unit, no_null_input))
-    print('hello')
     norm_null = open("./%s/%s"%(unit, normal_null), "r").read().splitlines()
     noentry_null = open("./%s/%s"%(unit, noentries_null),
         "r").read().splitlines()

@@ -74,8 +74,8 @@ def standMainControler(verbose, metadata, keep, control, case,
             for unit tests of the mainControler function. These
             statements indicate what the program is doing.
     '''
-    metadata = match_samples.mainControler(verbose, metadata, keep, control, 
-        case, nullvalues, match, one, only_matches, unit)
+    metadata = match_samples.mainControler(verbose, 'NULL', metadata, keep, control, 
+        case, nullvalues, match, one, only_matches, unit, True)
     
     if output != None:
         metadata.save(output)

@@ -211,12 +211,7 @@ def get_user_input_query_lines(verbose, dictofFiles):
                 #read metadata file into metadata object
                 if verbose:
                     print("metadata file path entered is %s"%(dictofFiles[key]))
-                #try:
                 dict_of_file_lines[key] = Metadata.load(dictofFiles[key])
-                '''except:
-                    raise ValueError("metadata file could not load. The file "
-                        + "must be a tab separated metadata file.")
-                '''
             else:
                 dict_of_file_lines[key] = dictofFiles[key]
             
@@ -609,8 +604,8 @@ def matcher(verbose, prepped_for_match_MD, conditions_for_match_lines,
     return matchedMD
 
 
-def mainControler(verbose, metadata, keep, control, case,
-    nullvalues, match, one, only_matches, unit, output):
+def mainControler(verbose, output, metadata, keep, control, case,
+    nullvalues, match, one, only_matches, unit, stand):
     '''
     Parameters
     ----------
@@ -647,6 +642,9 @@ def mainControler(verbose, metadata, keep, control, case,
             statements indicate what the program is doing.
     output: string
         File location for visualization of metadata to be outputted to. 
+    stand: boolean
+        If True then fuctions returns metadata object. This is used 
+            when running in a qiime2 enviroment but not as a plugin.
 
     Returns
     -------
@@ -703,6 +701,8 @@ def mainControler(verbose, metadata, keep, control, case,
         if verbose:
             tend = time.clock()
             print("Time to do everything %s"%(tend - tstart))
+        if stand:
+            return afterExclusionMD
         return tabulate(afterExclusionMD)
 
 
@@ -724,6 +724,8 @@ def mainControler(verbose, metadata, keep, control, case,
             if verbose:
                 tend = time.clock()
                 print("Time to do everything %s"%(tend - tstart))
+            if stand:
+                return case_controlMD
             return tabulate(case_controlMD)
     else:
         if verbose or unit:
@@ -744,7 +746,9 @@ def mainControler(verbose, metadata, keep, control, case,
             print("Time to match is %s"%(tmatch- tprepped))
             print("Time to do everything %s"%(tend - tstart))
         if verbose or unit:
-                print("Returning metadata")
+            print("Returning metadata")
+        if stand:
+            return matchedMD
         return tabulate(matchedMD)
     else:
         if verbose or unit:
@@ -752,6 +756,8 @@ def mainControler(verbose, metadata, keep, control, case,
         if verbose:
             tend = time.clock()
             print("Time to do everything %s"%(tend - tstart))
+        if stand:
+            return prepped_for_matchMD
         return tabulate(prepped_for_matchMD)
 
 

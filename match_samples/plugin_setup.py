@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------
 
 import sample_matcher
-from .match_samples import mainControler
+print(dir(sample_matcher))
 
 from qiime2.plugin import (Plugin, Metadata, Str, List, Citations, Range, Int,
                            Bool, Properties)
@@ -22,7 +22,7 @@ plugin = Plugin(
     short_description='Filter, label and match samples in a metadata file'
 )
 
-function=mainControler
+function=sample_matcher.mainControler
 name='match_samples'
 description='mainControler takes the inputs in, determines what needs to be run, and outputs a visialization of the processed metadata '
 parameters={
@@ -63,14 +63,14 @@ parameter_descriptions={
 output_descriptions={'outputMDV': 'Visualization of a Metadata object that contains the filtered, labeled, and or matched samples'}
 
 
-plugin.methods.register_function(
+plugin.visualizers.register_function(
     function=function,
     inputs=inputs,
     parameters=parameters,
-    outputs=[],
+    outputs=outputs,
     input_descriptions=input_descriptions,
     parameter_descriptions=parameter_descriptions,
-    output_descriptions={},
+    output_descriptions=output_descriptions,
     name=name,
     description=description
 )

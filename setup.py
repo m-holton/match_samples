@@ -7,7 +7,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="q2-sample_matcher",
+    name="sample_matcher",
     version='1',
     packages=find_packages(),
     author="Mark Holton",

@@ -7,16 +7,16 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="sample_matcher",
+    name="match_samples",
     version='1',
     packages=find_packages(),
     author="Mark Holton",
     author_email="mholton@ucsd.edu",
     description="Filter, label and match samples in a metadata file",
-    url="https://github.com/brainiac5mimic/sample_matcher",
+    url="https://github.com/brainiac5mimic/match_samples",
     entry_points={
         'qiime2.plugins':
-        ['q2-match_samples=sample_matcher.plugin_setup:plugin']
+        ['match_samples=match_samples.plugin_setup:plugin']
     },
     zip_safe=False,
 )

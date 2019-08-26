@@ -4,8 +4,9 @@
 #
 # ----------------------------------------------------------------------------
 
-import sample_matcher
-print(dir(sample_matcher))
+import match_samples
+
+print(dir(match_samples))
 
 from qiime2.plugin import (Plugin, Metadata, Str, List, Citations, Range, Int,
                            Bool, Properties)
@@ -22,8 +23,8 @@ plugin = Plugin(
     short_description='Filter, label and match samples in a metadata file'
 )
 
-function=sample_matcher.mainControler
-name='match_samples'
+function=match_samples.mainControler
+name='mainControler'
 description='mainControler takes the inputs in, determines what needs to be run, and outputs a visialization of the processed metadata '
 parameters={
     'verbose': Bool,  

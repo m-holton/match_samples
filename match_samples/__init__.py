@@ -9,8 +9,6 @@ from .match_samples import get_user_input_query_lines
 # importing Stable_Marriage class with contains functions 
     #stableMarriageRunner, order_keys, and orderDict
 from .match_samples import Stable_Marriage
-print("hello world")
-print(mainControler)   
 
 __version__ = "1"
 

@@ -12,3 +12,8 @@ match_samples.egg-info/dependency_links.txt
 match_samples/__pycache__/__init__.cpython-36.pyc
 match_samples/__pycache__/__init__.cpython-36.pyc
 match_samples/__pycache__/__init__.cpython-36.pyc
+match_samples/__pycache__ /__init__.cpython-36.pyc
+match_samples/__pycache__ /match_samples.cpython-36.pyc
+match_samples/__pycache__ /plugin_setup.cpython-36.pyc
+match_samples/__pycache__ /match_samples.cpython-37.pyc
+match_samples/__pycache__ /stand_alone_match_samples.cpython-36.pyc

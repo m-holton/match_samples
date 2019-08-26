@@ -23,6 +23,6 @@ before_install:
 # command to install dependencies
 # command to run tests
 script:
-  - cd sample_matcher
-  - python test_match_samples.py
+  - cd match_samples
+  - python unitTest_files/test_match_samples.py
  

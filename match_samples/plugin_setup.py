@@ -4,9 +4,8 @@
 #
 # ----------------------------------------------------------------------------
 
-import match_samples
+from match_samples import match_samples
 
-print(dir(match_samples))
 
 from qiime2.plugin import (Plugin, Metadata, Str, List, Citations, Range, Int,
                            Bool, Properties)
@@ -31,10 +30,10 @@ parameters={
     'keep': Str, 
     'control': Str, 'case': Str,
     'nullvalues': Str, 'match': Str, 'one': Bool, 
-    'only_matches': Bool, 'unit': Bool, 'metadata': Metadata, 'output': Str
+    'only_matches': Bool, 'unit': Bool, 'metadata': Metadata, 'stand': Bool
+    
 }
 inputs={}
-outputs=[('outputMDV', Visualization)]
 input_descriptions={}
 parameter_descriptions={
     'metadata': 'Sample metadata to analyze.',
@@ -58,20 +57,17 @@ parameter_descriptions={
     'unit': ('When True program will print out statements used '
         'for unit tests of the mainControler function. These '
         'statements indicate what the program is doing.'),
-    'output': ('Path to file where outputted visualization should be stored')
-
+    'stand':'test'
 }
-output_descriptions={'outputMDV': 'Visualization of a Metadata object that contains the filtered, labeled, and or matched samples'}
+
 
 
 plugin.visualizers.register_function(
     function=function,
     inputs=inputs,
     parameters=parameters,
-    outputs=outputs,
     input_descriptions=input_descriptions,
     parameter_descriptions=parameter_descriptions,
-    output_descriptions=output_descriptions,
     name=name,
     description=description
 )

@@ -13,12 +13,11 @@ from nose.tools import assert_raises, assert_equals
 from pandas.util.testing import assert_frame_equal
 from click.testing import CliRunner
 
-import match_samples
-import stand_alone_match_samples
+import match_functions
 from qiime2 import Metadata
 import qiime2
 
-def test_orderDict(verbose):
+def test_orderDict():
     '''
     Tests the function that orders the lists associated with each key
         in a dictionary based of the frequency through out the entire
@@ -31,7 +30,7 @@ def test_orderDict(verbose):
             True outputs print statements.
 
     '''
-    stable = match_samples.Stable_Marriage()
+    stable = match_functions.Stable_Marriage()
 
     test_unorderedDict = {'key_1':['a','b','c','d','e'],
         'key_2':['a','c','e','d','b'],  'key_3':['b','e','e','c','a']}
@@ -39,14 +38,14 @@ def test_orderDict(verbose):
     correct_output = {'key_1':['a','b','c','d','e'],
         'key_2':['a','b','c','d','e'], 'key_3':['a','b','c','e','e']}
 
-    assert_equals(stable.orderDict(verbose, test_unorderedDict,
+    assert_equals(stable.orderDict(test_unorderedDict,
         test_frequencies), correct_output)
 
     test_equal_freq = {'key_5':['c','b','e','d','a']}
     test_frequencies_equal = {'a':1,'b':3,'c':3,'d':3,'e':5}
     correct_output_freq = {'key_5':['a','b','c','d','e']}
 
-    assert_equals(stable.orderDict(verbose, test_equal_freq,
+    assert_equals(stable.orderDict(test_equal_freq,
         test_frequencies_equal), correct_output_freq)
 
     counter = 0
@@ -54,13 +53,13 @@ def test_orderDict(verbose):
     print("Running orderDict 100 times to test order when frequencies "
           "are equal.")
     while run_number <=100:
-        if (stable.orderDict(verbose, test_equal_freq, test_frequencies_equal)
+        if (stable.orderDict(test_equal_freq, test_frequencies_equal)
             != correct_output_freq):
             counter = counter + 1
         run_number = run_number + 1
     print('times out of 100 that the order was wrong = %s'%(counter))
 
-def test_order_keys(verbose):
+def test_order_keys():
     '''
     Tests the function that orders keys based one their number of
         entries
@@ -72,12 +71,12 @@ def test_order_keys(verbose):
             True outputs print statements.
 
     '''
-    stable = match_samples.Stable_Marriage()
+    stable = match_functions.Stable_Marriage()
 
     test_unorderedDict=  {'2':['a','b'], '1':['a'],  '3':['a','b','c'],
         '5':['a','b','c','d','e'], '4':['a','b','c','d']}
     correct_output = ['5','4','3','2','1']
-    assert_equals(stable.order_keys(verbose, test_unorderedDict),
+    assert_equals(stable.order_keys(test_unorderedDict),
         correct_output)
 
 
@@ -93,7 +92,7 @@ def test_order_keys(verbose):
           "equal.")
     num_runs = 1000
     for i in range(0,num_runs):
-        ans = stable.order_keys(verbose, test_unorderedDict_equ_freq)
+        ans = stable.order_keys(test_unorderedDict_equ_freq)
         if (ans == correct_output_equ_freq_one):
             counter_one = counter_one + 1
         if (ans == correct_output_equ_freq_two):
@@ -106,7 +105,7 @@ def test_order_keys(verbose):
 
 
 
-def test_stable_marriage(verbose):
+def test_stable_marriage():
     '''
     Tests the stable marriage function
 
@@ -117,7 +116,7 @@ def test_stable_marriage(verbose):
             True outputs print statements.
 
     '''
-    stable = match_samples.Stable_Marriage()
+    stable = match_functions.Stable_Marriage()
 
     case_dictionary = {'14': ['15', '17'], '25': [], '19': ['20'], '21':[],
         '6': [], '9': ['10'], '3': [], '7': ['8'], '18': ['17'], '23': [],
@@ -126,7 +125,7 @@ def test_stable_marriage(verbose):
         '8': 1, '20': 1, '13': 1}
     case_match_count_dictionary = {'23': 0, '6': 0, '14': 2, '21': 0, '16': 2,
         '11': 1, '19': 1, '9': 1, '27': 0, '7': 1, '3': 0, '25': 0, '18': 1}
-    case_to_control_match = stable.stableMarriageRunner(verbose,
+    case_to_control_match = stable.stableMarriageRunner(
         case_dictionary, control_match_count_dictionary,
         case_match_count_dictionary)
     test_output = {'20':'19', '10':'9', '12':'11', '8':'7', '15':'14',
@@ -136,7 +135,7 @@ def test_stable_marriage(verbose):
     case_dictionary = {'2': ['10', '1'], '4': ['3'], '6': [], '9':[]}
     control_match_count_dictionary = {'10': 1, '1': 1, '3': 1}
     case_match_count_dictionary = {'9': 0, '4': 1, '6': 0, '2': 2}
-    case_to_control_match = stable.stableMarriageRunner(verbose,
+    case_to_control_match = stable.stableMarriageRunner(
         case_dictionary, control_match_count_dictionary,
         case_match_count_dictionary)
     test_output = {'10':'2', '3':'4'}
@@ -145,7 +144,7 @@ def test_stable_marriage(verbose):
 
     
     
-def test_get_user_input_query_lines(verbose, unit, input_metadata,
+def test_get_user_input_query_lines(unit, input_metadata,
     match_query):
     '''
     Tests the fuction that reads in the sql query files
@@ -160,7 +159,7 @@ def test_get_user_input_query_lines(verbose, unit, input_metadata,
     input_metadata: string
         Name of the tsv file that will be loaded into a metadata object. This
             object will be used to test the keeping of samples functionality
-            of the match_samples.py
+            of the match_functions.py
     match_query: string
     '''
     input_dict = {"metadata":input_metadata}
@@ -170,15 +169,15 @@ def test_get_user_input_query_lines(verbose, unit, input_metadata,
     input_dict = {"keep":None, "case":None, "nullvalues":None, "match":None,
         "metadata":"input_metadata"}
     assert_raises(qiime2.metadata.io.MetadataFileError,
-        match_samples.get_user_input_query_lines,
-        verbose, input_dict)
+        match_functions.get_user_input_query_lines,
+        input_dict)
     input_dict = {"keep":"None", "case":None, "nullvalues":None, "match":None,
         "metadata":metadata}
-    assert_raises(ValueError, match_samples.get_user_input_query_lines,
-        verbose, input_dict)
+    assert_raises(ValueError, match_functions.get_user_input_query_lines,
+        input_dict)
 
 
-def test_keep_samples(verbose, unit, normal_input, normal_output, normal_keep,
+def test_keep_samples(unit, normal_input, normal_output, normal_keep,
     noentries_keep, empty_file):
     '''
     Test the programs filtering out of unwanted samples based on sql queries
@@ -193,7 +192,7 @@ def test_keep_samples(verbose, unit, normal_input, normal_output, normal_keep,
     normal_input: string
         Name of the tsv file that will be loaded into a metadata object. This
             object will be used to test the keeping of samples functionality
-            of the match_samples.py
+            of the match_functions.py
     normal_output: string
         Name of the tsv file that will be loaded into a metadata object. This
             object will be used to test that valid inputs for keeping samples
@@ -215,11 +214,11 @@ def test_keep_samples(verbose, unit, normal_input, normal_output, normal_keep,
         "r").read().splitlines()
     emp_file = open("./%s/%s"%(unit, empty_file), "r").read().splitlines()
 
-    unit_norm_out = match_samples.keep_samples(verbose, norm_in, norm_keep)
+    unit_norm_out = match_functions.keep_samples(norm_in, norm_keep)
 
-    assert_raises(ValueError, match_samples.keep_samples, verbose, norm_in,
+    assert_raises(ValueError, match_functions.keep_samples, norm_in,
         emp_file)
-    assert_raises(ValueError, match_samples.keep_samples, verbose, norm_in,
+    assert_raises(ValueError, match_functions.keep_samples, norm_in,
         noentry_keep)
 
     unit_norm_out = unit_norm_out.to_dataframe()
@@ -227,7 +226,7 @@ def test_keep_samples(verbose, unit, normal_input, normal_output, normal_keep,
     assert_frame_equal(norm_out, unit_norm_out)
 
 
-def test_determine_cases_and_controls(verbose, unit, normal_input,
+def test_determine_cases_and_controls(unit, normal_input,
     normal_output, normal_control, normal_case, noentries_case, empty_file):
     '''
     Tests the programs labeling of case and control samples
@@ -242,7 +241,7 @@ def test_determine_cases_and_controls(verbose, unit, normal_input,
     normal_input: string
         Name of the tsv file that will be loaded into a metadata object. This
             object will be used to test the case and control labeling
-            functionality of the match_samples.py
+            functionality of the match_functions.py
     normal_output: string
         Name of the tsv file that will be loaded into a metadata object. This
             object will be used to test that valid case and control inputs get
@@ -268,22 +267,22 @@ def test_determine_cases_and_controls(verbose, unit, normal_input,
     emp_file = open("./%s/%s"%(unit, empty_file), "r").read().splitlines()
 
     case_control_dict = {"case":norm_case, "control":norm_control}
-    unit_norm_out = match_samples.determine_cases_and_controls(verbose,
+    unit_norm_out = match_functions.determine_cases_and_controls(
         norm_in, case_control_dict)
 
     case_control_dict = {"case":emp_file, "control":emp_file}
-    assert_raises(ValueError, match_samples.determine_cases_and_controls,
-        verbose, norm_in, case_control_dict)
+    assert_raises(ValueError, match_functions.determine_cases_and_controls,
+        norm_in, case_control_dict)
 
     case_control_dict = {"case":noentry_case, "control":norm_control}
-    assert_raises(ValueError, match_samples.determine_cases_and_controls,
-        verbose, norm_in, case_control_dict)
+    assert_raises(ValueError, match_functions.determine_cases_and_controls,
+        norm_in, case_control_dict)
 
     norm_out = norm_out.to_dataframe()
     unit_norm_out = unit_norm_out.to_dataframe()
     assert_frame_equal(norm_out, unit_norm_out)
 
-def test_filter_prep_for_matchMD(verbose, unit, normal_input, normal_output,
+def test_filter_prep_for_matchMD(unit, normal_input, normal_output,
     no_null_input, normal_null, normal_match, wrong_column_match,
     noentries_null, empty_file):
     '''
@@ -337,18 +336,18 @@ def test_filter_prep_for_matchMD(verbose, unit, normal_input, normal_output,
     wcolumn_match = open("./%s/%s"%(unit, wrong_column_match),
         "r").read().splitlines()
 
-    unit_norm_out = match_samples.filter_prep_for_matchMD(verbose,
+    unit_norm_out = match_functions.filter_prep_for_matchMD(
         norm_in, norm_match, norm_null)
-    unit_no_out = match_samples.filter_prep_for_matchMD(verbose,
+    unit_no_out = match_functions.filter_prep_for_matchMD(
         no_in, norm_match, norm_null)
-    unit_empty_null_out = match_samples.filter_prep_for_matchMD(verbose,
+    unit_empty_null_out = match_functions.filter_prep_for_matchMD(
         norm_in, norm_match, emp_file)
-    unit_empty_match_out = match_samples.filter_prep_for_matchMD(verbose,
+    unit_empty_match_out = match_functions.filter_prep_for_matchMD(
         norm_in, emp_file, norm_null)
 
-    assert_raises(ValueError, match_samples.filter_prep_for_matchMD, verbose,
+    assert_raises(ValueError, match_functions.filter_prep_for_matchMD, 
         norm_in, norm_match, noentry_null)
-    assert_raises(KeyError, match_samples.filter_prep_for_matchMD, verbose,
+    assert_raises(KeyError, match_functions.filter_prep_for_matchMD, 
         norm_in, wcolumn_match, norm_null)
 
     norm_out = norm_out.to_dataframe()
@@ -368,7 +367,7 @@ def test_filter_prep_for_matchMD(verbose, unit, normal_input, normal_output,
     unit_empty_match_out = unit_empty_match_out.to_dataframe()
     assert_frame_equal(norm_in, unit_empty_match_out)
 
-def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
+def test_match_functions(unit, normal_input, normal_output, normal_match,
     string_control_input, string_case_input, wrong_column_match,
     string_int_match, no_match_input, no_match_output, empty_file,
     no_case_input, no_case_output, no_control_input, no_control_output,
@@ -387,7 +386,7 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     normal_input: string
         Name of the tsv file that will be loaded into a metadata object. This
             object will be used to test the matching of case and control
-            labeled samples functionality of the match_samples.py
+            labeled samples functionality of the match_functions.py
     normal_output: string
         Name of the tsv file that will be loaded into a metadata object. This
             object will be used to test that valid inputs for matching case
@@ -478,22 +477,22 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     wcolumn_match = open("./%s/%s"%(unit, wrong_column_match),
         "r").read().splitlines()
 
-    unit_norm_out = match_samples.matcher(verbose,
+    unit_norm_out = match_functions.matcher(
         norm_in, norm_match, True, False)
-    unit_case_out = match_samples.matcher(verbose,
+    unit_case_out = match_functions.matcher(
         no_case_in, norm_match, True, False)
-    unit_control_out = match_samples.matcher(verbose,
+    unit_control_out = match_functions.matcher(
         no_control_in, norm_match, True, False)
-    unit_no_out = match_samples.matcher(verbose,
+    unit_no_out = match_functions.matcher(
         no_in, norm_match, True, False)
 
-    assert_raises(ValueError, match_samples.matcher, verbose,
+    assert_raises(ValueError, match_functions.matcher, 
         str_cont_in, norm_match, True, False)
-    assert_raises(ValueError, match_samples.matcher, verbose,
+    assert_raises(ValueError, match_functions.matcher, 
         str_case_in, norm_match, True, False)
-    assert_raises(ValueError, match_samples.matcher, verbose,
+    assert_raises(ValueError, match_functions.matcher, 
         norm_in, str_match, True, False)
-    assert_raises(KeyError, match_samples.matcher, verbose,
+    assert_raises(KeyError, match_functions.matcher, 
         norm_in, wcolumn_match, True, False)
 
     norm_out = norm_out.to_dataframe()
@@ -521,11 +520,11 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
         %(unit, only_one_match_output))
     all_match = open("./%s/%s"
         %(unit, all_matches),"r").read().splitlines()
-    unit_all_out = match_samples.matcher(verbose, all_in, all_match,
+    unit_all_out = match_functions.matcher(all_in, all_match,
         False, False)
-    unit_only_all_out = match_samples.matcher(verbose, all_in, all_match,
+    unit_only_all_out = match_functions.matcher(all_in, all_match,
         False, True)
-    unit_only_one_out = match_samples.matcher(verbose, all_in, all_match,
+    unit_only_one_out = match_functions.matcher(all_in, all_match,
         True, True)
     assert_frame_equal(all_out.to_dataframe(),  unit_all_out.to_dataframe())
     assert_frame_equal(all_only_matches_out.to_dataframe(),
@@ -533,11 +532,11 @@ def test_match_samples(verbose, unit, normal_input, normal_output, normal_match,
     #assert_frame_equal(one_only_match_out.to_dataframe(),
     #                   unit_only_one_out.to_dataframe())
 
-
-def test_mainControler(verbose, unit, test_keep, test_case, test_control,
+'''
+def test_mainControler(unit, test_keep, test_case, test_control,
               test_nulls, test_match, unit_main_input):
-    '''
-    Tests that match_samples.py's mainControler function follows the correct
+    """
+    Tests that match_functions.py's mainControler function follows the correct
         steps based on different inputs
 
     Parameters
@@ -562,7 +561,7 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
         Name of the tsv file that will be loaded into a metadata object.
             This object will be used to test the logic of mainControler
             function.
-    '''
+    """
     runner = CliRunner()
 
     #kccnm
@@ -573,7 +572,7 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
         "--nullvalues", "./%s/%s"%(unit, test_nulls),
         "--match", "./%s/%s"%(unit, test_match),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_functions.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Calling determine_cases_and_controls\n"
         "Calling filter_prep_for_matchMD\n"
@@ -588,7 +587,7 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
         "--case", "./%s/%s"%(unit, test_case),
         "--match", "./%s/%s"%(unit, test_match),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_functions.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Calling determine_cases_and_controls\n"
         "Skipped filter_prep_for_matchMD\n"
@@ -603,7 +602,7 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
         "--case", "./%s/%s"%(unit, test_case),
         "--nullvalues", "./%s/%s"%(unit, test_nulls),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_functions.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Calling determine_cases_and_controls\n"
         "--nullvalues was given but --match was not so returning "
@@ -616,7 +615,7 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
         "--control", "./%s/%s"%(unit, test_control),
         "--case", "./%s/%s"%(unit, test_case),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_functions.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Calling determine_cases_and_controls\n"
         "Skipped filter_prep_for_matchMD\n"
@@ -628,7 +627,7 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
         "--keep", "./%s/%s"%(unit, test_keep),
         "--control", "./%s/%s"%(unit, test_control),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_functions.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Skipped determine_cases_and_controls and returning the metadata\n")
     assert_equals(ans, unit_all_out.output)
@@ -638,7 +637,7 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
         "--keep", "./%s/%s"%(unit, test_keep),
         "--case", "./%s/%s"%(unit, test_case),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_functions.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Skipped determine_cases_and_controls and returning the metadata\n")
     assert_equals(ans, unit_all_out.output)
@@ -647,7 +646,7 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
     args = ["--metadata", "./%s/%s"%(unit, unit_main_input),
         "--keep", "./%s/%s"%(unit, test_keep),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_functions.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Skipped determine_cases_and_controls and returning the metadata\n")
     assert_equals(ans, unit_all_out.output)
@@ -657,7 +656,7 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
         "--keep", "./%s/%s"%(unit, test_keep),
         "--match", "./%s/%s"%(unit, test_match),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_functions.standMainControler, args)
     ans = ("Calling keep_samples\n"
         "Skipped determine_cases_and_controls and returning the metadata\n")
     assert_equals(ans, unit_all_out.output)
@@ -669,7 +668,7 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
         "--nullvalues", "./%s/%s"%(unit, test_nulls),
         "--match", "./%s/%s"%(unit, test_match),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_functions.standMainControler, args)
     ans = ("Skipped keep_samples\n"
         "Calling determine_cases_and_controls\n"
         "Calling filter_prep_for_matchMD\n"
@@ -683,7 +682,7 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
         "--case", "./%s/%s"%(unit, test_case),
         "--match", "./%s/%s"%(unit, test_match),
         "--one", "--unit"]
-    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_functions.standMainControler, args)
     ans = ("Skipped keep_samples\n"
         "Calling determine_cases_and_controls\n"
         "Skipped filter_prep_for_matchMD\n"
@@ -693,16 +692,13 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
 
     #none
     args = ["--metadata", "./%s/%s"%(unit, unit_main_input), "--one", "--unit"]
-    unit_all_out = runner.invoke(stand_alone_match_samples.standMainControler, args)
+    unit_all_out = runner.invoke(stand_alone_match_functions.standMainControler, args)
     ans = ("Skipped keep_samples\n"
         "Skipped determine_cases_and_controls and returning the metadata\n")
     assert_equals(ans, unit_all_out.output)
-
+'''
 
 @click.command()
-@click.option("--verbose", is_flag=True,
-    help="Tells function if it should output print statements or not."
-         "True outputs print statements.")
 @click.option("--unittest_files",
     default="match_samples/tests/unitTest_files",
     help="Location of the folder that holds the unit test files")
@@ -877,7 +873,7 @@ def test_mainControler(verbose, unit, test_keep, test_case, test_control,
     default="unit_main_input.tsv",
     help="Name of the tsv file that will be loaded into a metadata object. "
         "This object will be used to test the logic of mainControler function.")
-def main(verbose, unittest_files, test_case, test_case_noentries, test_control_in,
+def main(unittest_files, test_case, test_case_noentries, test_control_in,
          test_control_notin, test_keep, test_keep_noentries, test_match,
          test_match_error_column, test_match_error_int_str, test_nulls,
          test_nulls_noentries, unit_case_input, unit_case_output, unit_keep_input,
@@ -889,25 +885,25 @@ def main(verbose, unittest_files, test_case, test_case_noentries, test_control_i
          all_matches_input, all_matches_output, only_all_matches_output,
          only_one_match_output, all_matches, unit_main_input):
 
-    test_orderDict(verbose)
-    test_order_keys(verbose)
-    test_stable_marriage(verbose)
+    test_orderDict()
+    test_order_keys()
+    test_stable_marriage()
 
-    test_get_user_input_query_lines(verbose, unittest_files, unit_keep_input,
+    test_get_user_input_query_lines(unittest_files, unit_keep_input,
         test_match)
 
-    test_keep_samples(verbose, unittest_files, unit_keep_input,
+    test_keep_samples(unittest_files, unit_keep_input,
         unit_keep_output, test_keep, test_keep_noentries, empty_file)
 
-    test_determine_cases_and_controls(verbose, unittest_files, unit_case_input,
+    test_determine_cases_and_controls(unittest_files, unit_case_input,
         unit_case_output, test_control_in, test_case, test_case_noentries,
         empty_file)
 
-    test_filter_prep_for_matchMD(verbose, unittest_files, unit_null_input,
+    test_filter_prep_for_matchMD(unittest_files, unit_null_input,
         unit_null_output, unit_no_null_input, test_nulls, test_match,
         test_match_error_column, test_nulls_noentries, empty_file)
 
-    test_match_samples(verbose, unittest_files, unit_match_input,
+    test_match_functions(unittest_files, unit_match_input,
         unit_match_output, test_match, unit_match_int_str_control,
         unit_match_int_str_case, test_match_error_column,
         test_match_error_int_str, unit_no_match_input, unit_no_match_output,
@@ -916,9 +912,10 @@ def main(verbose, unittest_files, test_case, test_case_noentries, test_control_i
         all_matches_input, all_matches_output, only_all_matches_output,
         only_one_match_output, all_matches)
 
-    test_mainControler(verbose, unittest_files, test_keep, test_case,
+    '''
+    test_mainControler(unittest_files, test_keep, test_case,
         test_control_in, test_nulls, test_match, unit_main_input)
-
+    '''
 
 
 

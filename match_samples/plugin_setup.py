@@ -22,53 +22,196 @@ plugin = Plugin(
     short_description='Filter, label and match samples in a metadata file'
 )
 
-function=match_samples.mainControler
-name='mainControler'
-description='mainControler takes the inputs in, determines what needs to be run, and outputs a visialization of the processed metadata '
-parameters={
-    'verbose': Bool,  
-    'keep': Str, 
-    'control': Str, 'case': Str,
-    'nullvalues': Str, 'match': Str, 'one': Bool, 
-    'only_matches': Bool, 'unit': Bool, 'metadata': Metadata, 'stand': Bool
-    
-}
-inputs={}
-input_descriptions={}
-parameter_descriptions={
-    'metadata': 'Sample metadata to analyze.',
-    'verbose': ('Tells function if it should output print statements or not.'
-        'True outputs print statements.'), 
-    'keep': ('Path of file with sqlite lines used to determine '
-        'what samples to exclude or keep.'), 
-    'control': ('Path of file with sqlite lines used to determine '
-        'what samples to label control.'), 
-    'case': ('Path of file with sqlite lines used to determine '
-        'what samples to label case.'),
-    'nullvalues': ('Path of file with list used to determine '
-        'what values are null.'), 
-    'match': ('Path of file with lines used to determine '
-        'what categories to match upon and how to match '
-        'samples based on each category.'), 
-    'one': ('When True match_samples will do one to '
-        'one matching instead of all matches.'), 
-    'only_matches': ('When True match_samples will filter out'
-        'non-matched samples from output file.'), 
-    'unit': ('When True program will print out statements used '
-        'for unit tests of the mainControler function. These '
-        'statements indicate what the program is doing.'),
-    'stand':'test'
-}
+
+plugin.visualizers.register_function(
+    function=match_samples.subsetting,
+    inputs={},
+    parameters={ 
+        'metadata': Metadata, 
+        'keep': Str, 
+    },
+    input_descriptions={},
+    parameter_descriptions={
+        'metadata': 'Sample metadata to analyze.',
+        'keep': ('Path of file with sqlite lines used to determine '
+            'what samples to exclude or keep.'), 
+    },
+    name='Visualize and Interact with Metadata object',
+    description='Subset a metadata object then returns a visualization of the augmented metadata'
+)
+
+
+plugin.visualizers.register_function(
+    function=match_samples.labeler_no_subset,
+    inputs={},
+    parameters={ 
+        'metadata': Metadata, 
+        'control': Str, 'case': Str,
+
+    },
+    input_descriptions={},
+    parameter_descriptions={
+        'metadata': 'Sample metadata to analyze.',
+        'control': ('Path of file with sqlite lines used to determine '
+            'what samples to label control.'), 
+        'case': ('Path of file with sqlite lines used to determine '
+            'what samples to label case.'),
+    },
+    name='Visualize and Interact with Metadata object',
+    description='Label samples in a metadata object then returns a visualization of the augmented metadata'
+)
 
 
 
 plugin.visualizers.register_function(
-    function=function,
-    inputs=inputs,
-    parameters=parameters,
-    input_descriptions=input_descriptions,
-    parameter_descriptions=parameter_descriptions,
-    name=name,
-    description=description
+    function=match_samples.complete_labeler,
+    inputs={},
+    parameters={ 
+        'metadata': Metadata, 
+        'keep': Str, 
+        'control': Str, 'case': Str,
+    },
+    input_descriptions={},
+    parameter_descriptions={
+        'metadata': 'Sample metadata to analyze.',
+        'keep': ('Path of file with sqlite lines used to determine '
+            'what samples to exclude or keep.'), 
+        'control': ('Path of file with sqlite lines used to determine '
+            'what samples to label control.'), 
+        'case': ('Path of file with sqlite lines used to determine '
+            'what samples to label case.'),
+
+    },
+    name='Visualize and Interact with Metadata object',
+    description='Subset and label samples in a metadata object then returns a visualization of the augmented metadata'
+)
+
+
+
+plugin.visualizers.register_function(
+    function=match_samples.match_no_subset_null_filter,
+    inputs={},
+    parameters={ 
+        'metadata': Metadata, 
+        'control': Str, 'case': Str,
+        'match': Str, 'one': Bool, 'only_matches': Bool
+    },
+    input_descriptions={},
+    parameter_descriptions={
+        'metadata': 'Sample metadata to analyze.',
+        'control': ('Path of file with sqlite lines used to determine '
+            'what samples to label control.'), 
+        'case': ('Path of file with sqlite lines used to determine '
+            'what samples to label case.'),
+        'match': ('Path of file with lines used to determine '
+            'what categories to match upon and how to match '
+            'samples based on each category.'), 
+        'one': ('When True match_samples will do one to '
+            'one matching instead of all matches.'), 
+        'only_matches': ('When True match_samples will filter out'
+            'non-matched samples from output file.')
+    },
+    name='Visualize and Interact with Metadata object',
+    description='Label and match samples in a metadata object then returns a visualization of the augmented metadata'
+)
+
+
+
+
+plugin.visualizers.register_function(
+    function=match_samples.matching_no_subset,
+    inputs={},
+    parameters={ 
+        'metadata': Metadata, 
+        'control': Str, 'case': Str,
+        'nullvalues': Str, 
+        'match': Str, 'one': Bool, 'only_matches': Bool
+    },
+    input_descriptions={},
+    parameter_descriptions={
+        'metadata': 'Sample metadata to analyze.',
+        'control': ('Path of file with sqlite lines used to determine '
+            'what samples to label control.'), 
+        'case': ('Path of file with sqlite lines used to determine '
+            'what samples to label case.'),
+        'nullvalues': ('Path of file with list used to determine '
+            'what values are null.'), 
+        'match': ('Path of file with lines used to determine '
+            'what categories to match upon and how to match '
+            'samples based on each category.'), 
+        'one': ('When True match_samples will do one to '
+            'one matching instead of all matches.'), 
+        'only_matches': ('When True match_samples will filter out'
+            'non-matched samples from output file.')
+    },
+    name='Visualize and Interact with Metadata object',
+    description='Label, filter, and match samples in a metadata object then returns a visualization of the augmented metadata'
+)
+
+
+
+plugin.visualizers.register_function(
+    function=match_samples.matching_no_null_filter,
+    inputs={},
+    parameters={ 
+        'metadata': Metadata, 
+        'keep': Str, 
+        'control': Str, 'case': Str,
+        'match': Str, 'one': Bool, 'only_matches': Bool
+    },
+    input_descriptions={},
+    parameter_descriptions={
+        'metadata': 'Sample metadata to analyze.',
+        'keep': ('Path of file with sqlite lines used to determine '
+            'what samples to exclude or keep.'), 
+        'control': ('Path of file with sqlite lines used to determine '
+            'what samples to label control.'), 
+        'case': ('Path of file with sqlite lines used to determine '
+            'what samples to label case.'),
+        'match': ('Path of file with lines used to determine '
+            'what categories to match upon and how to match '
+            'samples based on each category.'), 
+        'one': ('When True match_samples will do one to '
+            'one matching instead of all matches.'), 
+        'only_matches': ('When True match_samples will filter out'
+            'non-matched samples from output file.')
+    },
+    name='Visualize and Interact with Metadata object',
+    description='Subset, label, and match samples in a metadata object then returns a visualization of the augmented metadata'
+)
+
+
+
+plugin.visualizers.register_function(
+    function=match_samples.complete_Matcher,
+    inputs={},
+    parameters={ 
+        'metadata': Metadata, 
+        'keep': Str, 
+        'control': Str, 'case': Str,
+        'nullvalues': Str, 
+        'match': Str, 'one': Bool, 'only_matches': Bool
+    },
+    input_descriptions={},
+    parameter_descriptions={
+        'metadata': 'Sample metadata to analyze.',
+        'keep': ('Path of file with sqlite lines used to determine '
+            'what samples to exclude or keep.'), 
+        'control': ('Path of file with sqlite lines used to determine '
+            'what samples to label control.'), 
+        'case': ('Path of file with sqlite lines used to determine '
+            'what samples to label case.'),
+        'nullvalues': ('Path of file with list used to determine '
+            'what values are null.'), 
+        'match': ('Path of file with lines used to determine '
+            'what categories to match upon and how to match '
+            'samples based on each category.'), 
+        'one': ('When True match_samples will do one to '
+            'one matching instead of all matches.'), 
+        'only_matches': ('When True match_samples will filter out'
+            'non-matched samples from output file.')
+    },
+    name='Visualize and Interact with Metadata object',
+    description='Subset, label, filter, and match samples in a metadata object then returns a visualization of the augmented metadata'
 )
 

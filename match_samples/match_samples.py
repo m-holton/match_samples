@@ -1,8 +1,9 @@
 
 from qiime2 import Metadata
 
-import match_functions as mf
+from match_samples import match_functions as mf
 
+import time
 
 def subsetting(output_dir, metadata: Metadata, keep: str):
     '''
@@ -50,7 +51,7 @@ def subsetting(output_dir, metadata: Metadata, keep: str):
 
 
 
-def cc_labeler_without_inital_subsetting(output_dir, metadata: Metadata, control: str, case: str):
+def labeler_no_subset(output_dir, metadata: Metadata, control: str, case: str):
     '''
     Parameters
     ----------
@@ -102,7 +103,7 @@ def cc_labeler_without_inital_subsetting(output_dir, metadata: Metadata, control
 
 
 
-def complete_cc_labeler(output_dir, metadata: Metadata, keep:str, control:str, case:str):
+def complete_labeler(output_dir, metadata: Metadata, keep:str, control:str, case:str):
     '''
     Parameters
     ----------
@@ -162,9 +163,9 @@ def complete_cc_labeler(output_dir, metadata: Metadata, keep:str, control:str, c
 
 
 
-def matching_without_subsetting_and_null_filtering(output_dir, metadata: Metadata, 
+def match_no_subset_null_filter(output_dir, metadata: Metadata, 
                                                    control:str, case:str, match:str, 
-                                                   one:bool, only_matches:bool):
+                                                   one:bool=False, only_matches:bool=False):
     '''
     Parameters
     ----------
@@ -229,9 +230,9 @@ def matching_without_subsetting_and_null_filtering(output_dir, metadata: Metadat
 
 
 
-def matching_without_initial_subsetting(output_dir, metadata: Metadata, 
+def matching_no_subset(output_dir, metadata: Metadata, 
                                         control:str, case:str, nullvalues:str, 
-                                        match:str, one:bool, only_matches:bool):
+                                        match:str, one:bool=False, only_matches:bool=False):
     '''
     Parameters
     ----------
@@ -308,9 +309,9 @@ def matching_without_initial_subsetting(output_dir, metadata: Metadata,
 
 
 
-def matching_without_null_filtering(output_dir, metadata: Metadata, keep:str,
-                                    control:str, case:str, match:str, one:bool,
-                                    only_matches:bool):
+def matching_no_null_filter(output_dir, metadata: Metadata, keep:str,
+                            control:str, case:str, match:str, 
+                            one:bool=False, only_matches:bool=False):
     '''
     Parameters
     ----------
@@ -386,7 +387,7 @@ def matching_without_null_filtering(output_dir, metadata: Metadata, keep:str,
 
 
 def complete_Matcher(output_dir, metadata: Metadata, keep:str, control:str, case:str,
-    nullvalues:str, match:str, one:bool, only_matches:bool):
+    nullvalues:str, match:str, one:bool=False, only_matches:bool=False):
     '''
     Parameters
     ----------

@@ -1,8 +1,8 @@
-# match_samples
-match_samples allows users to filter down a metadata file, label samples case or control, and match case to control samples. 
+# match-samples
+match-samples allows users to filter down a metadata file, label samples case or control, and match case to control samples. 
 
 ## Arguments
-Each visualizer in match_samples takes a combination of the 9 arguments below
+Each visualizer in match-samples takes a combination of the 9 arguments below
 
 1. visualization 
    - file location to save augmented metadata to
@@ -29,7 +29,7 @@ Each visualizer in match_samples takes a combination of the 9 arguments below
 
    
 ## Input File Format
-inputdata must be a tab separated file such as a .tsv. The top column contains the metadata catagories and the left most row contains the sample ids.
+metadata must be a metadata object (tab separated file such as a .tsv). The top column contains the metadata catagories and the left most row contains the sample ids.
 
 keep, control, and case should all contain sqlite statement that can be used in a WHERE statement.
 Statements on different lines are joined by an AND.

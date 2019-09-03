@@ -293,7 +293,7 @@ def determine_cases_and_controls(afterExclusion_MD, query_line_dict):
             ids = shrunk_MD.get_ids(line)
             shrunk_MD = shrunk_MD.filter_ids(ids)
             print(line)
-            print("\tFilters down number of potental %s samples to %s"%(key, initial_size-shrunk_MD.id_count)) 
+            print("\tFilters down number of potental %s samples left to %s"%(key, shrunk_MD.id_count)) 
             
         print("Final number of %s samples is %s"%(shrunk_MD.id_count,key))
         #replaces the true values created by the loop above to case or control

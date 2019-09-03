@@ -83,12 +83,24 @@ Output is a visualization of a the metadata. This qzv visualiation reflects the 
 These functions are the visualizers that can users call using the plugin.
 
 1. subsetting
+   - Subsets a metadata object then outputs a visualization of the augmented metadata to a file
+
 2. labeler_no_subset
+   - Label samples in a metadata object then outputs a visualization of the augmented metadata to a file
+
 3. complete_labeler
+   - Subset and label samples in a metadata object then outputs a visualization of the augmented metadata to a file
+
 4. matching_no_subset_null_filter
+   - Label and match samples in a metadata object then outputs a visualization of the augmented metadata to a file
+
 5. matching_no_subset
+   - Label, filter, and match samples in a metadata object then outputs a visualization of the augmented metadata to a file
+
 6. matching_no_null_filter
+   - Subset, label, and match samples in a metadata object then outputs a visualization of the augmented metadata to a file
 7. complete_matcher
+   - Subset, label, filter, and match samples in a metadata object then outputs a visualization of the augmented metadata to a file
 
 ## Core Functions
 
@@ -119,32 +131,27 @@ These are the funtions that actually do thing and are found in match_funtions.py
 ## Examples  
 All files used in the examples are in the folder example_files. 
 
-In a directory with the example files running the below commands will run the plugin.
+In a directory with the example files running the below commands will run the plugin. 
 
-qiime match-samples complete-matcher \
+This command runs complete-matcher. Based on the keep file it first subsets the metadata to only be samples that fit the correct criteria such as being a stool sample. Then it uses the case and control files to label samples. In this example samples of individuals that have ptsd, depression, or bipolar disorder are case samples and those with none of these conditions plus schizophrenia are controls. Then the program check that for every catagory detailed in match that samples' values are one of the null values in the nullvalues file. If a value is a null value then the sample is excluded from the metadata passed on for matching. The match file details how to match the files and by default the paramater only-matches is True so the output visualization only includes samples that were matched to eachother.
+  
+      qiime match-samples complete-matcher \
+          --m-metadata-file truncated_AGP.tsv \
+          --p-keep keep.txt \
+          --p-control control.txt \
+          --p-case case.txt \
+          --p-nullvalues null.txt \
+          --p-match match.txt \
+          --o-visualization code_review_cMatcher.qzv \
+          --verbose
+    
+This command is similar to complete-matcher except that it does not match the samples. As such match and nullvalues are not paramaters. The metadata is ouput after labeling.
 
-    --m-metadata-file truncated_AGP.tsv \
-    
-    --p-keep keep.txt \
-    
-    --p-control control.txt \
-    
-    --p-case case.txt \
-    
-    --p-nullvalues null.txt \
-    
-    --p-match match.txt \
-    --o-visualization code_review_cMatcher.qzv \
-    --p-only-matches \
-    --verbose
-    
-This command 
-
-qiime match-samples complete-labeler \
-    --m-metadata-file truncated_AGP.tsv \
-    --p-keep keep.txt \
-    --p-control control.txt \
-    --p-case case.txt \
-    --o-visualization code_review_cLabeler.qzv \
-    --verbose
+      qiime match-samples complete-labeler \
+          --m-metadata-file truncated_AGP.tsv \
+          --p-keep keep.txt \
+          --p-control control.txt \
+          --p-case case.txt \
+          --o-visualization code_review_cLabeler.qzv \
+          --verbose
 

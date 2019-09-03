@@ -1,7 +1,4 @@
-# match_samples.py
-match_samples.py is the main program. test_match_samples.py contains the unit tests for match_samples.py
-unitTest_files contains the files used in the unit tests.
-
+# match_samples
 match_samples allows users to filter down a metadata file, label samples case or control, and match case to control samples. 
 
 ## Arguments
@@ -80,7 +77,7 @@ Output is a visualization of a the metadata. This qzv visualiation reflects the 
 
    
 ## Plugin Visualizers
-These functions are the visualizers that can users call using the plugin.
+These functions are the visualizers that can users call using the plugin. They are defined in match_samples.py.
 
 1. subsetting
    - Subsets a metadata object then outputs a visualization of the augmented metadata to a file
@@ -103,28 +100,25 @@ These functions are the visualizers that can users call using the plugin.
    - Subset, label, filter, and match samples in a metadata object then outputs a visualization of the augmented metadata to a file
 
 ## Core Functions
+These are the funtions that actually do things. They are defined in match_funtions.py. Their unit tests are detailed in test_match_samples.py.
 
-These are the funtions that actually do thing and are found in match_funtions.py
-1. mainControler
-   - Calls the other functions depending on which inputs are given
-   - Returns the final metadata object 
-2. get_user_input_query_lines
+1. get_user_input_query_lines
    - Loads input files into a dictionary that AllInOne uses
-3. keep_samples
+2. keep_samples
    - Filters out unwanted files befor 
-4. determine_cases_and_controls
+3. determine_cases_and_controls
    - Labels samples case or control in a new catagory added to the metadata file
-5. filter_prep_for_matchMD
+4. filter_prep_for_matchMD
    - Filters out samples that have null values for any of the metadata categories that are used to match samples
-6. matcher
+5. matcher
    - Matches samples and then calls the stable marriage class functions
-7. orderDict
+6. orderDict
    - orders the elements for each key in a dictionary based on the frequency the element over the entire dictionary
    - elements with equal frequency are then sorted in alphanumeric ordering  
-8. order_keys
+7. order_keys
    - order the keys in a dictionary based on how many elements are associated with the key in the dictionary
    - keys with equal number of elements are not sorted alphanumericly so the one to one matches can be slightly different for runs with identical inputs
-9. stableMarriageRunner
+8. stableMarriageRunner
    - Enacts the one to one matches using a stable marriage framework 
 
 

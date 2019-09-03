@@ -1,11 +1,8 @@
-# match_samples.py
-match_samples.py is the main program. test_match_samples.py contains the unit tests for match_samples.py
-unitTest_files contains the files used in the unit tests.
-
-match_samples allows users to filter down a metadata file, label samples case or control, and match case to control samples. 
+# match-samples
+match-samples allows users to filter down a metadata file, label samples case or control, and match case to control samples. 
 
 ## Arguments
-Each visualizer in match_samples takes a combination of the 9 arguments below
+Each visualizer in match-samples takes a combination of the 9 arguments below
 
 1. visualization 
    - file location to save augmented metadata to
@@ -32,7 +29,7 @@ Each visualizer in match_samples takes a combination of the 9 arguments below
 
    
 ## Input File Format
-inputdata must be a tab separated file such as a .tsv. The top column contains the metadata catagories and the left most row contains the sample ids.
+metadata must be a metadata object (tab separated file such as a .tsv). The top column contains the metadata catagories and the left most row contains the sample ids.
 
 keep, control, and case should all contain sqlite statement that can be used in a WHERE statement.
 Statements on different lines are joined by an AND.
@@ -80,71 +77,75 @@ Output is a visualization of a the metadata. This qzv visualiation reflects the 
 
    
 ## Plugin Visualizers
-These functions are the visualizers that can users call using the plugin.
+These functions are the visualizers that can users call using the plugin. They are defined in match_samples.py.
 
 1. subsetting
+   - Subsets a metadata object then outputs a visualization of the augmented metadata to a file
+
 2. labeler_no_subset
+   - Label samples in a metadata object then outputs a visualization of the augmented metadata to a file
+
 3. complete_labeler
+   - Subset and label samples in a metadata object then outputs a visualization of the augmented metadata to a file
+
 4. matching_no_subset_null_filter
+   - Label and match samples in a metadata object then outputs a visualization of the augmented metadata to a file
+
 5. matching_no_subset
+   - Label, filter, and match samples in a metadata object then outputs a visualization of the augmented metadata to a file
+
 6. matching_no_null_filter
+   - Subset, label, and match samples in a metadata object then outputs a visualization of the augmented metadata to a file
 7. complete_matcher
+   - Subset, label, filter, and match samples in a metadata object then outputs a visualization of the augmented metadata to a file
 
 ## Core Functions
+These are the funtions that actually do things. They are defined in match_funtions.py. Their unit tests are detailed in test_match_samples.py.
 
-These are the funtions that actually do thing and are found in match_funtions.py
-1. mainControler
-   - Calls the other functions depending on which inputs are given
-   - Returns the final metadata object 
-2. get_user_input_query_lines
+1. get_user_input_query_lines
    - Loads input files into a dictionary that AllInOne uses
-3. keep_samples
+2. keep_samples
    - Filters out unwanted files befor 
-4. determine_cases_and_controls
+3. determine_cases_and_controls
    - Labels samples case or control in a new catagory added to the metadata file
-5. filter_prep_for_matchMD
+4. filter_prep_for_matchMD
    - Filters out samples that have null values for any of the metadata categories that are used to match samples
-6. matcher
+5. matcher
    - Matches samples and then calls the stable marriage class functions
-7. orderDict
+6. orderDict
    - orders the elements for each key in a dictionary based on the frequency the element over the entire dictionary
    - elements with equal frequency are then sorted in alphanumeric ordering  
-8. order_keys
+7. order_keys
    - order the keys in a dictionary based on how many elements are associated with the key in the dictionary
    - keys with equal number of elements are not sorted alphanumericly so the one to one matches can be slightly different for runs with identical inputs
-9. stableMarriageRunner
+8. stableMarriageRunner
    - Enacts the one to one matches using a stable marriage framework 
 
 
 ## Examples  
 All files used in the examples are in the folder example_files. 
 
-In a directory with the example files running the below commands will run the plugin.
+In a directory with the example files running the below commands will run the plugin. 
 
-qiime match-samples complete-matcher \
+This command runs complete-matcher. Based on the keep file it first subsets the metadata to only be samples that fit the correct criteria such as being a stool sample. Then it uses the case and control files to label samples. In this example samples of individuals that have ptsd, depression, or bipolar disorder are case samples and those with none of these conditions plus schizophrenia are controls. Then the program check that for every catagory detailed in match that samples' values are one of the null values in the nullvalues file. If a value is a null value then the sample is excluded from the metadata passed on for matching. The match file details how to match the files and by default the paramater only-matches is True so the output visualization only includes samples that were matched to eachother.
+  
+      qiime match-samples complete-matcher \
+          --m-metadata-file truncated_AGP.tsv \
+          --p-keep keep.txt \
+          --p-control control.txt \
+          --p-case case.txt \
+          --p-nullvalues null.txt \
+          --p-match match.txt \
+          --o-visualization code_review_cMatcher.qzv \
+          --verbose
+    
+This command is similar to complete-matcher except that it does not match the samples. As such match and nullvalues are not paramaters. The metadata is ouput after labeling.
 
-    --m-metadata-file truncated_AGP.tsv \
-    
-    --p-keep keep.txt \
-    
-    --p-control control.txt \
-    
-    --p-case case.txt \
-    
-    --p-nullvalues null.txt \
-    
-    --p-match match.txt \
-    --o-visualization code_review_cMatcher.qzv \
-    --p-only-matches \
-    --verbose
-    
-This command 
-
-qiime match-samples complete-labeler \
-    --m-metadata-file truncated_AGP.tsv \
-    --p-keep keep.txt \
-    --p-control control.txt \
-    --p-case case.txt \
-    --o-visualization code_review_cLabeler.qzv \
-    --verbose
+      qiime match-samples complete-labeler \
+          --m-metadata-file truncated_AGP.tsv \
+          --p-keep keep.txt \
+          --p-control control.txt \
+          --p-case case.txt \
+          --o-visualization code_review_cLabeler.qzv \
+          --verbose
 

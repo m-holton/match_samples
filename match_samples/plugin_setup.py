@@ -36,9 +36,9 @@ plugin.visualizers.register_function(
             'what samples to exclude or keep.'), 
     },
     name='Interact with and save Metadata object',
-    description=('Subset a metadata object then '
-                 'then returns saves the augmented '
-                 'metadata to a file')
+    description=('Subset a metadata object '
+                 'then saves a visualization '
+                 'of the augmented metadata to a file')
 )
 
 
@@ -59,8 +59,9 @@ plugin.visualizers.register_function(
             'what samples to label case.'),
     },
     name='Interact with and visualizes a Metadata object',
-    description=('Label samples in a metadata object then '
-                 'visualizes the augmented metadata')
+    description=('Label samples in a metadata object '
+                 'then saves a visualization '
+                 'of the augmented metadata to a file')
 )
 
 
@@ -84,8 +85,8 @@ plugin.visualizers.register_function(
     },
     name='Interact with and visualizes a  Metadata object',
     description=('Subset and label samples in a '
-                 'metadata object then returns saves the augmented '
-                 'metadata')
+                 'metadata object then saves a visualization '
+                 'of the augmented metadata to a file')
 )
 
 
@@ -115,8 +116,8 @@ plugin.visualizers.register_function(
     },
     name='Interact with and visualizes a Metadata object',
     description=('Label and match samples in a '
-                 'metadata object then returns saves the augmented '
-                 'metadata')
+                 'metadata object then saves a visualization '
+                 'of the augmented metadata to a file')
 )
 
 
@@ -150,8 +151,8 @@ plugin.visualizers.register_function(
     },
     name='Interact with and visualizes a  Metadata object',
     description=('Label, filter, and match samples in a '
-                 'metadata object then visualizes the augmented '
-                 'metadata')
+                 'metadata object then saves a visualization '
+                 'of the augmented metadata to a file')
 )
 
 
@@ -184,8 +185,8 @@ plugin.visualizers.register_function(
     },
     name='Interact with and visualizes a Metadata object',
     description=('Subset, label, and match samples in a '
-                 'metadata object then visualizes the augmented '
-                 'metadata')
+                 'metadata object then saves a visualization '
+                 'of the augmented metadata to a file')
 )
 
 
@@ -222,6 +223,6 @@ plugin.visualizers.register_function(
     },
     name='Interact with and visualizes a Metadata object',
     description=('Subset, label, filter, and match samples in a '
-                 'metadata object then visualizes the augmented '
-                 'metadata')
+                 'metadata object then saves a visualization '
+                 'of the augmented metadata to a file')
 )

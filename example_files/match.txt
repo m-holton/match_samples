@@ -1,0 +1,9 @@
+exact	country_residence
+exact	census_region
+exact	center_project_name
+exact	sex
+range	age_corrected	5
+exact	bmi_cat
+exact	cardiovascular_disease
+exact	diabetes
+exact	smoking_frequency

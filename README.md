@@ -4,14 +4,13 @@ unitTest_files contains the files used in the unit tests.
 
 match_samples allows users to filter down a metadata file, label samples case or control, and match case to control samples. 
 
-## Input 
-The program takes up to ten inputs. 
+## Arguments
+Each visualizer in match_samples takes a combination of the 9 arguments below
 
-1. verbose 
-   - flag that tells the program to display information such as how many samples were filtered out by the function that filters down the input metadata based on the keep file
-2. inputdata 
+1. visualization 
+   - file location to save augmented metadata to
+2. metadata-file 
    - the metadata that contains the samples that will be processed by the program
-   - required
 3. keep 
    - name of file with sqlite lines used to determine what samples to exclude or keep
 4. control 
@@ -30,8 +29,7 @@ The program takes up to ten inputs.
    - flag that tells program to call stableMarriageRunner and do one to one matches
 9. only_matches
    - flag that makes program filter out none matched samples at the end of matching before the metadata is outputted
-10. unit
-    -flag that will make the program print out statements used for unit tests of the mainControler function. These statements indicate what the program is doing.
+
    
 ## Input File Format
 inputdata must be a tab separated file such as a .tsv. The top column contains the metadata catagories and the left most row contains the sample ids.
@@ -78,10 +76,23 @@ exact    sample_type
 This would match case and control samples that have the same value for sex and sample_type and their values for age are within 3 of eachother. 
 
 ## Output
-Output is a metadata object. This metadata objects reflects the fitering, labeling, and matching done by the program. 
+Output is a visualization of a the metadata. This qzv visualiation reflects the fitering, labeling, and matching done by the program. The recommended way to view visualization is by using qiime2 view at https://view.qiime2.org.
 
-## Program Functions
+   
+## Plugin Visualizers
+These functions are the visualizers that can users call using the plugin.
 
+1. subsetting
+2. labeler_no_subset
+3. complete_labeler
+4. matching_no_subset_null_filter
+5. matching_no_subset
+6. matching_no_null_filter
+7. complete_matcher
+
+## Core Functions
+
+These are the funtions that actually do thing and are found in match_funtions.py
 1. mainControler
    - Calls the other functions depending on which inputs are given
    - Returns the final metadata object 
@@ -104,4 +115,36 @@ Output is a metadata object. This metadata objects reflects the fitering, labeli
 9. stableMarriageRunner
    - Enacts the one to one matches using a stable marriage framework 
 
+
+## Examples  
+All files used in the examples are in the folder example_files. 
+
+In a directory with the example files running the below commands will run the plugin.
+
+qiime match-samples complete-matcher \
+
+    --m-metadata-file truncated_AGP.tsv \
+    
+    --p-keep keep.txt \
+    
+    --p-control control.txt \
+    
+    --p-case case.txt \
+    
+    --p-nullvalues null.txt \
+    
+    --p-match match.txt \
+    --o-visualization code_review_cMatcher.qzv \
+    --p-only-matches \
+    --verbose
+    
+This command 
+
+qiime match-samples complete-labeler \
+    --m-metadata-file truncated_AGP.tsv \
+    --p-keep keep.txt \
+    --p-control control.txt \
+    --p-case case.txt \
+    --o-visualization code_review_cLabeler.qzv \
+    --verbose
 

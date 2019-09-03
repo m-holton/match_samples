@@ -370,11 +370,11 @@ def filter_prep_for_matchMD(merged_MD, match_condition_lines,
               %(returned_MD.id_count))
     
     
-    
+    #always gives me an empty set
     print("%s case samples after filtering out null samples"
-              %((returned_MD.get_ids("'case_control' IN ('case')"))))
+              %(len(returned_MD.get_ids("'case_control' IN ('case')"))))
     print("%s control samples after filtering out null samples"
-              %((returned_MD.get_ids("'case_control' IN ('control')"))))
+              %(len(returned_MD.get_ids("'case_control' IN ('control')"))))
 
     return returned_MD
 
@@ -493,16 +493,6 @@ def matcher(prepped_for_match_MD, conditions_for_match_lines,
                 control_match_count_dictionary.update({id_control:0})
             control_match_count_dictionary.update(
                 {id_control:(control_match_count_dictionary[id_control]+1)})
-
-    '''
-    if verbose:
-        print("case_dictionary is %s"
-              %(case_dictionary))
-        print("control_match_count_dictionary is %s"
-              %(control_match_count_dictionary))
-        print("case_match_count_dictionary is %s"
-              %(case_match_count_dictionary))
-    '''
     
     if one_to_one:
         stable = Stable_Marriage()

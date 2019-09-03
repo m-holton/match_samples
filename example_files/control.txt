@@ -1,0 +1,4 @@
+mental_illness_type_depression IN ('No', 'false')
+mental_illness_type_bipolar_disorder IN ('No', 'false')
+mental_illness_type_ptsd_posttraumatic_stress_disorder IN ('No', 'false')
+mental_illness_type_schizophrenia IN ('No', 'false')

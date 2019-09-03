@@ -1,25 +1,24 @@
 # ----------------------------------------------------------------------------
-# Based of the qiime2 q2-emperor plugin_setup.py file found at
-# https://github.com/qiime2/q2-emperor/blob/master/q2_emperor/plugin_setup.py
+# 
 #
 # ----------------------------------------------------------------------------
 
 from match_samples import match_samples
-
-
 from qiime2.plugin import (Plugin, Metadata, Str, List, Citations, Range, Int,
                            Bool, Properties)
 from q2_types.ordination import PCoAResults
-
+from q2_types.feature_table import FeatureTable, Frequency, RelativeFrequency
 
 plugin = Plugin(
     name='match-samples',
     version='1',
     package='match_samples',
     website='https://github.com/brainiac5mimic/match_samples',    
-    description=('match_samples allows users to filter down a metadata file, '
-                 'label samples case or control, and match case to control samples.'),
-    short_description='Filter, label and match samples in a metadata file'
+    description=('match_samples allows users to filter down a '
+                 'metadata file, label samples case or control, and '
+                 'match case to control samples.'),
+    short_description=('Filter, label and match samples in a '
+                      'metadata file')
 )
 
 
@@ -36,9 +35,12 @@ plugin.visualizers.register_function(
         'keep': ('Path of file with sqlite lines used to determine '
             'what samples to exclude or keep.'), 
     },
-    name='Visualize and Interact with Metadata object',
-    description='Subset a metadata object then returns a visualization of the augmented metadata'
+    name='Interact with and save Metadata object',
+    description=('Subset a metadata object then '
+                 'then returns saves the augmented '
+                 'metadata to a file')
 )
+
 
 
 plugin.visualizers.register_function(
@@ -47,7 +49,6 @@ plugin.visualizers.register_function(
     parameters={ 
         'metadata': Metadata, 
         'control': Str, 'case': Str,
-
     },
     input_descriptions={},
     parameter_descriptions={
@@ -57,10 +58,10 @@ plugin.visualizers.register_function(
         'case': ('Path of file with sqlite lines used to determine '
             'what samples to label case.'),
     },
-    name='Visualize and Interact with Metadata object',
-    description='Label samples in a metadata object then returns a visualization of the augmented metadata'
+    name='Interact with and visualizes a Metadata object',
+    description=('Label samples in a metadata object then '
+                 'visualizes the augmented metadata')
 )
-
 
 
 plugin.visualizers.register_function(
@@ -80,21 +81,22 @@ plugin.visualizers.register_function(
             'what samples to label control.'), 
         'case': ('Path of file with sqlite lines used to determine '
             'what samples to label case.'),
-
     },
-    name='Visualize and Interact with Metadata object',
-    description='Subset and label samples in a metadata object then returns a visualization of the augmented metadata'
+    name='Interact with and visualizes a  Metadata object',
+    description=('Subset and label samples in a '
+                 'metadata object then returns saves the augmented '
+                 'metadata')
 )
 
 
-
 plugin.visualizers.register_function(
-    function=match_samples.match_no_subset_null_filter,
+    function=match_samples.matching_no_subset_null_filter,
     inputs={},
     parameters={ 
         'metadata': Metadata, 
         'control': Str, 'case': Str,
-        'match': Str, 'one': Bool, 'only_matches': Bool
+        'match': Str, 
+        'one': Bool, 'only_matches': Bool
     },
     input_descriptions={},
     parameter_descriptions={
@@ -111,10 +113,11 @@ plugin.visualizers.register_function(
         'only_matches': ('When True match_samples will filter out'
             'non-matched samples from output file.')
     },
-    name='Visualize and Interact with Metadata object',
-    description='Label and match samples in a metadata object then returns a visualization of the augmented metadata'
+    name='Interact with and visualizes a Metadata object',
+    description=('Label and match samples in a '
+                 'metadata object then returns saves the augmented '
+                 'metadata')
 )
-
 
 
 
@@ -125,7 +128,8 @@ plugin.visualizers.register_function(
         'metadata': Metadata, 
         'control': Str, 'case': Str,
         'nullvalues': Str, 
-        'match': Str, 'one': Bool, 'only_matches': Bool
+        'match': Str, 
+        'one': Bool, 'only_matches': Bool
     },
     input_descriptions={},
     parameter_descriptions={
@@ -144,10 +148,11 @@ plugin.visualizers.register_function(
         'only_matches': ('When True match_samples will filter out'
             'non-matched samples from output file.')
     },
-    name='Visualize and Interact with Metadata object',
-    description='Label, filter, and match samples in a metadata object then returns a visualization of the augmented metadata'
+    name='Interact with and visualizes a  Metadata object',
+    description=('Label, filter, and match samples in a '
+                 'metadata object then visualizes the augmented '
+                 'metadata')
 )
-
 
 
 plugin.visualizers.register_function(
@@ -157,7 +162,8 @@ plugin.visualizers.register_function(
         'metadata': Metadata, 
         'keep': Str, 
         'control': Str, 'case': Str,
-        'match': Str, 'one': Bool, 'only_matches': Bool
+        'match': Str, 
+        'one': Bool, 'only_matches': Bool    
     },
     input_descriptions={},
     parameter_descriptions={
@@ -176,21 +182,24 @@ plugin.visualizers.register_function(
         'only_matches': ('When True match_samples will filter out'
             'non-matched samples from output file.')
     },
-    name='Visualize and Interact with Metadata object',
-    description='Subset, label, and match samples in a metadata object then returns a visualization of the augmented metadata'
+    name='Interact with and visualizes a Metadata object',
+    description=('Subset, label, and match samples in a '
+                 'metadata object then visualizes the augmented '
+                 'metadata')
 )
 
 
 
 plugin.visualizers.register_function(
-    function=match_samples.complete_Matcher,
+    function=match_samples.complete_matcher,
     inputs={},
     parameters={ 
         'metadata': Metadata, 
         'keep': Str, 
         'control': Str, 'case': Str,
         'nullvalues': Str, 
-        'match': Str, 'one': Bool, 'only_matches': Bool
+        'match': Str, 
+        'one': Bool, 'only_matches': Bool
     },
     input_descriptions={},
     parameter_descriptions={
@@ -211,7 +220,8 @@ plugin.visualizers.register_function(
         'only_matches': ('When True match_samples will filter out'
             'non-matched samples from output file.')
     },
-    name='Visualize and Interact with Metadata object',
-    description='Subset, label, filter, and match samples in a metadata object then returns a visualization of the augmented metadata'
+    name='Interact with and visualizes a Metadata object',
+    description=('Subset, label, filter, and match samples in a '
+                 'metadata object then visualizes the augmented '
+                 'metadata')
 )
-

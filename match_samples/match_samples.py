@@ -1,11 +1,13 @@
+import time
+import pandas as pd
 
+from q2_types.feature_table import FeatureTable, Frequency, RelativeFrequency
 from qiime2 import Metadata
-
 from match_samples import match_functions as mf
 
-import time
 
-def subsetting(output_dir, metadata: Metadata, keep: str):
+
+def subsetting(output_dir, metadata: Metadata, keep: str) -> None:
     '''
     Parameters
     ----------
@@ -14,26 +16,16 @@ def subsetting(output_dir, metadata: Metadata, keep: str):
     metadata: Metadata
         Metadata object to analyze.
     keep: string
-        name of file with sqlite lines used to determine what samples to
-            exclude or keep
-            
-    Returns
-    -------
-    Visualization of a Metadata object that contains the subset of metadata
-        samples
-
+        name of file with sqlite lines used to determine what samples 
+            to exclude or keep
     '''
     from qiime2.plugins.metadata.visualizers import tabulate
-    
+
     tstart = time.clock()
     inputDict = { "keep":keep}
     #loads and opens input files
     inputDict = mf.get_user_input_query_lines(inputDict)
-    print("The file parameters found are")
-    print(", ".join(inputDict.keys()))
     tloadedFiles = time.clock()
-    print("Time to load input files is %s"%(tloadedFiles - tstart))
-        
 
     print("Calling keep_samples")
     afterExclusionMD = mf.keep_samples(metadata,
@@ -42,16 +34,17 @@ def subsetting(output_dir, metadata: Metadata, keep: str):
     print("Time to filter out unwanted samples is %s"
           %(tkeep - tloadedFiles))
 
+    vis = tabulate(afterExclusionMD)
+    vis.visualization.export_data(output_dir)
     tend = time.clock()
     print("Time to do everything %s"%(tend - tstart))
-    return tabulate(afterExclusionMD)
+    
 
 
 
 
-
-
-def labeler_no_subset(output_dir, metadata: Metadata, control: str, case: str):
+def labeler_no_subset(output_dir, metadata: Metadata, control: str, 
+                      case: str) -> None:
     '''
     Parameters
     ----------
@@ -60,41 +53,35 @@ def labeler_no_subset(output_dir, metadata: Metadata, control: str, case: str):
     metadata: Metadata
         Metadata object to analyze.
     control: string
-        name of file with sqlite lines used to determine what samples to
-            label control
+        name of file with sqlite lines used to determine what 
+            samples to label control
     case: string
-        name of file with sqlite lines used to determine what samples to
-            label case
-            
-    Returns
-    -------
-    Visualization of a Metadata object that contains the filtered, labeled, and or matched
-        samples
-
+        name of file with sqlite lines used to determine what 
+            samples to label case
     '''
     from qiime2.plugins.metadata.visualizers import tabulate
-    
+    #from qiime2.plugins import metadata as plugMD
+
+
     tstart = time.clock()
     inputDict = {"control":control, "case":case}
     #loads and opens input files
     inputDict = mf.get_user_input_query_lines(inputDict)
-    print("The file parameters found are")
-    print(", ".join(inputDict.keys()))
     tloadedFiles = time.clock()
-    print("Time to load input files is %s"%(tloadedFiles - tstart))
-        
+
     print("Calling determine_cases_and_controls")
     case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
-    case_controlMD = mf.determine_cases_and_controls(verbose,
+    case_controlMD = mf.determine_cases_and_controls(
             metadata, case_control_dict)
     tcase_control = time.clock()
     print("Time to label case and control samples is %s"
           %(tcase_control - tloadedFiles))
 
+    vis = tabulate(case_controlMD)
+    vis.visualization.export_data(output_dir)
     tend = time.clock()
     print("Time to do everything %s"%(tend - tstart))
-    return tabulate(case_controlMD)
 
 
 
@@ -103,7 +90,10 @@ def labeler_no_subset(output_dir, metadata: Metadata, control: str, case: str):
 
 
 
-def complete_labeler(output_dir, metadata: Metadata, keep:str, control:str, case:str):
+
+
+def complete_labeler(output_dir, metadata: Metadata, keep:str, 
+                     control:str, case:str) -> None:
     '''
     Parameters
     ----------
@@ -112,50 +102,43 @@ def complete_labeler(output_dir, metadata: Metadata, keep:str, control:str, case
     metadata: Metadata
         Metadata object to analyze.
     keep: string
-        name of file with sqlite lines used to determine what samples to
-            exclude or keep
+        name of file with sqlite lines used to determine what 
+            samples to exclude or keep
     control: string
-        name of file with sqlite lines used to determine what samples to
-            label control
+        name of file with sqlite lines used to determine what 
+            samples to label control
     case: string
-        name of file with sqlite lines used to determine what samples to
-            label case
-
-    Returns
-    -------
-    Visualization of a Metadata object that contains the filtered, labeled, and or matched
-        samples
+        name of file with sqlite lines used to determine what 
+            samples to label case
 
     '''
     from qiime2.plugins.metadata.visualizers import tabulate
-    
+
     tstart = time.clock()
     inputDict = {"keep":keep, "control":control, "case":case}
     #loads and opens input files
     inputDict = mf.get_user_input_query_lines(inputDict)
-    print("The file parameters found are")
-    print(", ".join(inputDict.keys()))
     tloadedFiles = time.clock()
-    print("Time to load input files is %s"%(tloadedFiles - tstart))
-        
+
     print("Calling keep_samples")
     afterExclusionMD = mf.keep_samples(metadata, inputDict["keep"])
     tkeep = time.clock()
     print("Time to filter out unwanted samples is %s"
           %(tkeep - tloadedFiles))
-    
+
     print("Calling determine_cases_and_controls")
     case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
-    case_controlMD = mf.determine_cases_and_controls(verbose,
+    case_controlMD = mf.determine_cases_and_controls(
             afterExclusionMD, case_control_dict)
     tcase_control = time.clock()
     print("Time to label case and control samples is %s"
           %(tcase_control - tkeep))
 
+    vis = tabulate(case_controlMD)
+    vis.visualization.export_data(output_dir)
     tend = time.clock()
     print("Time to do everything %s"%(tend - tstart))
-    return tabulate(case_controlMD)
 
 
 
@@ -163,9 +146,10 @@ def complete_labeler(output_dir, metadata: Metadata, keep:str, control:str, case
 
 
 
-def match_no_subset_null_filter(output_dir, metadata: Metadata, 
-                                                   control:str, case:str, match:str, 
-                                                   one:bool=False, only_matches:bool=False):
+def matching_no_subset_null_filter(output_dir, metadata: Metadata,
+                                control:str, case:str, match:str,
+                                one:bool=False,
+                                only_matches:bool=False) -> None:
     '''
     Parameters
     ----------
@@ -174,11 +158,11 @@ def match_no_subset_null_filter(output_dir, metadata: Metadata,
     metadata: Metadata
         Metadata object to analyze.
     control: string
-        name of file with sqlite lines used to determine what samples to
-            label control
+        name of file with sqlite lines used to determine what 
+            samples to label control
     case: string
-        name of file with sqlite lines used to determine what samples to
-            label case
+        name of file with sqlite lines used to determine what 
+            samples to label case
     match: string
         name of file which contains information on what conditions
             must be met to constitue a match
@@ -188,29 +172,20 @@ def match_no_subset_null_filter(output_dir, metadata: Metadata,
     only_matches: boolean
         When given as a parameter match_samples will filter out
             non-matched samples from output file
-
-    Returns
-    -------
-    Visualization of a Metadata object that contains the filtered, labeled, and or matched
-        samples
-
     '''
     from qiime2.plugins.metadata.visualizers import tabulate
-    
+
     tstart = time.clock()
     inputDict = {"metadata":metadata, "control":control,
         "case":case, "match":match}
     #loads and opens input files
     inputDict = mf.get_user_input_query_lines(inputDict)
-    print("The file parameters found are")
-    print(", ".join(inputDict.keys()))
     tloadedFiles = time.clock()
-    print("Time to load input files is %s"%(tloadedFiles - tstart))
-        
+
     print("Calling determine_cases_and_controls")
     case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
-    case_controlMD = mf.determine_cases_and_controls(verbose,
+    case_controlMD = mf.determine_cases_and_controls(
             metadata, case_control_dict)
     tcase_control = time.clock()
     print("Time to label case and control samples is %s"
@@ -219,20 +194,21 @@ def match_no_subset_null_filter(output_dir, metadata: Metadata,
     print("Calling matcher")
     matchedMD = mf.matcher(case_controlMD,
                         inputDict["match"], one, only_matches)
-        
     tmatch = time.clock()
-    tend = time.clock()
     print("Time to match is %s"%(tmatch - tcase_control))
+
+    vis = tabulate(matchedMD)
+    vis.visualization.export_data(output_dir)
+    tend = time.clock()
     print("Time to do everything %s"%(tend - tstart))
-    return tabulate(matchedMD)
 
 
 
 
-
-def matching_no_subset(output_dir, metadata: Metadata, 
-                                        control:str, case:str, nullvalues:str, 
-                                        match:str, one:bool=False, only_matches:bool=False):
+def matching_no_subset(output_dir, metadata: Metadata,
+                       control:str, case:str, nullvalues:str,
+                       match:str, one:bool=False, 
+                       only_matches:bool=False) -> None:
     '''
     Parameters
     ----------
@@ -241,11 +217,11 @@ def matching_no_subset(output_dir, metadata: Metadata,
     metadata: Metadata
         Metadata object to analyze.
     control: string
-        name of file with sqlite lines used to determine what samples to
-            label control
+        name of file with sqlite lines used to determine what 
+            samples to label control
     case: string
-        name of file with sqlite lines used to determine what samples to
-            label case
+        name of file with sqlite lines used to determine what 
+            samples to label case
     nullvalues: string
         name of file with strings that represent null values so that
             samples where one of these null values are in a category
@@ -259,59 +235,50 @@ def matching_no_subset(output_dir, metadata: Metadata,
     only_matches: boolean
         When given as a parameter match_samples will filter out
             non-matched samples from output file
-
-    Returns
-    -------
-    Visualization of a Metadata object that contains the filtered, labeled, and or matched
-        samples
-
     '''
     from qiime2.plugins.metadata.visualizers import tabulate
-    
+
     tstart = time.clock()
     inputDict = { "control":control,
         "case":case, "nullvalues":nullvalues, "match":match}
     #loads and opens input files
     inputDict = mf.get_user_input_query_lines(inputDict)
-    print("The file parameters found are")
-    print(", ".join(inputDict.keys()))
     tloadedFiles = time.clock()
-    print("Time to load input files is %s"%(tloadedFiles - tstart))
-        
+
     print("Calling determine_cases_and_controls")
     case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
-    case_controlMD = mf.determine_cases_and_controls(verbose,
+    case_controlMD = mf.determine_cases_and_controls(
             metadata, case_control_dict)
     tcase_control = time.clock()
     print("Time to label case and control samples is %s"
           %(tcase_control - tloadedFiles))
 
     print("Calling filter_prep_for_matchMD")
-    prepped_for_matchMD = mf.filter_prep_for_matchMD(verbose,
-                case_controlMD, inputDict["match"], inputDict["nullvalues"])
+    prepped_for_matchMD = mf.filter_prep_for_matchMD(
+        case_controlMD, inputDict["match"], inputDict["nullvalues"])
     tprepped = time.clock()
     print("Time to filter Metadata information for samples "
-                      "with null values is %s"%(tprepped - tcase_control))
-    
+          "with null values is %s"%(tprepped - tcase_control))
+
     print("Calling matcher")
     matchedMD = mf.matcher(prepped_for_matchMD,
                         inputDict["match"], one, only_matches)
-    
     tmatch = time.clock()
+    print("Time to match is %s"%(tmatch - tprepped))
+
+    vis = tabulate(matchedMD)
+    vis.visualization.export_data(output_dir)
     tend = time.clock()
-    print("Time to match is %s"%(tmatch- tprepped))
     print("Time to do everything %s"%(tend - tstart))
-    return tabulate(matchedMD)
-
-
 
 
 
 
 def matching_no_null_filter(output_dir, metadata: Metadata, keep:str,
                             control:str, case:str, match:str, 
-                            one:bool=False, only_matches:bool=False):
+                            one:bool=False, 
+                            only_matches:bool=False) -> None:
     '''
     Parameters
     ----------
@@ -320,14 +287,14 @@ def matching_no_null_filter(output_dir, metadata: Metadata, keep:str,
     metadata: Metadata
         Metadata object to analyze.
     keep: string
-        name of file with sqlite lines used to determine what samples to
-            exclude or keep
+        name of file with sqlite lines used to determine what 
+            samples to exclude or keep
     control: string
-        name of file with sqlite lines used to determine what samples to
-            label control
+        name of file with sqlite lines used to determine what 
+            samples to label control
     case: string
-        name of file with sqlite lines used to determine what samples to
-            label case
+        name of file with sqlite lines used to determine what 
+            samples to label case
     match: string
         name of file which contains information on what conditions
             must be met to constitue a match
@@ -337,25 +304,16 @@ def matching_no_null_filter(output_dir, metadata: Metadata, keep:str,
     only_matches: boolean
         When given as a parameter match_samples will filter out
             non-matched samples from output file
-            
-    Returns
-    -------
-    Visualization of a Metadata object that contains the filtered, labeled, and or matched
-        samples
-
     '''
     from qiime2.plugins.metadata.visualizers import tabulate
-    
+
     tstart = time.clock()
     inputDict = { "keep":keep, "control":control,
         "case":case, "nullvalues":nullvalues, "match":match}
     #loads and opens input files
     inputDict = mf.get_user_input_query_lines(inputDict)
-    print("The file parameters found are")
-    print(", ".join(inputDict.keys()))
     tloadedFiles = time.clock()
-    print("Time to load input files is %s"%(tloadedFiles - tstart))
-    
+
     print("Calling keep_samples")
     afterExclusionMD = mf.keep_samples(metadata,
             inputDict["keep"])
@@ -366,7 +324,7 @@ def matching_no_null_filter(output_dir, metadata: Metadata, keep:str,
     print("Calling determine_cases_and_controls")
     case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
-    case_controlMD = mf.determine_cases_and_controls(verbose,
+    case_controlMD = mf.determine_cases_and_controls(
             afterExclusionMD, case_control_dict)
     tcase_control = time.clock()
     print("Time to label case and control samples is %s"
@@ -375,19 +333,22 @@ def matching_no_null_filter(output_dir, metadata: Metadata, keep:str,
     print("Calling matcher")
     matchedMD = mf.matcher(prepped_for_matchMD,
                         inputDict["match"], one, only_matches)
- 
     tmatch = time.clock()
+    print("Time to match is %s"%(tmatch - tcase_control))
+
+    vis = tabulate(matchedMD)
+    vis.visualization.export_data(output_dir)
     tend = time.clock()
-    print("Time to match is %s"%(tmatch- tcase_control))
     print("Time to do everything %s"%(tend - tstart))
-    return tabulate(matchedMD)
 
 
 
 
 
-def complete_Matcher(output_dir, metadata: Metadata, keep:str, control:str, case:str,
-    nullvalues:str, match:str, one:bool=False, only_matches:bool=False):
+def complete_matcher(output_dir, metadata: Metadata, keep:str, 
+                     control:str, case:str, nullvalues:str, 
+                     match:str, one:bool=False, 
+                     only_matches:bool=True) -> None:
     '''
     Parameters
     ----------
@@ -396,14 +357,14 @@ def complete_Matcher(output_dir, metadata: Metadata, keep:str, control:str, case
     metadata: Metadata
         Metadata object to analyze.
     keep: string
-        name of file with sqlite lines used to determine what samples to
-            exclude or keep
+        name of file with sqlite lines used to determine what 
+            samples to exclude or keep
     control: string
-        name of file with sqlite lines used to determine what samples to
-            label control
+        name of file with sqlite lines used to determine what 
+            samples to label control
     case: string
-        name of file with sqlite lines used to determine what samples to
-            label case
+        name of file with sqlite lines used to determine what 
+            samples to label case
     nullvalues: string
         name of file with strings that represent null values so that
             samples where one of these null values are in a category
@@ -417,25 +378,15 @@ def complete_Matcher(output_dir, metadata: Metadata, keep:str, control:str, case
     only_matches: boolean
         When given as a parameter match_samples will filter out
             non-matched samples from output file
-            
-    Returns
-    -------
-    Visualization of a Metadata object that contains the filtered, labeled, and or matched
-        samples
-
     '''
     from qiime2.plugins.metadata.visualizers import tabulate
-    
+
     tstart = time.clock()
     inputDict = { "keep":keep, "control":control,
         "case":case, "nullvalues":nullvalues, "match":match}
     #loads and opens input files
     inputDict = mf.get_user_input_query_lines(inputDict)
-    print("The file parameters found are")
-    print(", ".join(inputDict.keys()))
     tloadedFiles = time.clock()
-    print("Time to load input files is %s"%(tloadedFiles - tstart))
-        
 
     print("Calling keep_samples")
     afterExclusionMD = mf.keep_samples(metadata,
@@ -443,36 +394,30 @@ def complete_Matcher(output_dir, metadata: Metadata, keep:str, control:str, case
     tkeep = time.clock()
     print("Time to filter out unwanted samples is %s"
           %(tkeep - tloadedFiles))
-    
+
     print("Calling determine_cases_and_controls")
     case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
-    case_controlMD = mf.determine_cases_and_controls(verbose,
+    case_controlMD = mf.determine_cases_and_controls(
             afterExclusionMD, case_control_dict)
     tcase_control = time.clock()
     print("Time to label case and control samples is %s"
           %(tcase_control - tkeep))
 
     print("Calling filter_prep_for_matchMD")
-    prepped_for_matchMD = mf.filter_prep_for_matchMD(verbose,
-                case_controlMD, inputDict["match"], inputDict["nullvalues"])
+    prepped_for_matchMD = mf.filter_prep_for_matchMD(
+        case_controlMD, inputDict["match"], inputDict["nullvalues"])
     tprepped = time.clock()
     print("Time to filter Metadata information for samples "
-                      "with null values is %s"%(tprepped - tcase_control))
+          "with null values is %s"%(tprepped - tcase_control))
 
     print("Calling matcher")
     matchedMD = mf.matcher(prepped_for_matchMD,
                         inputDict["match"], one, only_matches)
-        
     tmatch = time.clock()
+    print("Time to match is %s"%(tmatch - tprepped))
+
+    vis = tabulate(matchedMD)
+    vis.visualization.export_data(output_dir)
     tend = time.clock()
-    print("Time to match is %s"%(tmatch- tprepped))
     print("Time to do everything %s"%(tend - tstart))
-    return tabulate(matchedMD)
-
-
-
-
-
-
-

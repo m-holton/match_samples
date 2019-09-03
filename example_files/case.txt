@@ -1,0 +1,1 @@
+mental_illness_type_depression IN ('Yes', 'true') OR mental_illness_type_ptsd_posttraumatic_stress_disorder IN ('Yes', 'true') OR mental_illness_type_bipolar_disorder IN ('Yes', 'true')

@@ -28,12 +28,15 @@ plugin.visualizers.register_function(
     parameters={ 
         'metadata': Metadata, 
         'keep': Str, 
+        'extra': Bool,
     },
     input_descriptions={},
     parameter_descriptions={
         'metadata': 'Sample metadata to analyze.',
         'keep': ('Path of file with sqlite lines used to determine '
             'what samples to exclude or keep.'), 
+        'extra': ('Dictates if funtions that subset metadata do '
+                  'the subsetting in one or multiple steps'),
     },
     name='Interact with and save Metadata object',
     description=('Subset a metadata object '
@@ -48,7 +51,8 @@ plugin.visualizers.register_function(
     inputs={},
     parameters={ 
         'metadata': Metadata, 
-        'control': Str, 'case': Str,
+        'control': Str, 'case': Str, 
+        'extra': Bool,
     },
     input_descriptions={},
     parameter_descriptions={
@@ -56,7 +60,9 @@ plugin.visualizers.register_function(
         'control': ('Path of file with sqlite lines used to determine '
             'what samples to label control.'), 
         'case': ('Path of file with sqlite lines used to determine '
-            'what samples to label case.'),
+            'what samples to label case.'), 
+        'extra': ('Dictates if funtions that subset metadata do '
+                  'the subsetting in one or multiple steps'),
     },
     name='Interact with and visualizes a Metadata object',
     description=('Label samples in a metadata object '
@@ -71,7 +77,8 @@ plugin.visualizers.register_function(
     parameters={ 
         'metadata': Metadata, 
         'keep': Str, 
-        'control': Str, 'case': Str,
+        'control': Str, 'case': Str, 
+        'extra': Bool,
     },
     input_descriptions={},
     parameter_descriptions={
@@ -81,7 +88,9 @@ plugin.visualizers.register_function(
         'control': ('Path of file with sqlite lines used to determine '
             'what samples to label control.'), 
         'case': ('Path of file with sqlite lines used to determine '
-            'what samples to label case.'),
+            'what samples to label case.'), 
+        'extra': ('Dictates if funtions that subset metadata do '
+                  'the subsetting in one or multiple steps'),
     },
     name='Interact with and visualizes a  Metadata object',
     description=('Subset and label samples in a '
@@ -97,7 +106,7 @@ plugin.visualizers.register_function(
         'metadata': Metadata, 
         'control': Str, 'case': Str,
         'match': Str, 
-        'one': Bool, 'only_matches': Bool
+        'one': Bool, 'only_matches': Bool, 'extra': Bool,
     },
     input_descriptions={},
     parameter_descriptions={
@@ -112,7 +121,9 @@ plugin.visualizers.register_function(
         'one': ('When True match_samples will do one to '
             'one matching instead of all matches.'), 
         'only_matches': ('When True match_samples will filter out'
-            'non-matched samples from output file.')
+            'non-matched samples from output file.'), 
+        'extra': ('Dictates if funtions that subset metadata do '
+                  'the subsetting in one or multiple steps'),
     },
     name='Interact with and visualizes a Metadata object',
     description=('Label and match samples in a '
@@ -130,7 +141,7 @@ plugin.visualizers.register_function(
         'control': Str, 'case': Str,
         'nullvalues': Str, 
         'match': Str, 
-        'one': Bool, 'only_matches': Bool
+        'one': Bool, 'only_matches': Bool, 'extra': Bool,
     },
     input_descriptions={},
     parameter_descriptions={
@@ -147,7 +158,9 @@ plugin.visualizers.register_function(
         'one': ('When True match_samples will do one to '
             'one matching instead of all matches.'), 
         'only_matches': ('When True match_samples will filter out'
-            'non-matched samples from output file.')
+            'non-matched samples from output file.'), 
+        'extra': ('Dictates if funtions that subset metadata do '
+                  'the subsetting in one or multiple steps'),
     },
     name='Interact with and visualizes a  Metadata object',
     description=('Label, filter, and match samples in a '
@@ -164,7 +177,7 @@ plugin.visualizers.register_function(
         'keep': Str, 
         'control': Str, 'case': Str,
         'match': Str, 
-        'one': Bool, 'only_matches': Bool    
+        'one': Bool, 'only_matches': Bool, 'extra': Bool, 
     },
     input_descriptions={},
     parameter_descriptions={
@@ -181,7 +194,9 @@ plugin.visualizers.register_function(
         'one': ('When True match_samples will do one to '
             'one matching instead of all matches.'), 
         'only_matches': ('When True match_samples will filter out'
-            'non-matched samples from output file.')
+            'non-matched samples from output file.'), 
+        'extra': ('Dictates if funtions that subset metadata do '
+                  'the subsetting in one or multiple steps'),
     },
     name='Interact with and visualizes a Metadata object',
     description=('Subset, label, and match samples in a '
@@ -200,7 +215,7 @@ plugin.visualizers.register_function(
         'control': Str, 'case': Str,
         'nullvalues': Str, 
         'match': Str, 
-        'one': Bool, 'only_matches': Bool
+        'one': Bool, 'only_matches': Bool, 'extra': Bool,
     },
     input_descriptions={},
     parameter_descriptions={
@@ -219,7 +234,9 @@ plugin.visualizers.register_function(
         'one': ('When True match_samples will do one to '
             'one matching instead of all matches.'), 
         'only_matches': ('When True match_samples will filter out'
-            'non-matched samples from output file.')
+            'non-matched samples from output file.'), 
+        'extra': ('Dictates if funtions that subset metadata do '
+                  'the subsetting in one or multiple steps'),
     },
     name='Interact with and visualizes a Metadata object',
     description=('Subset, label, filter, and match samples in a '

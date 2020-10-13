@@ -7,7 +7,7 @@ from match_samples import match_functions as mf
 
 
 
-def subsetting(output_dir, metadata: Metadata, keep: str) -> None:
+def subsetting(output_dir, metadata: Metadata, keep: str, extra) -> None:
     '''
     Parameters
     ----------
@@ -18,6 +18,9 @@ def subsetting(output_dir, metadata: Metadata, keep: str) -> None:
     keep: string
         name of file with sqlite lines used to determine what samples 
             to exclude or keep
+    extra: boolean
+        Dictates if funtions that subset metadata do the subsetting
+            in one or multiple steps
     '''
     from qiime2.plugins.metadata.visualizers import tabulate
 
@@ -29,7 +32,7 @@ def subsetting(output_dir, metadata: Metadata, keep: str) -> None:
 
     print("Calling keep_samples")
     afterExclusionMD = mf.keep_samples(metadata,
-            inputDict["keep"])
+            inputDict["keep"], extra)
     tkeep = time.clock()
     print("Time to filter out unwanted samples is %s"
           %(tkeep - tloadedFiles))
@@ -44,7 +47,7 @@ def subsetting(output_dir, metadata: Metadata, keep: str) -> None:
 
 
 def labeler_no_subset(output_dir, metadata: Metadata, control: str, 
-                      case: str) -> None:
+                      case: str, extra) -> None:
     '''
     Parameters
     ----------
@@ -58,6 +61,9 @@ def labeler_no_subset(output_dir, metadata: Metadata, control: str,
     case: string
         name of file with sqlite lines used to determine what 
             samples to label case
+    extra: boolean
+        Dictates if funtions that subset metadata do the subsetting
+            in one or multiple steps
     '''
     from qiime2.plugins.metadata.visualizers import tabulate
     #from qiime2.plugins import metadata as plugMD
@@ -73,7 +79,7 @@ def labeler_no_subset(output_dir, metadata: Metadata, control: str,
     case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
     case_controlMD = mf.determine_cases_and_controls(
-            metadata, case_control_dict)
+            metadata, case_control_dict, extra)
     tcase_control = time.clock()
     print("Time to label case and control samples is %s"
           %(tcase_control - tloadedFiles))
@@ -93,7 +99,7 @@ def labeler_no_subset(output_dir, metadata: Metadata, control: str,
 
 
 def complete_labeler(output_dir, metadata: Metadata, keep:str, 
-                     control:str, case:str) -> None:
+                     control:str, case:str, extra) -> None:
     '''
     Parameters
     ----------
@@ -110,6 +116,9 @@ def complete_labeler(output_dir, metadata: Metadata, keep:str,
     case: string
         name of file with sqlite lines used to determine what 
             samples to label case
+    extra: boolean
+        Dictates if funtions that subset metadata do the subsetting
+            in one or multiple steps
 
     '''
     from qiime2.plugins.metadata.visualizers import tabulate
@@ -121,7 +130,8 @@ def complete_labeler(output_dir, metadata: Metadata, keep:str,
     tloadedFiles = time.clock()
 
     print("Calling keep_samples")
-    afterExclusionMD = mf.keep_samples(metadata, inputDict["keep"])
+    afterExclusionMD = mf.keep_samples(metadata, inputDict["keep"], 
+                                       extra)
     tkeep = time.clock()
     print("Time to filter out unwanted samples is %s"
           %(tkeep - tloadedFiles))
@@ -130,7 +140,7 @@ def complete_labeler(output_dir, metadata: Metadata, keep:str,
     case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
     case_controlMD = mf.determine_cases_and_controls(
-            afterExclusionMD, case_control_dict)
+            afterExclusionMD, case_control_dict, extra)
     tcase_control = time.clock()
     print("Time to label case and control samples is %s"
           %(tcase_control - tkeep))
@@ -149,7 +159,8 @@ def complete_labeler(output_dir, metadata: Metadata, keep:str,
 def matching_no_subset_null_filter(output_dir, metadata: Metadata,
                                 control:str, case:str, match:str,
                                 one:bool=False,
-                                only_matches:bool=False) -> None:
+                                only_matches:bool=False,
+                                extra) -> None:
     '''
     Parameters
     ----------
@@ -172,6 +183,9 @@ def matching_no_subset_null_filter(output_dir, metadata: Metadata,
     only_matches: boolean
         When given as a parameter match_samples will filter out
             non-matched samples from output file
+    extra: boolean
+        Dictates if funtions that subset metadata do the subsetting
+            in one or multiple steps
     '''
     from qiime2.plugins.metadata.visualizers import tabulate
 
@@ -186,7 +200,7 @@ def matching_no_subset_null_filter(output_dir, metadata: Metadata,
     case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
     case_controlMD = mf.determine_cases_and_controls(
-            metadata, case_control_dict)
+            metadata, case_control_dict, extra)
     tcase_control = time.clock()
     print("Time to label case and control samples is %s"
           %(tcase_control - tloadedFiles))
@@ -208,7 +222,8 @@ def matching_no_subset_null_filter(output_dir, metadata: Metadata,
 def matching_no_subset(output_dir, metadata: Metadata,
                        control:str, case:str, nullvalues:str,
                        match:str, one:bool=False, 
-                       only_matches:bool=False) -> None:
+                       only_matches:bool=False,
+                       extra) -> None:
     '''
     Parameters
     ----------
@@ -235,6 +250,9 @@ def matching_no_subset(output_dir, metadata: Metadata,
     only_matches: boolean
         When given as a parameter match_samples will filter out
             non-matched samples from output file
+    extra: boolean
+        Dictates if funtions that subset metadata do the subsetting
+            in one or multiple steps
     '''
     from qiime2.plugins.metadata.visualizers import tabulate
 
@@ -249,7 +267,7 @@ def matching_no_subset(output_dir, metadata: Metadata,
     case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
     case_controlMD = mf.determine_cases_and_controls(
-            metadata, case_control_dict)
+            metadata, case_control_dict, extra)
     tcase_control = time.clock()
     print("Time to label case and control samples is %s"
           %(tcase_control - tloadedFiles))
@@ -278,7 +296,8 @@ def matching_no_subset(output_dir, metadata: Metadata,
 def matching_no_null_filter(output_dir, metadata: Metadata, keep:str,
                             control:str, case:str, match:str, 
                             one:bool=False, 
-                            only_matches:bool=False) -> None:
+                            only_matches:bool=False, 
+                            extra) -> None:
     '''
     Parameters
     ----------
@@ -304,6 +323,9 @@ def matching_no_null_filter(output_dir, metadata: Metadata, keep:str,
     only_matches: boolean
         When given as a parameter match_samples will filter out
             non-matched samples from output file
+    extra: boolean
+        Dictates if funtions that subset metadata do the subsetting
+            in one or multiple steps
     '''
     from qiime2.plugins.metadata.visualizers import tabulate
 
@@ -316,7 +338,7 @@ def matching_no_null_filter(output_dir, metadata: Metadata, keep:str,
 
     print("Calling keep_samples")
     afterExclusionMD = mf.keep_samples(metadata,
-            inputDict["keep"])
+            inputDict["keep"], extra)
     tkeep = time.clock()
     print("Time to filter out unwanted samples is %s"
           %(tkeep - tloadedFiles))
@@ -325,7 +347,7 @@ def matching_no_null_filter(output_dir, metadata: Metadata, keep:str,
     case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
     case_controlMD = mf.determine_cases_and_controls(
-            afterExclusionMD, case_control_dict)
+            afterExclusionMD, case_control_dict, extra)
     tcase_control = time.clock()
     print("Time to label case and control samples is %s"
           %(tcase_control - tkeep))
@@ -348,7 +370,7 @@ def matching_no_null_filter(output_dir, metadata: Metadata, keep:str,
 def complete_matcher(output_dir, metadata: Metadata, keep:str, 
                      control:str, case:str, nullvalues:str, 
                      match:str, one:bool=False, 
-                     only_matches:bool=True) -> None:
+                     only_matches:bool=True, extra) -> None:
     '''
     Parameters
     ----------
@@ -378,6 +400,9 @@ def complete_matcher(output_dir, metadata: Metadata, keep:str,
     only_matches: boolean
         When given as a parameter match_samples will filter out
             non-matched samples from output file
+    extra: boolean
+        Dictates if funtions that subset metadata do the subsetting
+            in one or multiple steps
     '''
     from qiime2.plugins.metadata.visualizers import tabulate
 
@@ -390,7 +415,7 @@ def complete_matcher(output_dir, metadata: Metadata, keep:str,
 
     print("Calling keep_samples")
     afterExclusionMD = mf.keep_samples(metadata,
-            inputDict["keep"])
+            inputDict["keep"], extra)
     tkeep = time.clock()
     print("Time to filter out unwanted samples is %s"
           %(tkeep - tloadedFiles))
@@ -399,7 +424,7 @@ def complete_matcher(output_dir, metadata: Metadata, keep:str,
     case_control_dict = {"case":inputDict["case"],
             "control":inputDict["control"]}
     case_controlMD = mf.determine_cases_and_controls(
-            afterExclusionMD, case_control_dict)
+            afterExclusionMD, case_control_dict, extra)
     tcase_control = time.clock()
     print("Time to label case and control samples is %s"
           %(tcase_control - tkeep))

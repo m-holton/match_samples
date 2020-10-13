@@ -11,7 +11,7 @@ from qiime2 import Metadata
 
 class Stable_Marriage:
 
-    def orderDict(self, dictionary, value_frequency):
+    def orderDict(self, case_dictionary, control_frequency):
         '''
         orders the elements of each array that is associated with a sample
             key by how often they get matched to other samples least to
@@ -19,11 +19,11 @@ class Stable_Marriage:
 
         Parameters
         ----------
-        dictionary: dictionary
+        case_dictionary: dictionary
             keys are linked to arrays that contain strings that correspond to
                 samples that match to the sample the key represents
 
-        value_frequency: dictionary
+        control_frequency: dictionary
             keys are samples found in arrays of dictionary. Elements are
                 numerical representation of how many samples element
                 matches to
@@ -34,13 +34,13 @@ class Stable_Marriage:
             dictionary with elements of the arrays that correspond to keys
                 ordered from least to greatest abundance
         '''
-        for k in dictionary:
-            dictionary[k] = sorted(dictionary[k])
-            dictionary[k] = sorted(dictionary[k],
-                key=lambda x:value_frequency[x])
-        return dictionary
+        for k in case_dictionary:
+            case_dictionary[k] = sorted(case_dictionary[k])
+            case_dictionary[k] = sorted(case_dictionary[k],
+                key=lambda x:control_frequency[x])
+        return case_dictionary
 
-    def order_keys(self, dictionary):
+    def order_keys(self, case_dictionary):
         '''
         orders the keys of a dictionary so that they can be used properly as
             the freemen of stable marriage. In order greatest to least number
@@ -49,7 +49,7 @@ class Stable_Marriage:
 
         Parameters
         ----------
-        dictionary
+        case_dictionary
             dictionary of cases or controls with their matching controls or
                 cases ordered by rising abundance
 
@@ -59,8 +59,8 @@ class Stable_Marriage:
             contains keys in order of greatest to least amount of samples they
                 match to
         '''
-        keys_greatest_to_least = sorted(dictionary,
-            key=lambda x: len(dictionary[x]), reverse=True)
+        keys_greatest_to_least = sorted(case_dictionary,
+            key=lambda x: len(case_dictionary[x]), reverse=True)
         return keys_greatest_to_least
 
     def stableMarriageRunner(self, case_dictionary,
@@ -128,13 +128,6 @@ class Stable_Marriage:
                     if one_to_one_match_dictionary[control] in free_keys:
                         free_keys.remove(one_to_one_match_dictionary[control])
 
-            else:
-                key_in_use = one_to_one_match_dictionary[entry]
-                if pref_counts_case[key] < pref_counts_case[key_in_use]:
-                    one_to_one_match_dictionary[entry] = key
-                    free_keys.append(key_in_use)
-                else:
-                    free_keys.append(key)
 
 
         return one_to_one_match_dictionary
@@ -192,7 +185,7 @@ def get_user_input_query_lines(dictofFiles):
     return dict_of_file_lines
 
 
-def keep_samples(original_MD, keep_query_lines):
+def keep_samples(original_MD, keep_query_lines, extra):
     '''
     Filters out unwanted rows based on values in chosen columns detailed in
         keep_query_lines.
@@ -206,6 +199,11 @@ def keep_samples(original_MD, keep_query_lines):
         list of strings that are the lines of the file
         each string is a sqlite query that determines what ids to keep
 
+    extra: boolean
+        Tells function whether to shrink metadata in one step or in multiple
+            extra print statements that show how many potential case or control
+            samples are left after each query
+            
     Returns
     -------
     shrunk_MD : Metadata object
@@ -223,12 +221,16 @@ def keep_samples(original_MD, keep_query_lines):
     shrunk_MD = original_MD
     print("size of original MetaData Object = %s"
           %(shrunk_MD.id_count))
-    for line in keep_query_lines:
-        initial_size = shrunk_MD.id_count
-        ids = shrunk_MD.get_ids(line)
+    if extra:
+        for line in keep_query_lines:
+            initial_size = shrunk_MD.id_count
+            ids = shrunk_MD.get_ids(line)
+            shrunk_MD = shrunk_MD.filter_ids(ids)
+            print(line)
+            print("\tfiltered out %s samples"%(initial_size-shrunk_MD.id_count))   
+    else:
+        ids = shrunk_MD.get_ids(' AND '.join(keep_query_lines))
         shrunk_MD = shrunk_MD.filter_ids(ids)
-        print(line)
-        print("\tfiltered out %s samples"%(initial_size-shrunk_MD.id_count))    
     print("size of filtered MetaData Object = %s"
             %(shrunk_MD.id_count))
     print("kept %s samples"%(shrunk_MD.id_count))
@@ -237,7 +239,7 @@ def keep_samples(original_MD, keep_query_lines):
     return shrunk_MD
 
 
-def determine_cases_and_controls(afterExclusion_MD, query_line_dict):
+def determine_cases_and_controls(afterExclusion_MD, query_line_dict, extra):
     '''
     Determines what samples are cases or controls using the queries in
         query_line_array. The labels of each sample are stored in
@@ -245,9 +247,6 @@ def determine_cases_and_controls(afterExclusion_MD, query_line_dict):
 
     Parameters
     ----------
-    verbose: boolean
-        Tells function if it should output print statements or not. True
-            outputs print statements.
 
     afterExclusion_MD : Metadata object
         Metadata object with unwanted samples filtered out
@@ -256,6 +255,11 @@ def determine_cases_and_controls(afterExclusion_MD, query_line_dict):
         there are two sub arrays
         the first array are made of queries to determine controls
         the second array are made of queries to determine cases
+        
+    extra: boolean
+        Tells function whether to shrink metadata in one step or in multiple
+            extra print statements that show how many potential case or control
+            samples are left after each query
 
     Returns
     -------
@@ -287,14 +291,16 @@ def determine_cases_and_controls(afterExclusion_MD, query_line_dict):
         query_lines = query_line_dict[key]
         if len(query_lines) < 1:
             raise ValueError("The %s query file is empty"%(key))
-            
-        for line in query_lines:
-            initial_size = shrunk_MD.id_count
-            ids = shrunk_MD.get_ids(line)
+        if extra:
+            for line in query_lines:
+                initial_size = shrunk_MD.id_count
+                ids = shrunk_MD.get_ids(line)
+                shrunk_MD = shrunk_MD.filter_ids(ids)
+                print(line)
+                print("\tFilters down number of potental %s samples left to %s"%(key, shrunk_MD.id_count)) 
+        else:
+            ids = shrunk_MD.get_ids(' AND '.join(query_lines))  
             shrunk_MD = shrunk_MD.filter_ids(ids)
-            print(line)
-            print("\tFilters down number of potental %s samples left to %s"%(key, shrunk_MD.id_count)) 
-            
         print("Final number of %s samples is %s"%(shrunk_MD.id_count,key))
         #replaces the true values created by the loop above to case or control
         ids = shrunk_MD.ids

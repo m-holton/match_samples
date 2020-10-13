@@ -206,6 +206,7 @@ def test_keep_samples(unit, normal_input, normal_output, normal_keep,
     empty_file: string
         Name of the empty file used in various tests
     '''
+    extra = False
     norm_in = Metadata.load("./%s/%s"%(unit, normal_input))
     norm_out = Metadata.load("./%s/%s"%(unit, normal_output))
 
@@ -214,12 +215,12 @@ def test_keep_samples(unit, normal_input, normal_output, normal_keep,
         "r").read().splitlines()
     emp_file = open("./%s/%s"%(unit, empty_file), "r").read().splitlines()
 
-    unit_norm_out = match_functions.keep_samples(norm_in, norm_keep)
+    unit_norm_out = match_functions.keep_samples(norm_in, norm_keep, extra)
 
     assert_raises(ValueError, match_functions.keep_samples, norm_in,
-        emp_file)
+        emp_file, extra)
     assert_raises(ValueError, match_functions.keep_samples, norm_in,
-        noentry_keep)
+        noentry_keep, extra)
 
     unit_norm_out = unit_norm_out.to_dataframe()
     norm_out = norm_out.to_dataframe()
@@ -256,6 +257,7 @@ def test_determine_cases_and_controls(unit, normal_input,
     empty_file: string
         Name of the empty file used in various tests
     '''
+    extra = False
     norm_in = Metadata.load("./%s/%s"%(unit, normal_input))
     norm_out = Metadata.load("./%s/%s"%(unit, normal_output))
 
@@ -268,15 +270,15 @@ def test_determine_cases_and_controls(unit, normal_input,
 
     case_control_dict = {"case":norm_case, "control":norm_control}
     unit_norm_out = match_functions.determine_cases_and_controls(
-        norm_in, case_control_dict)
+        norm_in, case_control_dict, extra)
 
     case_control_dict = {"case":emp_file, "control":emp_file}
     assert_raises(ValueError, match_functions.determine_cases_and_controls,
-        norm_in, case_control_dict)
+        norm_in, case_control_dict, extra)
 
     case_control_dict = {"case":noentry_case, "control":norm_control}
     assert_raises(ValueError, match_functions.determine_cases_and_controls,
-        norm_in, case_control_dict)
+        norm_in, case_control_dict, extra)
 
     norm_out = norm_out.to_dataframe()
     unit_norm_out = unit_norm_out.to_dataframe()
